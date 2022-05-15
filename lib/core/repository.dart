@@ -2,6 +2,7 @@ import 'package:gazer_client/core/gazer_local_client.dart';
 import 'package:gazer_client/core/history/history.dart';
 import 'package:gazer_client/core/items_watcher/items_watcher.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
+import 'package:gazer_client/core/xchg/xchg.dart';
 
 enum NavIndex {
   units,
@@ -23,6 +24,7 @@ class Repository {
   History history = History();
   ItemsWatcher itemsWatcher = ItemsWatcher();
   NavIndex navIndex = NavIndex.units;
+  Xchg xchg = Xchg("gazer_client");
 
   GazerLocalClient client(Connection conn) {
     String clientKey = conn.address + " / " + conn.sessionKey + " / " + conn.transport;
