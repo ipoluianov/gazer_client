@@ -589,7 +589,7 @@ class GazerLocalClient {
   }
 
   Future<TResp> fetchXchg<TReq, TResp>(String function, TReq request, FromJsonFunc fromJson) async {
-    print("fetchXchg $function");
+    //print("fetchXchg $function");
 
     // Gazer request body
     var reqString = jsonEncode(request);
@@ -604,7 +604,7 @@ class GazerLocalClient {
 
     if (tr.responseCode == 200 && tr.response != null) {
       String s = utf8.decode(tr.response!.data.toList());
-      print("RESULT: $s");
+      //print("RESULT: $s");
       //var fResp = Frame.fromJson(jsonDecode(s));
       //print("resp1: ${str}");
       return fromJson(jsonDecode(s));

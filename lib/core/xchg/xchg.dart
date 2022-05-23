@@ -48,7 +48,7 @@ class Transaction {
       await Future.delayed(const Duration(milliseconds: 1));
       //sleep(const Duration(milliseconds: 10));
       if (complete) {
-        print("TRANSACTION COMPLETE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        //print("TRANSACTION COMPLETE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         break;
       }
     }
@@ -75,12 +75,13 @@ class Xchg {
 
   void requestR() async {
     processing = true;
-    var req = http.MultipartRequest('POST', Uri.parse("http://rep01.gazer.cloud:8987/"));
+    var req = http.MultipartRequest('POST', Uri.parse("http://54.37.73.160:8987/"));
+
     req.fields['f'] = "r";
     req.fields['a'] = address;
     http.Response? response;
     try {
-      print("read begin: ${address}");
+      //print("read begin: ${address}");
       response = await http.Response.fromStream(await req.send().timeout(const Duration(milliseconds: 20000)));
       //print("read result: ${response.statusCode} body: ${response.body}");
     } on TimeoutException catch (_) {
@@ -114,12 +115,12 @@ class Xchg {
   }
 
   Future<Transaction> requestW(String dest, String function, Uint8List data) async {
-    print("requestW $dest, $function");
+    //print("requestW $dest, $function");
     String transactionId = nextTransactionId();
     Frame frame = Frame(address, function, transactionId, data);
     Transaction tr = Transaction(transactionId, frame);
     var jsonBytesB64 = jsonEncode(frame);
-    var req = http.MultipartRequest('POST', Uri.parse("http://rep01.gazer.cloud:8987/"));
+    var req = http.MultipartRequest('POST', Uri.parse("http://54.37.73.160:8987/"));
     req.fields['f'] = "w";
     req.fields['a'] = dest;
     req.fields['d'] = jsonBytesB64;
