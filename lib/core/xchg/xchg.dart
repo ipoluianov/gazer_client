@@ -43,13 +43,16 @@ class Transaction {
     response = null;
   }
 
-  void wait() {
-    for (int i = 0; i < 100; i++) {
-      sleep(const Duration(milliseconds: 10));
+  Future<Transaction> wait() async {
+    for (int i = 0; i < 3000; i++) {
+      await Future.delayed(const Duration(milliseconds: 1));
+      //sleep(const Duration(milliseconds: 10));
       if (complete) {
+        print("TRANSACTION COMPLETE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         break;
       }
     }
+    return this;
   }
 }
 
@@ -57,59 +60,75 @@ class Xchg {
   String address;
   late Timer _timer;
 
+  bool processing = false;
+
   Map<String, Transaction> transactions = {};
 
   Xchg(this.address) {
-    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 20), (timer) {
+      if (processing) {
+        return;
+      }
       requestR();
     });
   }
 
   void requestR() async {
+    processing = true;
     var req = http.MultipartRequest('POST', Uri.parse("http://rep01.gazer.cloud:8987/"));
     req.fields['f'] = "r";
     req.fields['a'] = address;
-    http.Response response;
+    http.Response? response;
     try {
-      response = await http.Response.fromStream(await req.send().timeout(const Duration(milliseconds: 5000)));
-      print("ok ${response.statusCode}");
+      print("read begin: ${address}");
+      response = await http.Response.fromStream(await req.send().timeout(const Duration(milliseconds: 20000)));
+      //print("read result: ${response.statusCode} body: ${response.body}");
     } on TimeoutException catch (_) {
       print("timeout");
-      throw GazerClientException("timeout");
+      //throw GazerClientException("timeout");
     }
 
-    if (response.statusCode == 200) {
-      String s = response.body;
+    if (response != null) {
+      //print("RESPONSE: ${response.statusCode} for addr $address");
+      if (response.statusCode == 200) {
+        String s = response.body;
 
-      var fResp = Frame.fromJson(jsonDecode(s));
-      String str = String.fromCharCodes(fResp.data);
+        var fResp = Frame.fromJson(jsonDecode(s));
+        //String str = String.fromCharCodes(fResp.data);
 
-      if (transactions.containsKey(fResp.transactionId)) {
-        var tr = transactions[fResp.transactionId];
-        if (tr != null) {
-          tr.responseCode = response.statusCode;
-          tr.response = fResp;
-          tr.complete = true;
+        //print("Received transaction: ${fResp.transactionId}");
+
+        if (transactions.containsKey(fResp.transactionId)) {
+          var tr = transactions[fResp.transactionId];
+          if (tr != null) {
+            //print("Received transaction FOUND: ${fResp.transactionId}");
+            tr.responseCode = response.statusCode;
+            tr.response = fResp;
+            tr.complete = true;
+          }
         }
       }
     }
+
+    processing = false;
   }
 
-  Future<Transaction> requestW(String address, String function, Uint8List data) async {
+  Future<Transaction> requestW(String dest, String function, Uint8List data) async {
+    print("requestW $dest, $function");
     String transactionId = nextTransactionId();
-    Frame frame = Frame("client", function, transactionId, data);
+    Frame frame = Frame(address, function, transactionId, data);
     Transaction tr = Transaction(transactionId, frame);
-    var jsonBytesB64 = base64Encode(utf8.encode(jsonEncode(frame)));
+    var jsonBytesB64 = jsonEncode(frame);
     var req = http.MultipartRequest('POST', Uri.parse("http://rep01.gazer.cloud:8987/"));
     req.fields['f'] = "w";
-    req.fields['a'] = address;
+    req.fields['a'] = dest;
     req.fields['d'] = jsonBytesB64;
     transactions[transactionId] = tr;
     http.Response response;
     try {
       response = await http.Response.fromStream(await req.send().timeout(const Duration(milliseconds: 1000)));
     } on TimeoutException catch (_) {
-      throw GazerClientException("timeout");
+      //throw GazerClientException("timeout");
     }
     return tr;
   }

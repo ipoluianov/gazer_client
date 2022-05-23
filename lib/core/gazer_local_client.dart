@@ -596,21 +596,21 @@ class GazerLocalClient {
     List<int> list = reqString.codeUnits;
     Uint8List bytes = Uint8List.fromList(list);
 
-    Frame frame = Frame("client", function, Repository().xchg.nextTransactionId(), bytes);
-    var jsonBytes = Uint8List.fromList(utf8.encode(jsonEncode(frame)));
+    //Frame frame = Frame("client", function, Repository().xchg.nextTransactionId(), bytes);
+    //var jsonBytes = Uint8List.fromList(utf8.encode(jsonEncode(frame)));
 
-    Transaction tr = await Repository().xchg.requestW(function, jsonBytes);
-    tr.wait();
+    Transaction tr = await Repository().xchg.requestW("node", function, bytes);
+    await tr.wait();
 
     if (tr.responseCode == 200 && tr.response != null) {
       String s = utf8.decode(tr.response!.data.toList());
-      var fResp = Frame.fromJson(jsonDecode(s));
-      String str = String.fromCharCodes(fResp.data);
-      print("resp1: ${str}");
-      return fromJson(jsonDecode(str));
+      print("RESULT: $s");
+      //var fResp = Frame.fromJson(jsonDecode(s));
+      //print("resp1: ${str}");
+      return fromJson(jsonDecode(s));
     } else {
       lastError = tr.error;
-      print("err: ${tr.error}");
+      //print("err: ${tr.error}");
       throw GazerClientException(tr.error);
     }
   }
