@@ -24,7 +24,7 @@ class Repository {
   History history = History();
   ItemsWatcher itemsWatcher = ItemsWatcher();
   NavIndex navIndex = NavIndex.units;
-  Xchg xchg = Xchg("gazer_client");
+  Xchg xchg = Xchg("");
 
   GazerLocalClient client(Connection conn) {
     String clientKey = conn.address + " / " + conn.sessionKey + " / " + conn.transport;
