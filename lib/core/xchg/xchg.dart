@@ -39,13 +39,11 @@ class Frame {
 
 class Transaction {
   String transactionId;
-  Frame request;
   bool complete = false;
   int responseCode = 0;
   String error = "";
-  Frame? response;
-  Transaction(this.transactionId, this.request) {
-    response = null;
+  String response = "";
+  Transaction(this.transactionId) {
   }
 
   Future<Transaction> wait() async {
@@ -74,9 +72,9 @@ class Xchg {
 
   Xchg(this.address) {
 
-    _timer = Timer.periodic(const Duration(milliseconds: 20), (timer) {
+    /*_timer = Timer.periodic(const Duration(milliseconds: 20), (timer) {
       if (aesKey.isEmpty) {
-        init();
+        //init();
       }
 
       if (address.isEmpty) {
@@ -88,7 +86,7 @@ class Xchg {
         return;
       }
       requestR();
-    });
+    });*/
   }
 
   SecureRandom exampleSecureRandom() {
@@ -163,7 +161,7 @@ class Xchg {
     return topLevel.encode();
   }
 
-  void init() async {
+  /*void init() async {
     var req = http.MultipartRequest('POST', Uri.parse("http://127.0.0.1:8987/"));
 
     final pair = generateRSAkeyPair(exampleSecureRandom());
@@ -198,7 +196,7 @@ class Xchg {
       print("timeout");
       //throw GazerClientException("timeout");
     }
-  }
+  }*/
 
   Uint8List rsaEncrypt(RSAPublicKey myPublic, Uint8List dataToEncrypt) {
     final encryptor = PKCS1Encoding(RSAEngine())
@@ -241,9 +239,9 @@ class Xchg {
     b.add(encryptedData);
     var result = b.toBytes();
 
-    print(keyBytes);
-    print(result);
-    print(result.length);
+    //print(keyBytes);
+    //print(result);
+    //print(result.length);
 
     //aesDecrypt(keyBytes, encryptedData);
     return result;
@@ -262,9 +260,9 @@ class Xchg {
     }
 
     //dataToDecrypt = base64Decode(utf8.decode(dataToDecrypt));
-    print("decode---------------------");
-    print(dataToDecrypt);
-    print("decode---------------------");
+    //print("decode---------------------");
+    //print(dataToDecrypt);
+    //print("decode---------------------");
 
     final cipher = GCMBlockCipher(AESEngine())
       ..init(
@@ -277,8 +275,8 @@ class Xchg {
           ));
 
     var encryptedData = cipher.process(dataToDecrypt);
-    print("decrypt:");
-    print(utf8.decode(encryptedData));
+    //print("decrypt:");
+    //print(utf8.decode(encryptedData));
     //print(base64Encode(keyBytes));
     return encryptedData;
   }
@@ -311,11 +309,11 @@ class Xchg {
   Uint8List int64bytes(int value) =>
       Uint8List(8)..buffer.asInt64List()[0] = value;
 
-  void requestR() async {
+  /*void requestR() async {
     processing = true;
     var req = http.MultipartRequest('POST', Uri.parse("http://127.0.0.1:8987/"));
 
-    print("requestR");
+    //print("requestR");
 
     Uint8List counterBytes = int64bytes(counter);
 
@@ -362,24 +360,55 @@ class Xchg {
     }
 
     processing = false;
-  }
+  }*/
 
   Future<Transaction> requestW(String dest, String function, Uint8List data) async {
-    print("requestW $dest, $function");
-    String transactionId = nextTransactionId();
-    Frame frame = Frame(address, function, transactionId, data);
-    Transaction tr = Transaction(transactionId, frame);
-    var jsonBytesB64 = jsonEncode(frame);
-    var req = http.MultipartRequest('POST', Uri.parse("http://127.0.0.1:8987/"));
-    req.fields['f'] = "w";
-    req.fields['a'] = dest;
-    req.fields['d'] = jsonBytesB64;
-    transactions[transactionId] = tr;
-    http.Response response;
-    try {
-      response = await http.Response.fromStream(await req.send().timeout(const Duration(milliseconds: 1000)));
-    } on TimeoutException catch (_) {
-      //throw GazerClientException("timeout");
+    Transaction tr = Transaction("");
+    dest = "MIIBCgKCAQEAw3HnYPGjGltAf1vIw7U8/VrYrAtICk6gPy+K+q+YuQTjYJ8bdc7T5HcshkHpJ5gT9JR9fhC/JhFsRe1ZOV/CxLHYyD0ruo8ouyolC29CSHmeNqRp2TiV8sC642HoTphGRf0MQ0uaq7h7AYdVMxgUUKPgJs5eLI4KQnJa+Dwl0+HUUq54g2qQja4wAgrXhbtm+qm3hcJBycQbuBG2LfGl+lboA7cn0Vo+03QxQlXAp0MBuVOBIQ29PjR2hrq/T6+f48r4XzrUFfrV8iFrQtIq4R33j6UO/88jWcXXnlRAXt4/Eg65W+avBf83UIUVMMtn1QUcpBnyKis2qPF9o+bvCQIDAQAB";
+    int lid = 0;
+    {
+      Uint8List publicKey = base64Decode(dest);
+      List<int> bFrame = [];
+      bFrame.add(0x05);
+      bFrame.addAll(publicKey);
+      var req = http.MultipartRequest('POST', Uri.parse("http://127.0.0.1:8987/"));
+      req.fields['f'] = "b";
+      req.fields['d'] = base64Encode(bFrame);
+      http.Response response;
+      try {
+        response = await http.Response.fromStream(await req.send().timeout(const Duration(milliseconds: 1000)));
+        //print("RESP:" + response.body);
+        var resp = base64Decode(response.body);
+        ByteBuffer byteBuffer = resp.buffer;
+        Uint64List thirtytwoBitList = byteBuffer.asUint64List();
+        lid = thirtytwoBitList[0];
+        print("LID: ${lid}");
+      } on TimeoutException catch (_) {
+        //throw GazerClientException("timeout");
+      }
+    }
+    {
+      print("executing");
+      Uint8List publicKey = base64Decode(dest);
+      List<int> bFrame = [];
+      bFrame.add(0x04);
+      bFrame.addAll(int64bytes(lid));
+      bFrame.addAll(data);
+      var req = http.MultipartRequest('POST', Uri.parse("http://127.0.0.1:8987/"));
+      req.fields['f'] = "b";
+      req.fields['d'] = base64Encode(bFrame);
+      http.Response response;
+      try {
+        print("send CALL");
+        response = await http.Response.fromStream(await req.send().timeout(const Duration(milliseconds: 1000)));
+        var resp = base64Decode(response.body);
+        var textResp = utf8.decode(resp);
+        print("RESPONSE:" + textResp);
+        tr.response = textResp;
+        tr.responseCode = 200;
+      } on TimeoutException catch (_) {
+        //throw GazerClientException("timeout");
+      }
     }
     return tr;
   }

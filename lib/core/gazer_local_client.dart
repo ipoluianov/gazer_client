@@ -596,17 +596,16 @@ class GazerLocalClient {
     List<int> list = reqString.codeUnits;
     Uint8List bytes = Uint8List.fromList(list);
 
-    //Frame frame = Frame("client", function, Repository().xchg.nextTransactionId(), bytes);
-    //var jsonBytes = Uint8List.fromList(utf8.encode(jsonEncode(frame)));
+    Frame frame = Frame("client", function, Repository().xchg.nextTransactionId(), bytes);
+    var jsonBytes = Uint8List.fromList(utf8.encode(jsonEncode(frame)));
 
-    Transaction tr = await Repository().xchg.requestW("a584002b070c3295673669a49e2bbff2", function, bytes);
-    await tr.wait();
+    Transaction tr = await Repository().xchg.requestW("a584002b070c3295673669a49e2bbff2", function, jsonBytes);
 
-    if (tr.responseCode == 200 && tr.response != null) {
-      String s = utf8.decode(tr.response!.data.toList());
+    if (tr.responseCode == 200) {
+      String s = tr.response;
       //print("RESULT: $s");
       //var fResp = Frame.fromJson(jsonDecode(s));
-      //print("resp1: ${str}");
+      print("resp1: ${s}");
       return fromJson(jsonDecode(s));
     } else {
       lastError = tr.error;
