@@ -588,6 +588,9 @@ class GazerLocalClient {
     return fetchLocal(function, request, fromJson);
   }
 
+  Uint8List int32bytes(int value) =>
+      Uint8List(4)..buffer.asUint32List()[0] = value;
+
   Future<TResp> fetchXchg<TReq, TResp>(String function, TReq request, FromJsonFunc fromJson) async {
     //print("fetchXchg $function");
 
@@ -599,7 +602,13 @@ class GazerLocalClient {
     Frame frame = Frame("client", function, Repository().xchg.nextTransactionId(), bytes);
     var jsonBytes = Uint8List.fromList(utf8.encode(jsonEncode(frame)));
 
-    Transaction tr = await Repository().xchg.requestW("a584002b070c3295673669a49e2bbff2", function, jsonBytes);
+    List<int> unencryptedFrame = [];
+    List<int> resultFrame = [];
+    resultFrame.addAll(int32bytes(unencryptedFrame.length));
+    resultFrame.addAll(unencryptedFrame);
+    resultFrame.addAll(jsonBytes);
+
+    Transaction tr = await Repository().xchg.requestW("a584002b070c3295673669a49e2bbff2", function, Uint8List.fromList(resultFrame));
 
     if (tr.responseCode == 200) {
       String s = tr.response;
