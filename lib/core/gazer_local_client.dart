@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
-import 'package:gazer_client/core/packer/packer.dart';
+import 'package:gazer_client/xchg/packer.dart';
 import 'package:gazer_client/core/protocol/cloud/cloud_account_info.dart';
 import 'package:gazer_client/core/protocol/cloud/cloud_add_node.dart';
 import 'package:gazer_client/core/protocol/cloud/cloud_login.dart';
@@ -57,6 +57,8 @@ import 'package:gazer_client/core/protocol/user/user_set_password.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/xchg/xchg.dart';
 import 'package:http/http.dart' as http;
+
+import '../xchg/utils.dart';
 
 typedef FromJsonFunc = dynamic Function(Map<String, dynamic> json);
 
@@ -582,10 +584,10 @@ class GazerLocalClient {
   Future<TResp> fetch<TReq, TResp>(String function, TReq request, FromJsonFunc fromJson) async {
     return fetchXchg(function, request, fromJson);
 
-    if (transport == "https/cloud") {
+    /*if (transport == "https/cloud") {
       return fetchCloud(function, request, fromJson);
     }
-    return fetchLocal(function, request, fromJson);
+    return fetchLocal(function, request, fromJson);*/
   }
 
   Uint8List int32bytes(int value) =>
@@ -596,34 +598,24 @@ class GazerLocalClient {
 
     // Gazer request body
     var reqString = jsonEncode(request);
-    List<int> list = reqString.codeUnits;
-    Uint8List bytes = Uint8List.fromList(list);
+    CallResult res = await Repository().xchg.call(function, Uint8List.fromList(utf8.encode(reqString)));
 
-    Frame frame = Frame("client", function, Repository().xchg.nextTransactionId(), bytes);
-    var jsonBytes = Uint8List.fromList(utf8.encode(jsonEncode(frame)));
-
-    List<int> unencryptedFrame = [];
-    List<int> resultFrame = [];
-    resultFrame.addAll(int32bytes(unencryptedFrame.length));
-    resultFrame.addAll(unencryptedFrame);
-    resultFrame.addAll(jsonBytes);
-
-    Transaction tr = await Repository().xchg.requestW("a584002b070c3295673669a49e2bbff2", function, Uint8List.fromList(resultFrame));
-
-    if (tr.responseCode == 200) {
-      String s = tr.response;
+    if (!res.isError()) {
+      String s = utf8.decode(res.data);
       //print("RESULT: $s");
       //var fResp = Frame.fromJson(jsonDecode(s));
-      print("resp1: ${s}");
       return fromJson(jsonDecode(s));
     } else {
-      lastError = tr.error;
+      lastError = res.error;
       //print("err: ${tr.error}");
-      throw GazerClientException(tr.error);
+      print("RESULT ERROR: ${res.error}");
+      throw GazerClientException(res.error);
     }
+
+
   }
 
-  Future<TResp> fetchLocal<TReq, TResp>(String function, TReq request, FromJsonFunc fromJson) async {
+  /*Future<TResp> fetchLocal<TReq, TResp>(String function, TReq request, FromJsonFunc fromJson) async {
     var fullAddress = '';
 
     fullAddress += 'http://' + address;
@@ -662,7 +654,7 @@ class GazerLocalClient {
       lastError = response.statusCode.toString();
       throw GazerClientException(response.body);
     }
-  }
+  }*/
 
   Future<GazerCloudWhereNodeResponse> fetchCloudRepeater() async {
     print("CLOUD RESP fetchCloudRepeater");
@@ -682,7 +674,7 @@ class GazerLocalClient {
     }
   }
 
-  Future<TResp> fetchCloud<TReq, TResp>(String function, TReq request, FromJsonFunc fromJson) async {
+  /*Future<TResp> fetchCloud<TReq, TResp>(String function, TReq request, FromJsonFunc fromJson) async {
     if (repeater.isEmpty && !function.startsWith("s-") && function != "session_open") {
       try {
         var value = await fetchCloudRepeater();
@@ -695,9 +687,9 @@ class GazerLocalClient {
     //print("FETCH: $function");
 
     return fetchCloudMain(function, request, fromJson);
-  }
+  }*/
 
-  Future<TResp> fetchCloudMain<TReq, TResp>(String function, TReq request, FromJsonFunc fromJson) async {
+  /*Future<TResp> fetchCloudMain<TReq, TResp>(String function, TReq request, FromJsonFunc fromJson) async {
     bool isServiceFunction = false;
 
     if (repeater.isEmpty && !function.startsWith("s-") && function != "session_open") {
@@ -749,7 +741,7 @@ class GazerLocalClient {
       print("CLOUD RESP ERROR3:");
       throw GazerClientException(err.toString());
     }
-  }
+  }*/
 
   String displayName() {
     if (transport == "https/cloud") {

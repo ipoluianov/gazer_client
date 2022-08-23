@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gazer_client/core/design.dart';
@@ -6,6 +8,7 @@ import 'package:gazer_client/forms/nodes/main_form/main_form_bloc.dart';
 import 'package:gazer_client/forms/nodes/main_form/node_widget.dart';
 import 'package:gazer_client/core/navigation/route_generator.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
+import 'package:gazer_client/xchg/xchg_connection.dart';
 
 import '../../../core/workspace/add_local_connection.dart';
 import '../../../core/navigation/bottom_navigator.dart';
@@ -28,6 +31,8 @@ class MainFormSt extends State<MainForm> {
   @override
   void initState() {
     super.initState();
+    //conn.call("", Uint8List(0));
+
     addLocalConnection().then((value) {
       if (value is Connection) {
         Navigator.of(context).popUntil((route) => route.isFirst);

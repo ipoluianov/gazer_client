@@ -28,14 +28,14 @@ class TitleBarSt extends State<TitleBar> {
   bool serviceInfoLoaded = false;
   late ServiceInfoResponse serviceInfo;
   void loadNodeInfo() {
-    Repository().client(widget.connection).serviceInfo().then((value) {
+    /*Repository().client(widget.connection).serviceInfo().then((value) {
       if (mounted) {
         setState(() {
           serviceInfo = value;
           serviceInfoLoaded = true;
         });
       }
-    });
+    });*/
   }
 
   String nodeName() {

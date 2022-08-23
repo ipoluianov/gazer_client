@@ -4,6 +4,8 @@ import 'package:gazer_client/core/items_watcher/items_watcher.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/core/xchg/xchg.dart';
 
+import '../xchg/xchg_connection.dart';
+
 enum NavIndex {
   units,
   charts,
@@ -24,7 +26,7 @@ class Repository {
   History history = History();
   ItemsWatcher itemsWatcher = ItemsWatcher();
   NavIndex navIndex = NavIndex.units;
-  Xchg xchg = Xchg("");
+  XchgConnection xchg = XchgConnection("gruvl3znuewl3gslgkz6aaebya4j5hvd2lcgu3i4lvj263ze", "pass");
 
   GazerLocalClient client(Connection conn) {
     String clientKey = conn.address + " / " + conn.sessionKey + " / " + conn.transport;
