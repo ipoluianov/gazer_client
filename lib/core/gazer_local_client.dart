@@ -499,7 +499,7 @@ class GazerLocalClient {
   }
 
   Future<ResGetResponse> resGetEntire(String id) async {
-    int step = 200000;
+    int step = 1000;
     String name = "";
     String type = "";
     int resSize = 0;

@@ -152,7 +152,7 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.6),
-                    //border: Border.symmetric(vertical: BorderSide(color: Colors.blue, width: 3))
+                    border: const Border(bottom: BorderSide(color: Colors.blue, width: 1))
                   ),
                   padding: const EdgeInsets.all(6),
                   constraints: const BoxConstraints(minWidth: 100, maxWidth: 266),

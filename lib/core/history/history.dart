@@ -464,7 +464,7 @@ class HistoryItemTimeRange {
   List<RequestToNode> checkValues(int minTime, int maxTime) {
     List<RequestToNode> requests = [];
     int currentTime = DateTime.now().microsecondsSinceEpoch;
-    if (currentTime - lastTaskTime < 500000) {
+    if (currentTime - lastTaskTime < 1000000) {
       return requests;
     }
     lastTaskTime = currentTime;
@@ -514,7 +514,7 @@ class HistoryItemTimeRange {
         continue;
       }
 
-      if (loadingTasks.length < 10) {
+      if (loadingTasks.length < 1) {
         HistoryLoadingTask task = HistoryLoadingTask(needToLoadItem.minTime, needToLoadItem.maxTime);
         loadingTasks.add(task);
         //print("task ${task.minTime} ${task.maxTime}");

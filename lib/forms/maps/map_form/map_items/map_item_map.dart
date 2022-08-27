@@ -91,7 +91,7 @@ class MapItemMap extends MapItem {
     loading = true;
     //print("loading $resourceId");
 
-    int step = 200000;
+    int step = 50000;
     List<int> result = [];
 
     loadingProgress = 0;

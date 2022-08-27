@@ -5,11 +5,15 @@ class Transaction {
   int sid = 0;
   int transactionId = 0;
   int sessionId = 0;
+  int offset = 0;
+  int totalSize = 0;
   Uint8List data = Uint8List(0);
 
   bool complete = false;
   String error = "";
   Uint8List response = Uint8List(0);
+
+  int receivedDataLen = 0;
 
   factory Transaction.fromBinary(Uint8List frame, int offset, int size) {
     frame = frame.sublist(offset);
@@ -18,13 +22,15 @@ class Transaction {
     tr.sid = frame.buffer.asUint64List(8)[0];
     tr.transactionId = frame.buffer.asUint64List(16)[0];
     tr.sessionId = frame.buffer.asUint64List(24)[0];
-    tr.data = frame.sublist(32, size);
+    tr.offset = frame.buffer.asUint32List(32)[0];
+    tr.totalSize = frame.buffer.asUint32List(36)[0];
+    tr.data = frame.sublist(40, size);
     return tr;
   }
 
   Transaction();
   List<int> serialize() {
-    int frameLen = 32 + data.length;
+    int frameLen = 40 + data.length;
     List<int> result = [];
     result.add(0xAA);
     result.add(0x01);
@@ -34,6 +40,8 @@ class Transaction {
     result.addAll(int64bytes(sid));
     result.addAll(int64bytes(transactionId));
     result.addAll(int64bytes(sessionId));
+    result.addAll(int32bytes(offset));
+    result.addAll(int32bytes(totalSize));
     result.addAll(data);
     return result;
   }

@@ -3,15 +3,11 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:gazer_client/xchg/aes.dart';
 import 'package:gazer_client/xchg/packer.dart';
 import 'package:gazer_client/xchg/rsa.dart';
 import 'package:gazer_client/xchg/utils.dart';
-import 'package:pointycastle/asn1/primitives/asn1_integer.dart';
-import 'package:pointycastle/asn1/primitives/asn1_sequence.dart';
 import "package:pointycastle/export.dart";
 import 'dart:math';
 import 'package:base32/base32.dart';
@@ -19,17 +15,19 @@ import 'package:base32/base32.dart';
 import 'package:gazer_client/xchg/xchg_transaction.dart';
 
 class XchgConnection {
+  String id = "";
+  String remotePeerAddress = "";
+
   Socket? socket;
   List<int> inputBufferList = [];
 
-  String remotePeerAddress = "";
   bool init2Received = false;
   bool init3Received = false;
   bool init6Received = false;
-
-  RSAPublicKey? remoteRouterPublicKey;
   Uint8List localSecret = Uint8List(32);
   Uint8List remoteSecret = Uint8List(0);
+
+  RSAPublicKey? remoteRouterPublicKey;
 
   int currentSID = 0;
   RSAPublicKey? remotePeerPublicKey;
@@ -38,6 +36,7 @@ class XchgConnection {
   int sessionNonceCounter = 1;
 
   int nextTransactionId = 1;
+
   Map<int, Transaction> transactions = {};
   String authData = "";
 
@@ -46,6 +45,7 @@ class XchgConnection {
   late AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> keyPair;
 
   XchgConnection(String remotePeerAddressL, String authString) {
+    id = DateTime.now().toString();
     keyPair = generateRSAkeyPair();
     remotePeerAddress = remotePeerAddressL;
     authData = authString;
@@ -59,7 +59,6 @@ class XchgConnection {
   }
 
   void onData(List<int> event) {
-    print("event ${event.length}");
     inputBufferList.addAll(event);
     Uint8List inputBufferBytes = Uint8List.fromList(inputBufferList);
 
@@ -71,12 +70,12 @@ class XchgConnection {
         processedLen++;
       }
       int restBytes = incomingDataOffset - processedLen;
-      if (restBytes < 32) {
+      if (restBytes < 40) {
         break;
       }
       int frameLen =
           inputBufferBytes.sublist(processedLen).buffer.asUint32List(4)[0];
-      if (frameLen < 32 || frameLen > 128*1024) {
+      if (frameLen < 40 || frameLen > 128*1024) {
         processedLen++;
         continue;
       }
@@ -102,7 +101,6 @@ class XchgConnection {
           processError(tr);
           break;
       }
-      print("Received: ${tr.frameType} ${frameLen}");
       processedLen += frameLen;
     }
 
@@ -111,9 +109,7 @@ class XchgConnection {
 
   void processInit2(Transaction tr) {
     init2Received = true;
-    print("INIT2 recevied: ${tr.data}");
     remoteRouterPublicKey = decodePublicKeyFromPKCS1(tr.data);
-    print("init2Received ${remoteRouterPublicKey}");
     sendInit5();
     if (init2Received && init3Received) {
       sendInit4();
@@ -123,7 +119,6 @@ class XchgConnection {
   void processInit3(Transaction tr) {
     init3Received = true;
     remoteSecret = rsaDecrypt(keyPair.privateKey, tr.data);
-    print("init3Received ${remoteSecret}");
     if (init2Received && init3Received) {
       sendInit4();
     }
@@ -132,14 +127,27 @@ class XchgConnection {
   void processInit6(Transaction tr) {
     init6Received = true;
     var localSecretBytesReceived = rsaDecrypt(keyPair.privateKey, tr.data);
-    print("init6Received $localSecretBytesReceived");
   }
 
   void processResponse(Transaction tr) {
-    print("processResponse ${tr.transactionId}");
     if (transactions.containsKey(tr.transactionId)) {
       Transaction originalTransaction = transactions[tr.transactionId]!;
-      originalTransaction.response = tr.data;
+      if (originalTransaction.response.length != tr.totalSize) {
+        originalTransaction.response = Uint8List(tr.totalSize);
+      }
+
+      // Copy data
+      for (int i = tr.offset; i < (tr.offset + tr.data.length); i++) {
+        if (i >= 0 && i < originalTransaction.response.length) {
+          originalTransaction.response[i] = tr.data[i - tr.offset];
+        }
+      }
+      originalTransaction.receivedDataLen += tr.data.length;
+
+      if (originalTransaction.receivedDataLen < tr.totalSize) {
+        return;
+      }
+
       originalTransaction.error = "";
       originalTransaction.complete = true;
       transactions.remove(tr.transactionId);
@@ -159,60 +167,78 @@ class XchgConnection {
 
   Future<CallResult> call(String function, Uint8List data) async {
     if (statusConnecting) {
+      print("connect ing ...");
       return CallResult.createError("connecting ...");
     }
 
     if (socket == null) {
       statusConnecting = true;
-      socket = await Socket.connect('x01.gazer.cloud', 8484);
+      try {
+        print("connect processing ...");
+        socket = await Socket.connect('x01.gazer.cloud', 8484,
+            timeout: const Duration(milliseconds: 1000));
+      } catch (err) {
+        print("connect error");
+        statusConnecting = false;
+        return CallResult.createError("can not connect: $err");
+      }
       if (socket == null) {
+        print("connect error (null)");
         statusConnecting = false;
         return CallResult.createError("can not connect");
       }
+      print("connect ok");
       socket!.listen(onData);
-      print('connected');
+
       fillLocalSecret();
       sendInit1();
       for (int i = 0; i < 20; i++) {
         await Future.delayed(const Duration(milliseconds: 100));
         if (init6Received) {
+          print("connect init ok");
           break;
         }
       }
       if (!init6Received) {
-        print("ERROR: !init6Received");
+        print("connect init timeout");
         statusConnecting = false;
         return CallResult.createError("can not init");
       }
-      print("Initialization OK");
     }
 
     if (currentSID == 0) {
+      print("connect resolve ...");
       var resolveResult = await resolveAddress();
       if (resolveResult.isError()) {
+        print("connect resolve error");
         statusConnecting = false;
         return resolveResult;
       }
+      print("connect resolve ok");
     }
 
     if (sessionID == 0) {
+      print("connect auth ...");
       var authRes = await auth();
       if (authRes.isError()) {
-        print("authRes error: ${authRes.error}");
+        print("connect auth error");
+        statusConnecting = false;
         return authRes;
       }
+      print("connect auth ok");
     }
+
+    //print("connect call ... ${function}");
 
     statusConnecting = false;
 
     var result = await regularCall(function, data);
     if (result.isError()) {
-      print("Call error: ${result.error}");
+      print("connect call error $id");
       return result;
     }
 
-    //print("Call ok $function ${result.data}");
-    print("exit");
+    //print("connect call ok $id");
     return result;
   }
 
@@ -222,10 +248,8 @@ class XchgConnection {
     {
       CallResult nonceResult = await regularCall("/xchg-get-nonce", Uint8List(0));
       if (nonceResult.isError()) {
-        print("auth nonce err ${nonceResult.error}");
         return nonceResult;
       }
-      print("Nonce recevied: ${nonceResult.data}");
       List<int> authFrameToEncrypt = [];
       authFrameToEncrypt.addAll(nonceResult.data);
       authFrameToEncrypt.addAll(utf8.encode(authData));
@@ -239,13 +263,11 @@ class XchgConnection {
       authFrameList.addAll(encryptedAuthFrame);
       CallResult authResult = await regularCall("/xchg-auth", Uint8List.fromList(authFrameList));
       if (authResult.isError()) {
-        print("auth err ${authResult.error}");
         return authResult;
       }
       var authResultDecrypted = rsaDecrypt(keyPair.privateKey, authResult.data);
       sessionID = authResultDecrypted.buffer.asUint64List()[0];
       aesKey = authResultDecrypted.sublist(8);
-      print("auth ok; sessionId: ${sessionID} aes:${aesKey}");
     }
 
     return result;
@@ -258,19 +280,14 @@ class XchgConnection {
   }
 
   Future<CallResult> resolveAddress() async {
-    print("11");
     var res = await executeTransaction(0x10, 0, 0, Uint8List.fromList(utf8.encode(remotePeerAddress)));
-    print("22");
     if (res.error.isEmpty) {
-      print("33 ${res.error} ${res.data}");
       remotePeerPublicKey = decodePublicKeyFromPKCS1(res.data.sublist(8));
       var receivedAddr = addressByPublicKey(remotePeerPublicKey!);
       if (receivedAddr == remotePeerAddress) {
         currentSID = res.data.buffer.asUint64List()[0];
       }
-      print("SID received $currentSID $receivedAddr");
     } else {
-      print("resolveAddress error: ${res.error}");
     }
     return res;
   }
@@ -286,7 +303,6 @@ class XchgConnection {
       frame.add(functionBS.length);
       frame.addAll(functionBS);
       frame.addAll(data);
-      //print("regCall: ${frame}");
       frame = packBytes(Uint8List.fromList(frame));
       frame = aesEncrypt(aesKey, Uint8List.fromList(frame));
       encrypted = true;
@@ -322,15 +338,13 @@ class XchgConnection {
     return result;
   }
 
-  void reset() {
-    sessionNonceCounter = 1;
-    currentSID = 0;
-    sessionID = 0;
-    aesKey = Uint8List(0);
-  }
-
   Future<CallResult> executeTransaction(
       int frameType, int targetSID, int sessionID, Uint8List data) async {
+
+    if (socket == null || !init6Received) {
+      return CallResult.createError("no connection");
+    }
+
     int transactionId = nextTransactionId;
     nextTransactionId++;
     Transaction tr = Transaction();
@@ -339,11 +353,17 @@ class XchgConnection {
     tr.sid = targetSID;
     tr.sessionId = sessionID;
     tr.data = data;
+    tr.offset = 0;
+    tr.totalSize = data.length;
     transactions[transactionId] = tr;
-    socket!.add(tr.serialize());
+    try {
+      socket?.add(tr.serialize());
+    } catch (err) {
+      reset();
+      return CallResult.createError("{ERR_XCHG_PEER_CONN_TR_TIMEOUT}");
+    }
 
-    print("waiting ...");
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 50; i++) {
       await Future.delayed(const Duration(milliseconds: 100));
       if (tr.complete) {
         if (transactions.containsKey(tr.transactionId)) {
@@ -360,7 +380,27 @@ class XchgConnection {
       transactions.remove(tr.transactionId);
     }
 
+    reset();
+
     return CallResult.createError("{ERR_XCHG_PEER_CONN_TR_TIMEOUT}");
+  }
+
+  void reset() {
+    statusConnecting = false;
+    if (socket != null) {
+      socket!.close();
+    }
+    socket = null;
+    sessionNonceCounter = 1;
+    currentSID = 0;
+    sessionID = 0;
+    aesKey = Uint8List(0);
+    inputBufferList = [];
+    for (var tId in transactions.keys) {
+      transactions[tId]?.error = "Connection Lost";
+      transactions[tId]?.complete = true;
+    }
+    transactions = {};
   }
 
   void sendInit1() {
@@ -371,9 +411,10 @@ class XchgConnection {
     tr.transactionId = 0;
     var strPublicKeyBS = encodePublicKeyToPemPKCS1(keyPair.publicKey);
     tr.data = strPublicKeyBS;
+    tr.offset = 0;
+    tr.totalSize = tr.data.length;
     var bs = tr.serialize();
-    socket!.add(bs);
-    print("sendInit1");
+    socket?.add(bs);
   }
 
   void sendInit4() {
@@ -383,14 +424,11 @@ class XchgConnection {
     tr.sid = 0;
     tr.transactionId = 0;
 
-    print("Key:");
-    print(remoteRouterPublicKey!.modulus);
-    print(remoteRouterPublicKey!.exponent);
-
     var encryptedRemoteSecret = rsaEncrypt(remoteRouterPublicKey!, remoteSecret);
     tr.data = encryptedRemoteSecret;
-    socket!.add(tr.serialize());
-    print("sendInit4");
+    tr.offset = 0;
+    tr.totalSize = tr.data.length;
+    socket?.add(tr.serialize());
   }
 
   void sendInit5() {
@@ -401,7 +439,8 @@ class XchgConnection {
     tr.transactionId = 0;
     var encryptedLocalSecret = rsaEncrypt(remoteRouterPublicKey!, localSecret);
     tr.data = encryptedLocalSecret;
-    socket!.add(tr.serialize());
-    print("sendInit5 ${tr.serialize()}");
+    tr.offset = 0;
+    tr.totalSize = tr.data.length;
+    socket?.add(tr.serialize());
   }
 }
