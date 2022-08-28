@@ -58,6 +58,8 @@ class NodeFormSt extends State<NodeForm> {
       loading = true;
     });
     GazerLocalClient client = Repository().client(widget.arg.connection);
+    navCurrentIndex(context);
+    //print("Units - STATE ${navCurrentPath(context)}");
     client.unitsStateAll().then((value) {
       if (mounted) {
         setState(() {

@@ -18,7 +18,7 @@ class History {
     _timer = Timer.periodic(const Duration(milliseconds: 5000), (timer) {
       clear();
     });
-    _timerRequester = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+    _timerRequester = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       request();
     });
   }
@@ -168,10 +168,9 @@ class History {
   }
 
   List<DataItemHistoryChartItemValueResponse> getHistory(Connection conn, String itemName, int minTime, int maxTime, int groupTimeRange) {
-
     int groupTimeRangeOriginal = groupTimeRange;
     groupTimeRange = alignGroupTimeRange(groupTimeRange);
-    //print("getHistory $groupTimeRangeOriginal => $groupTimeRange");
+    //print("getHistory $groupTimeRangeOriginal => $groupTimeRange ${(maxTime - minTime) / groupTimeRangeOriginal}");
 
     if (nodes.containsKey(conn.id)) {
       return nodes[conn.id]!.getHistory(itemName, minTime, maxTime, groupTimeRange);
@@ -240,7 +239,6 @@ class HistoryNode {
   HistoryNode(this.connection);
 
   List<DataItemHistoryChartItemValueResponse> getHistory(String itemName, int minTime, int maxTime, int groupTimeRange) {
-
     if (items.containsKey(itemName)) {
       var res = items[itemName]!.getHistory(minTime, maxTime, groupTimeRange);
       requests.addAll(res.requests);
@@ -361,7 +359,7 @@ class HistoryItem {
 
   DataItemInfo getValue() {
     if (_value == null) {
-      return DataItemInfo(0, itemName, "",  "", 0, "");
+      return DataItemInfo(0, itemName, "", "", 0, "");
     }
     return _value!;
   }
@@ -438,6 +436,7 @@ class HistoryItemTimeRange {
 
   DateTime _dtLastGetHistory = DateTime.now();
   DateTime _dtLastClearProcedure = DateTime.now();
+  bool needToFastLoad = false;
 
   List<HistoryLoadedRange> loadedRanges = [];
   List<HistoryLoadingTask> loadingTasks = [];
@@ -464,9 +463,22 @@ class HistoryItemTimeRange {
   List<RequestToNode> checkValues(int minTime, int maxTime) {
     List<RequestToNode> requests = [];
     int currentTime = DateTime.now().microsecondsSinceEpoch;
-    if (currentTime - lastTaskTime < 1000000) {
+
+    int delay = 1000000;
+    if (needToFastLoad) {
+      delay = 10000;
+    }
+
+    if (currentTime - lastTaskTime < delay) {
       return requests;
     }
+
+    if (needToFastLoad) {
+      print("fast load");
+    } else {
+      print("reg load");
+    }
+
     lastTaskTime = currentTime;
 
     for (var range in loadedRanges) {
@@ -478,6 +490,7 @@ class HistoryItemTimeRange {
     List<HistoryNeedToLoad> needToLoad = [];
 
     int workFrom = minTime;
+
 
     //print("need ${minTime} ${maxTime}");
     for (var range in loadedRanges) {
@@ -514,12 +527,26 @@ class HistoryItemTimeRange {
         continue;
       }
 
-      if (loadingTasks.length < 1) {
-        HistoryLoadingTask task = HistoryLoadingTask(needToLoadItem.minTime, needToLoadItem.maxTime);
-        loadingTasks.add(task);
-        //print("task ${task.minTime} ${task.maxTime}");
-        //loadData(task.minTime, task.maxTime, groupTimeRange);
-        requests.add(RequestToNode(connection, itemName, task.minTime, task.maxTime, groupTimeRange, this));
+      if (loadingTasks.isEmpty) {
+        needToFastLoad = false;
+        int diff = needToLoadItem.maxTime - needToLoadItem.minTime;
+        int expectedCount = (diff / groupTimeRange).round();
+        int needExpectedCount = 500;
+        var mTime = needToLoadItem.minTime;
+
+        var beginTime = mTime;
+        var endTime = mTime + needExpectedCount * groupTimeRange;
+        if (endTime > needToLoadItem.maxTime) {
+          endTime = needToLoadItem.maxTime;
+        } else {
+          needToFastLoad = true;
+        }
+        if (endTime > beginTime) {
+          HistoryLoadingTask task = HistoryLoadingTask(beginTime, endTime);
+          loadingTasks.add(task);
+          print("add task ${task.minTime} ${task.maxTime} ${task.maxTime - task.minTime}");
+          requests.add(RequestToNode(connection, itemName, task.minTime, task.maxTime, groupTimeRange, this));
+        }
       }
     }
     return requests;
@@ -642,7 +669,6 @@ class HistoryItemTimeRange {
         for (var iii in valToRemove) {
           print("v:                  ${iii.datetimeFirst} ${iii.datetimeLast}");
         }*/
-
 
         values.removeWhere((element) {
           bool toDelete = true;

@@ -8,6 +8,7 @@ import 'package:gazer_client/xchg/aes.dart';
 import 'package:gazer_client/xchg/packer.dart';
 import 'package:gazer_client/xchg/rsa.dart';
 import 'package:gazer_client/xchg/utils.dart';
+import 'package:gazer_client/xchg/xchg_network.dart';
 import "package:pointycastle/export.dart";
 import 'dart:math';
 import 'package:base32/base32.dart';
@@ -34,6 +35,7 @@ class XchgConnection {
   Uint8List aesKey = Uint8List(0);
   int sessionID = 0;
   int sessionNonceCounter = 1;
+  XchgNetwork? network;
 
   int nextTransactionId = 1;
 
@@ -165,17 +167,58 @@ class XchgConnection {
     reset();
   }
 
+  Future<String> getNextServer(String address) async {
+    String result = "x01.gazer.cloud:8484";
+    network ??= await loadNetworkFromInternet();
+    if (network != null) {
+      List<String> hosts = network!.getNodesAddressesByAddress(address);
+      if (hosts.isNotEmpty) {
+        var rnd = Random();
+        result = hosts[rnd.nextInt(hosts.length)];
+      }
+    }
+    print("RES-------------------------------------------- : $result");
+    return result;
+  }
+
   Future<CallResult> call(String function, Uint8List data) async {
     if (statusConnecting) {
-      print("connect ing ...");
       return CallResult.createError("connecting ...");
     }
 
     if (socket == null) {
       statusConnecting = true;
+      String nextServer = "";
+      try {
+        nextServer = await getNextServer(remotePeerAddress);
+      } catch (err) {
+        statusConnecting = false;
+        return CallResult.createError("cannot load network" + err.toString());
+      }
+      if (nextServer.isEmpty) {
+        statusConnecting = false;
+        return CallResult.createError("cannot load network (1)");
+      }
+      List<String> partsOfAddress = nextServer.split(":");
+      if (partsOfAddress.length < 2) {
+        statusConnecting = false;
+        return CallResult.createError("cannot load network (2)");
+      }
+
+      String routerHost = partsOfAddress[0];
+      int? routerPort = int.tryParse(partsOfAddress[1]);
+
+      if (routerHost.isEmpty || routerPort == null) {
+        statusConnecting = false;
+        return CallResult.createError("cannot load network (3)");
+      }
+
       try {
         print("connect processing ...");
-        socket = await Socket.connect('x01.gazer.cloud', 8484,
+        print("trying ${nextServer}");
+
+
+        socket = await Socket.connect(routerHost, routerPort,
             timeout: const Duration(milliseconds: 1000));
       } catch (err) {
         print("connect error");

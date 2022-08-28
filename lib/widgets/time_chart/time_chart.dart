@@ -35,7 +35,7 @@ class TimeRange {
 }
 
 class TimeChartState extends State<TimeChart> with TickerProviderStateMixin {
-  late Timer _timerUpdateTimeRange = Timer.periodic(const Duration(milliseconds: 1000), (timer) {});
+  late Timer _timerUpdateTimeRange = Timer.periodic(const Duration(milliseconds: 500), (timer) {});
 
   @override
   void initState() {
