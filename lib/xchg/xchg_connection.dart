@@ -14,6 +14,7 @@ import 'dart:math';
 import 'package:base32/base32.dart';
 
 import 'package:gazer_client/xchg/xchg_transaction.dart';
+import 'package:udp/udp.dart';
 
 class XchgConnection {
   String id = "";
@@ -31,6 +32,12 @@ class XchgConnection {
   RSAPublicKey? remoteRouterPublicKey;
 
   int currentSID = 0;
+
+  String udpHole4Address = "";
+  int udpHole4Port = 0;
+  String udpHole6Address = "";
+  int udpHole6Port = 0;
+
   RSAPublicKey? remotePeerPublicKey;
   Uint8List aesKey = Uint8List(0);
   int sessionID = 0;
@@ -67,25 +74,22 @@ class XchgConnection {
     int processedLen = 0;
     int incomingDataOffset = inputBufferBytes.length;
     while (true) {
-      while (processedLen < incomingDataOffset &&
-          inputBufferBytes[processedLen] != 0xAA) {
+      while (processedLen < incomingDataOffset && inputBufferBytes[processedLen] != 0xAA) {
         processedLen++;
       }
       int restBytes = incomingDataOffset - processedLen;
       if (restBytes < 40) {
         break;
       }
-      int frameLen =
-          inputBufferBytes.sublist(processedLen).buffer.asUint32List(4)[0];
-      if (frameLen < 40 || frameLen > 128*1024) {
+      int frameLen = inputBufferBytes.sublist(processedLen).buffer.asUint32List(4)[0];
+      if (frameLen < 40 || frameLen > 128 * 1024) {
         processedLen++;
         continue;
       }
       if (restBytes < frameLen) {
         break;
       }
-      Transaction tr =
-          Transaction.fromBinary(inputBufferBytes, processedLen, frameLen);
+      Transaction tr = Transaction.fromBinary(inputBufferBytes, processedLen, frameLen);
       switch (tr.frameType) {
         case 0x02:
           processInit2(tr);
@@ -181,6 +185,27 @@ class XchgConnection {
     return result;
   }
 
+  Future<List<String>> getServersForAddress(String address) async {
+    List<String> result = [];
+    var rnd = Random();
+    network ??= await loadNetworkFromInternet();
+    if (network != null) {
+      result = network!.getNodesAddressesByAddress(address);
+      result.sort(
+        (a, b) {
+          int rndInt = rnd.nextInt(2);
+          if (rndInt == 0) {
+            return -1;
+          } else {
+            return 1;
+          }
+        },
+      );
+    }
+    //print("RES-------------------------------------------- : $result");
+    return result;
+  }
+
   Future<CallResult> call(String function, Uint8List data) async {
     if (statusConnecting) {
       return CallResult.createError("connecting ...");
@@ -188,43 +213,51 @@ class XchgConnection {
 
     if (socket == null) {
       statusConnecting = true;
-      String nextServer = "";
+      //String nextServer = "";
+
+      List<String> servers = [];
+
       try {
-        nextServer = await getNextServer(remotePeerAddress);
+        servers = await getServersForAddress(remotePeerAddress);
       } catch (err) {
         statusConnecting = false;
         return CallResult.createError("cannot load network" + err.toString());
       }
-      if (nextServer.isEmpty) {
+
+      if (servers.isEmpty) {
         statusConnecting = false;
         return CallResult.createError("cannot load network (1)");
       }
-      List<String> partsOfAddress = nextServer.split(":");
-      if (partsOfAddress.length < 2) {
-        statusConnecting = false;
-        return CallResult.createError("cannot load network (2)");
+
+      for (var nextServer in servers) {
+        try {
+          print("connect processing ...");
+          print("trying ${nextServer}");
+
+          List<String> partsOfAddress = nextServer.split(":");
+          if (partsOfAddress.length < 2) {
+            statusConnecting = false;
+            return CallResult.createError("cannot load network (2)");
+          }
+          String routerHost = partsOfAddress[0];
+          int? routerPort = int.tryParse(partsOfAddress[1]);
+
+          if (routerHost.isEmpty || routerPort == null) {
+            statusConnecting = false;
+            return CallResult.createError("cannot load network (3)");
+          }
+
+          socket = await Socket.connect(routerHost, routerPort, timeout: const Duration(milliseconds: 1000));
+        } catch (err) {
+          print("connect error");
+          socket = null;
+        }
+
+        if (socket != null) {
+          break;
+        }
       }
 
-      String routerHost = partsOfAddress[0];
-      int? routerPort = int.tryParse(partsOfAddress[1]);
-
-      if (routerHost.isEmpty || routerPort == null) {
-        statusConnecting = false;
-        return CallResult.createError("cannot load network (3)");
-      }
-
-      try {
-        print("connect processing ...");
-        print("trying ${nextServer}");
-
-
-        socket = await Socket.connect(routerHost, routerPort,
-            timeout: const Duration(milliseconds: 1000));
-      } catch (err) {
-        print("connect error");
-        statusConnecting = false;
-        return CallResult.createError("can not connect: $err");
-      }
       if (socket == null) {
         print("connect error (null)");
         statusConnecting = false;
@@ -325,13 +358,37 @@ class XchgConnection {
   Future<CallResult> resolveAddress() async {
     var res = await executeTransaction(0x10, 0, 0, Uint8List.fromList(utf8.encode(remotePeerAddress)));
     if (res.error.isEmpty) {
-      remotePeerPublicKey = decodePublicKeyFromPKCS1(res.data.sublist(8));
+      if (res.data.length < 64) {
+        res.error = "wrong data size (resolve response must be >= 64 bytes)";
+        return res;
+      }
+      remotePeerPublicKey = decodePublicKeyFromPKCS1(res.data.sublist(64));
       var receivedAddr = addressByPublicKey(remotePeerPublicKey!);
       if (receivedAddr == remotePeerAddress) {
         currentSID = res.data.buffer.asUint64List()[0];
+
+        {
+          udpHole4Address = res.data[8].toString() + "." + res.data[9].toString() + "." + res.data[10].toString() + "." + res.data[11].toString();
+          udpHole4Port = res.data.buffer.asUint16List(12)[0];
+          udpHole6Address = res.data[14].toString() + ":" + res.data[15].toString() + ":" + res.data[16].toString() + ":" + res.data[17].toString();
+          udpHole6Port = res.data.buffer.asUint16List(30)[0];
+          print("resolve result: $udpHole4Address $udpHole4Port");
+
+          if (udpHole4Port > 0) {
+            var udpSocket = await RawDatagramSocket.bind("0.0.0.0", 0);
+            udpSocket.send([56,57,58], InternetAddress(udpHole4Address), udpHole4Port);
+            print("Send UDP to $udpHole4Address:$udpHole4Port");
+            /*var sender = await UDP.bind(Endpoint.any());
+            var remoteEndpoint = Endpoint.unicast(InternetAddress(udpHole4Address), port: Port(udpHole4Port));
+            sender.send([56,57,58], remoteEndpoint);
+            print("Send UDP to $udpHole4Address:$udpHole4Port $remoteEndpoint");
+            sender.close();*/
+          }
+        }
+
+        //udpHole4Address = res.data.buffer.asUint64List(8)[0];
       }
-    } else {
-    }
+    } else {}
     return res;
   }
 
@@ -381,9 +438,7 @@ class XchgConnection {
     return result;
   }
 
-  Future<CallResult> executeTransaction(
-      int frameType, int targetSID, int sessionID, Uint8List data) async {
-
+  Future<CallResult> executeTransaction(int frameType, int targetSID, int sessionID, Uint8List data) async {
     if (socket == null || !init6Received) {
       return CallResult.createError("no connection");
     }
@@ -406,8 +461,8 @@ class XchgConnection {
       return CallResult.createError("{ERR_XCHG_PEER_CONN_TR_TIMEOUT}");
     }
 
-    for (int i = 0; i < 50; i++) {
-      await Future.delayed(const Duration(milliseconds: 100));
+    for (int i = 0; i < 1000; i++) {
+      await Future.delayed(const Duration(milliseconds: 5));
       if (tr.complete) {
         if (transactions.containsKey(tr.transactionId)) {
           transactions.remove(tr.transactionId);

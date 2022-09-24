@@ -18,7 +18,7 @@ class History {
     _timer = Timer.periodic(const Duration(milliseconds: 5000), (timer) {
       clear();
     });
-    _timerRequester = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+    _timerRequester = Timer.periodic(const Duration(milliseconds: 150), (timer) {
       request();
     });
   }
@@ -474,9 +474,9 @@ class HistoryItemTimeRange {
     }
 
     if (needToFastLoad) {
-      print("fast load");
+      //print("fast load");
     } else {
-      print("reg load");
+      //print("reg load");
     }
 
     lastTaskTime = currentTime;
@@ -531,7 +531,7 @@ class HistoryItemTimeRange {
         needToFastLoad = false;
         int diff = needToLoadItem.maxTime - needToLoadItem.minTime;
         int expectedCount = (diff / groupTimeRange).round();
-        int needExpectedCount = 500;
+        int needExpectedCount = 1000;
         var mTime = needToLoadItem.minTime;
 
         var beginTime = mTime;
@@ -544,7 +544,7 @@ class HistoryItemTimeRange {
         if (endTime > beginTime) {
           HistoryLoadingTask task = HistoryLoadingTask(beginTime, endTime);
           loadingTasks.add(task);
-          print("add task ${task.minTime} ${task.maxTime} ${task.maxTime - task.minTime}");
+          //print("add task ${task.minTime} ${task.maxTime} ${task.maxTime - task.minTime}");
           requests.add(RequestToNode(connection, itemName, task.minTime, task.maxTime, groupTimeRange, this));
         }
       }
