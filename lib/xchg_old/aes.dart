@@ -1,10 +1,5 @@
-import 'dart:io';
 import 'dart:typed_data';
-
-import 'package:pointycastle/asn1/primitives/asn1_integer.dart';
-import 'package:pointycastle/asn1/primitives/asn1_sequence.dart';
 import "package:pointycastle/export.dart";
-import 'dart:math';
 
 Uint8List aesEncrypt(Uint8List keyBytes, Uint8List dataToEncrypt) {
   final nonce = Uint8List(12);

@@ -8,7 +8,7 @@ import 'package:gazer_client/forms/nodes/main_form/main_form_bloc.dart';
 import 'package:gazer_client/forms/nodes/main_form/node_widget.dart';
 import 'package:gazer_client/core/navigation/route_generator.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
-import 'package:gazer_client/xchg/xchg_connection.dart';
+//import 'package:gazer_client/xchg/xchg_connection.dart';
 
 import '../../../core/workspace/add_local_connection.dart';
 import '../../../core/navigation/bottom_navigator.dart';

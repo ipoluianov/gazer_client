@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
-import 'package:gazer_client/xchg/packer.dart';
+import 'package:gazer_client/xchg_old/packer.dart';
 import 'package:gazer_client/core/protocol/cloud/cloud_account_info.dart';
 import 'package:gazer_client/core/protocol/cloud/cloud_add_node.dart';
 import 'package:gazer_client/core/protocol/cloud/cloud_login.dart';
@@ -58,7 +58,7 @@ import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/xchg/xchg.dart';
 import 'package:http/http.dart' as http;
 
-import '../xchg/utils.dart';
+import '../xchg_old/utils.dart';
 
 typedef FromJsonFunc = dynamic Function(Map<String, dynamic> json);
 

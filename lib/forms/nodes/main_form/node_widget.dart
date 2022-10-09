@@ -86,7 +86,7 @@ class NodeWidgetSt extends State<NodeWidget> {
   }
 
   Widget buildContent() {
-    return Text("");
+    return const Text("");
   }
 
   @override
@@ -170,10 +170,8 @@ class NodeWidgetSt extends State<NodeWidget> {
                           Container(
                             //margin: const EdgeInsets.only(top: 10),
                             padding: const EdgeInsets.all(3),
-                            child: Container(
-                              child: Text(
-                                "Node",
-                              ),
+                            child: const Text(
+                              "Node",
                             ),
                           ),
                         ],
@@ -217,7 +215,7 @@ class NodeWidgetSt extends State<NodeWidget> {
         child: Card(
           margin: const EdgeInsets.all(10),
           child: Container(
-            padding: EdgeInsets.all(6),
+            padding: const EdgeInsets.all(6),
             color: hover ? Colors.black12 : Colors.transparent,
             constraints: const BoxConstraints(
               maxWidth: 400,
@@ -228,22 +226,18 @@ class NodeWidgetSt extends State<NodeWidget> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
-                  child: Container(
-                    child: Text(
-                      nodeName,
-                      style: const TextStyle(fontSize: 14),
-                    ),
+                  child: Text(
+                    nodeName,
+                    style: const TextStyle(fontSize: 14),
                   ),
                 ),
                 buildStatus(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(child: Container(
-                      child: Text(
-                        widget.conn.transport + " : " + widget.conn.address,
-                        style: const TextStyle(fontSize: 12, color: Colors.white60),
-                      ),
+                    Expanded(child: Text(
+                      widget.conn.transport + " : " + widget.conn.address,
+                      style: const TextStyle(fontSize: 12, color: Colors.white60),
                     ),
                     ),
                     IconButton(

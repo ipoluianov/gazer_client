@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:pointycastle/asn1/asn1_parser.dart';

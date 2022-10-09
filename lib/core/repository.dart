@@ -4,7 +4,7 @@ import 'package:gazer_client/core/items_watcher/items_watcher.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/core/xchg/xchg.dart';
 
-import '../xchg/xchg_connection.dart';
+import '../xchg_old/xchg_connection.dart';
 
 enum NavIndex {
   units,

@@ -4,16 +4,16 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:gazer_client/xchg/aes.dart';
-import 'package:gazer_client/xchg/packer.dart';
-import 'package:gazer_client/xchg/rsa.dart';
-import 'package:gazer_client/xchg/utils.dart';
-import 'package:gazer_client/xchg/xchg_network.dart';
+import 'package:gazer_client/xchg_old/aes.dart';
+import 'package:gazer_client/xchg_old/packer.dart';
+import 'package:gazer_client/xchg_old/rsa.dart';
+import 'package:gazer_client/xchg_old/utils.dart';
+import 'package:gazer_client/xchg_old/xchg_network.dart';
 import "package:pointycastle/export.dart";
 import 'dart:math';
 import 'package:base32/base32.dart';
 
-import 'package:gazer_client/xchg/xchg_transaction.dart';
+import 'package:gazer_client/xchg_old/xchg_transaction.dart';
 import 'package:udp/udp.dart';
 
 class XchgConnection {
