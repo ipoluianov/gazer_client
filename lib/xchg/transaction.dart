@@ -14,6 +14,8 @@ class Transaction {
   bool complete = false;
   String error = "";
   Uint8List response = Uint8List(0);
+  DateTime dtBegin = DateTime.now();
+  Uint8List result = Uint8List(0);
 
   int receivedDataLen = 0;
 
@@ -47,6 +49,7 @@ class Transaction {
 
     result.addAll(int64bytes(transactionId));
     result.addAll(int64bytes(sessionId));
+    result.addAll(int64bytes(0));
     result.addAll(int32bytes(offset));
     result.addAll(int32bytes(totalSize));
     result.addAll(data);

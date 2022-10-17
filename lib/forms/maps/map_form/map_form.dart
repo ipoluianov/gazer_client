@@ -492,6 +492,9 @@ class MapFormSt extends State<MapForm> {
                                 if (ev.physicalKey == PhysicalKeyboardKey.delete) {
                                   map.removeSelectedItem();
                                 }
+                                if (ev.physicalKey == PhysicalKeyboardKey.escape) {
+                                  map.entire();
+                                }
                               }
                             },
                             child: CustomPaint(

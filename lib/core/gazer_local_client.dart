@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
-import 'package:gazer_client/xchg_old/packer.dart';
 import 'package:gazer_client/core/protocol/cloud/cloud_account_info.dart';
 import 'package:gazer_client/core/protocol/cloud/cloud_add_node.dart';
 import 'package:gazer_client/core/protocol/cloud/cloud_login.dart';
@@ -58,7 +57,7 @@ import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/xchg/xchg.dart';
 import 'package:http/http.dart' as http;
 
-import '../xchg_old/utils.dart';
+import '../xchg/utils.dart';
 
 typedef FromJsonFunc = dynamic Function(Map<String, dynamic> json);
 
@@ -598,7 +597,7 @@ class GazerLocalClient {
 
     // Gazer request body
     var reqString = jsonEncode(request);
-    CallResult res = await Repository().xchg.call(function, Uint8List.fromList(utf8.encode(reqString)));
+    CallResult res = await Repository().peer.call("#whucrl4odswdr7fccok3speepprdgdkym2pk45xep2dkhpqj", "pass", function, Uint8List.fromList(utf8.encode(reqString)));
 
     if (!res.isError()) {
       String s = utf8.decode(res.data);

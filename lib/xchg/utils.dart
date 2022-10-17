@@ -1,5 +1,11 @@
 import 'dart:typed_data';
 
+import 'package:crypto/crypto.dart';
+import 'package:pointycastle/asymmetric/api.dart';
+
+import 'rsa.dart';
+import 'package:base32/base32.dart';
+
 class CallResult {
   Uint8List data = Uint8List(0);
   String error = "";
@@ -15,5 +21,21 @@ class CallResult {
 
   bool isError() {
     return error.isNotEmpty;
+  }
+}
+
+String addressForPublicKey(RSAPublicKey publicKey) {
+  var publicKeyBS = encodePublicKeyToPemPKCS1(publicKey);
+  var d = sha256.convert(publicKeyBS);
+  return "#" +
+      base32.encode(Uint8List.fromList(d.bytes.sublist(0, 30))).toLowerCase();
+}
+
+void copyBytes(Uint8List dest, int offset, Uint8List src) {
+  for (int i = 0; i < src.length; i++) {
+    int destIndex = i + offset;
+    if (destIndex >= 0 && destIndex < dest.length) {
+      dest[destIndex] = src[i];
+    }
   }
 }
