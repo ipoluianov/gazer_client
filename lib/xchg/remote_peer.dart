@@ -120,7 +120,7 @@ class RemotePeer {
     request[0] = 0x20;
     copyBytes(request, 8, nonce);
     copyBytes(request, 8 + 16, Uint8List.fromList(addressBS));
-    socket.broadcastEnabled = true;
+    //socket.broadcastEnabled = true;
     //socket.send(request, InternetAddress("255.255.255.255"), 42000);
 
     for (int i = 42000; i < 42100; i++) {
@@ -133,26 +133,38 @@ class RemotePeer {
 
   Future<CallResult> call(
       RawDatagramSocket socket, String function, Uint8List data) async {
-    if (lanConnectionPoint == null) {
-      checkLANConnectionPoint(socket);
-    }
+    for (int i = 0; i < 5; i++) {
+      if (lanConnectionPoint == null) {
+        checkLANConnectionPoint(socket);
+      }
 
-    if (internetConnectionPoint == null) {
-      checkInternetConnectionPoint();
+      if (internetConnectionPoint == null) {
+        checkInternetConnectionPoint();
+      }
+
+      if (lanConnectionPoint != null || internetConnectionPoint != null) {
+        break;
+      }
+      await Future.delayed(const Duration(milliseconds: 100));
     }
 
     if (lanConnectionPoint == null && internetConnectionPoint == null) {
       return CallResult.createError("no route to peer");
     }
 
+    print("lanConnectionPoint ${lanConnectionPoint}");
+
     if (sessionId == 0) {
-      if (!await auth(socket, lanConnectionPoint!)) {
+      print("auth start");
+      String authRes = await auth(socket, lanConnectionPoint!);
+      if (authRes.isNotEmpty) {
         CallResult result = CallResult();
-        result.error = "auth error";
+        result.error = "auth error:" + authRes;
         sessionId = 0;
         aesKey = Uint8List(0);
         return result;
       }
+      print("auth ok");
     }
 
     CallResult result =
@@ -160,10 +172,10 @@ class RemotePeer {
     return result;
   }
 
-  Future<bool> auth(
+  Future<String> auth(
       RawDatagramSocket socket, UdpAddress remoteConnectionPoint) async {
     if (authProcessing) {
-      return false;
+      return "auth processing ...";
     }
 
     try {
@@ -172,16 +184,16 @@ class RemotePeer {
           "/xchg-get-nonce", Uint8List(0), Uint8List(0));
       if (getNonceResult.isError()) {
         authProcessing = false;
-        return false;
+        return "get nonce error:" + getNonceResult.error;
       }
       if (getNonceResult.data.length != 16) {
         authProcessing = false;
-        return false;
+        return "nonce != 16";
       }
 
       if (remotePublicKey == null) {
         authProcessing = false;
-        return false;
+        return "remotePublicKey == null";
       }
 
       var authDataBS = utf8.encode(authData);
@@ -204,7 +216,7 @@ class RemotePeer {
           socket, remoteConnectionPoint, "/xchg-auth", authFrame, Uint8List(0));
       if (authResult.isError()) {
         authProcessing = false;
-        return false;
+        return "auth error:" + authResult.error;
       }
 
       Uint8List authResultDecrypted =
@@ -212,7 +224,7 @@ class RemotePeer {
 
       if (authResultDecrypted.length != 8 + 32) {
         authProcessing = false;
-        return false;
+        return "authResultDecrypted.length != 8 + 32";
       }
 
       sessionId = authResultDecrypted.buffer.asInt64List(0)[0];
@@ -221,7 +233,7 @@ class RemotePeer {
       authProcessing = false;
     }
     authProcessing = false;
-    return true;
+    return "";
   }
 
   Future<CallResult> regularCall(
@@ -332,10 +344,16 @@ class RemotePeer {
           tr.data.sublist(offset, offset + currentBlockSize);
 
       Uint8List blockFrame = Uint8List.fromList(blockTransaction.serialize());
-      socket.send(blockFrame, remoteConnectionPoint.address,
+      int sentBytes = socket.send(blockFrame, remoteConnectionPoint.address,
           remoteConnectionPoint.port);
+      if (sentBytes != blockFrame.length) {
+        return CallResult.createError("cannot send $sentBytes");
+      }
+      //print("sent: $sentBytes");
       offset += currentBlockSize;
     }
+
+    print("------------------waiting for transaction");
 
     for (int i = 0; i < 100; i++) {
       if (tr.complete) {
@@ -352,6 +370,7 @@ class RemotePeer {
     }
 
     outgoingTransactions.remove(localTransactionId);
+    lanConnectionPoint = null;
     return CallResult.createError("transaction timeout");
   }
 }

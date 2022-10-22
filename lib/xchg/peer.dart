@@ -29,7 +29,7 @@ class Peer {
 
   static int udpStartPort = 42000;
   static int udpEndPort = 42100;
-  int currentUdpPort = 42000-1;
+  int currentUdpPort = 42000;
   bool currentUdpPortTrying = false;
   bool currentUdpPortValid = false;
   RawDatagramSocket? socket;
@@ -63,73 +63,67 @@ class Peer {
     _timer.cancel();
   }
 
-  void checkConnection() {
+  Future<void> checkConnection() async {
     if (currentUdpPortValid || currentUdpPortTrying) {
       return;
     }
 
-    currentUdpPort++;
+    var udpPortToOpen = currentUdpPort;
     currentUdpPortTrying = true;
+    currentUdpPort++;
 
     //var address = InternetAddress('0.0.0.0');
-    print("binding udp port $currentUdpPort");
+    print("binding udp port $udpPortToOpen");
 
-    RawDatagramSocket.bind(InternetAddress("0.0.0.0"), currentUdpPort,
-            reuseAddress: false, reusePort: false)
-        .then((udpSocket) {
-      print("binding udp port OK");
-      //udpSocket.setRawOption(RawSocketOption(RawSocketOption.levelSocket, ));
-      socket = udpSocket;
-      udpSocket.broadcastEnabled = true;
-      udpSocket.readEventsEnabled = true;
-      currentUdpPortValid = true;
-      currentUdpPortTrying = false;
+    socket = await RawDatagramSocket.bind(
+        InternetAddress("0.0.0.0"), 0,
+        reuseAddress: true, reusePort: false);
 
-      udpSocket.handleError((err){
-        print("udpSocket.handleError $err");
-      });
+    socket!.broadcastEnabled = true;
+    print("binding udp port OK");
+    currentUdpPortValid = true;
+    currentUdpPortTrying = false;
 
-      udpSocket.listen((event) {
-        print("udp: onData1 " + event.toString());
-        if (event == RawSocketEvent.read) {
-          print("udp: onData2");
-          Datagram? dg = udpSocket.receive();
-          print("udp: onData3");
-          if (dg != null) {
-            print("udp: received ${dg.data}");
-            processFrame(udpSocket, UdpAddress(dg.address, dg.port), dg.data);
-          }
+    socket!.handleError((err) {
+      print("udpSocket.handleError $err");
+    });
+
+    socket!.listen((event) {
+      print("udp: onData1 " + event.toString());
+      if (event == RawSocketEvent.read) {
+        Datagram? dg = socket!.receive();
+        if (dg != null) {
+          //print("udp: received ${dg.data}");
+          processFrame(socket!, UdpAddress(dg.address, dg.port), dg.data);
         }
-        if (event == RawSocketEvent.closed) {
-          print("closed");
-        }
-        if (event == RawSocketEvent.write) {
-          print("write");
-          /*udpSocket.send(new Utf8Codec().encode('Hello from client'),
-              "255.255.255.255", 45214);*/
-        }
-        if (event == RawSocketEvent.readClosed) {
-          print("readClosed");
-        }
-      }, onError: (err) {
-        print("udp: listen ERROR $err");
+      }
+      if (event == RawSocketEvent.closed) {
+        print("closed");
+      }
+      if (event == RawSocketEvent.write) {
+        print("write");
+      }
+      if (event == RawSocketEvent.readClosed) {
+        print("readClosed");
         currentUdpPortTrying = false;
         currentUdpPortValid = false;
-      });
-
-      //udpSocket.send(dataToSend, addressesIListenFrom, portIListenOn);
-      //udpSocket.send(dataToSend, InternetAddress('172.16.32.73'), 16123);
-    }).onError((error, stackTrace) {
-      // todo: error
+        socket!.close();
+        socket = null;
+      }
+    }, onError: (err) {
+      print("udp: listen ERROR $err");
       currentUdpPortTrying = false;
-      print("udp: bind ERROR");
-      print(error);
-    });
+      currentUdpPortValid = false;
+        socket!.close();
+        socket = null;
+    }, onDone: () {
+      print("udp: ON DONE");
+    }, cancelOnError: true);
   }
 
   void processFrame(
       RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {
-    print("received: ${sourceAddress} ${frame.length}");
+    print("received: $sourceAddress ${frame.length}");
 
     if (frame.length < 8) {
       return;
@@ -381,18 +375,31 @@ class Peer {
 
   Future<CallResult> call(String remoteAddress, String authData,
       String function, Uint8List data) async {
-    if (socket == null) {
-      return CallResult.createError("No connection");
-    }
-
     RemotePeer? remotePeer;
-    if (remotePeers.containsKey(remoteAddress)) {
-      remotePeer = remotePeers[remoteAddress];
-    } else {
-      remotePeer = RemotePeer(remoteAddress, authData, keyPair, network);
-      remotePeers[remoteAddress] = remotePeer;
-    }
+    CallResult? res;
+    try {
+      // Waiting for socket
+      for (int i = 0; i < 5; i++) {
+        if (socket != null) {
+          break;
+        }
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
 
-    return remotePeer!.call(socket!, function, data);
+      if (socket == null) {
+        return CallResult.createError("No connection");
+      }
+
+      if (remotePeers.containsKey(remoteAddress)) {
+        remotePeer = remotePeers[remoteAddress];
+      } else {
+        remotePeer = RemotePeer(remoteAddress, authData, keyPair, network);
+        remotePeers[remoteAddress] = remotePeer;
+      }
+      res = await remotePeer!.call(socket!, function, data);
+    } catch (err) {
+      return CallResult.createError(err.toString());
+    }
+    return res;
   }
 }
