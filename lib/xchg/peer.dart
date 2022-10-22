@@ -29,7 +29,7 @@ class Peer {
 
   static int udpStartPort = 42000;
   static int udpEndPort = 42100;
-  int currentUdpPort = 42000;
+  int currentUdpPort = 42000-1;
   bool currentUdpPortTrying = false;
   bool currentUdpPortValid = false;
   RawDatagramSocket? socket;
@@ -74,7 +74,7 @@ class Peer {
     //var address = InternetAddress('0.0.0.0');
     print("binding udp port $currentUdpPort");
 
-    RawDatagramSocket.bind(InternetAddress("127.0.0.1"), 42009,
+    RawDatagramSocket.bind(InternetAddress("0.0.0.0"), currentUdpPort,
             reuseAddress: false, reusePort: false)
         .then((udpSocket) {
       print("binding udp port OK");

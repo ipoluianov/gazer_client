@@ -126,7 +126,8 @@ class MapFormSt extends State<MapForm> {
     map.setViewPropertiesDirect(previousDisplayOffset, previousZoom);
 
     Picture pic = rec.endRecording();
-    var img = await pic.toImage(map.instance.getDouble("w").toInt(), map.instance.getDouble("h").toInt());
+    var img = await pic.toImage(map.instance.getDouble("w").toInt(),
+        map.instance.getDouble("h").toInt());
 
     ByteData? byteData = await img.toByteData(format: ImageByteFormat.png);
     if (byteData != null) {
@@ -154,9 +155,12 @@ class MapFormSt extends State<MapForm> {
         if (offset + currentStep > listOfBytes.length) {
           currentStep = listOfBytes.length - offset;
         }
-        await Repository()
-            .client(widget.arg.connection)
-            .resSet(widget.arg.id, "", offset, Uint8List.fromList(listOfBytes.sublist(offset, offset + currentStep)));
+        await Repository().client(widget.arg.connection).resSet(
+            widget.arg.id,
+            "",
+            offset,
+            Uint8List.fromList(
+                listOfBytes.sublist(offset, offset + currentStep)));
 
         if (listOfBytes.isNotEmpty) {
           setState(() {
@@ -173,7 +177,9 @@ class MapFormSt extends State<MapForm> {
       map.entire();
 
       drawMapToImage().then((value) {
-        Repository().client(widget.arg.connection).resSet(widget.arg.id, "thumbnail", 0, value);
+        Repository()
+            .client(widget.arg.connection)
+            .resSet(widget.arg.id, "thumbnail", 0, value);
       });
     } else {
       _showErrorMessage("Error", "Can not save the map. Please try again.");
@@ -255,7 +261,8 @@ class MapFormSt extends State<MapForm> {
     return LayoutBuilder(
       builder: (context, constraints) {
         List<Widget> buttons = [];
-        buttons.add(buildActionButton(context, Icons.zoom_out_map, "Show entire", () {
+        buttons.add(
+            buildActionButton(context, Icons.zoom_out_map, "Show entire", () {
           map.entire();
         }));
         if (!fullScreen) {
@@ -265,10 +272,12 @@ class MapFormSt extends State<MapForm> {
           buttons.add(buildActionButton(context, Icons.zoom_in, "Zoom In", () {
             map.zoomIn();
           }));
-          buttons.add(buildActionButton(context, Icons.zoom_out, "Zoom Out", () {
+          buttons
+              .add(buildActionButton(context, Icons.zoom_out, "Zoom Out", () {
             map.zoomOut();
           }));
-          buttons.add(buildActionButton(context, Icons.preview_sharp, "100%", () {
+          buttons
+              .add(buildActionButton(context, Icons.preview_sharp, "100%", () {
             map.resetView();
           }));
         }
@@ -323,7 +332,8 @@ class MapFormSt extends State<MapForm> {
               );
             }, false),
           );
-          rightButtons.add(buildActionButton(context, Icons.delete_forever, "Remove item", () {
+          rightButtons.add(buildActionButton(
+              context, Icons.delete_forever, "Remove item", () {
             map.removeSelectedItem();
           }));
           rightButtons.add(buildActionButton(context, Icons.copy, "Copy", () {
@@ -332,13 +342,15 @@ class MapFormSt extends State<MapForm> {
           rightButtons.add(buildActionButton(context, Icons.paste, "Paste", () {
             map.pasteFromClipboard();
           }));
-          rightButtons.add(buildActionButtonFull(context, Icons.more_horiz, "Item Properties", () {
+          rightButtons.add(buildActionButtonFull(
+              context, Icons.more_horiz, "Item Properties", () {
             var item = map.currentItem();
             if (item != null) {
               Navigator.of(context)
                   .pushNamed(
                 "/map_item_properties",
-                arguments: MapItemPropertiesFormArgument(widget.arg.connection, map.currentItem()!),
+                arguments: MapItemPropertiesFormArgument(
+                    widget.arg.connection, map.currentItem()!),
               )
                   .then((value) {
                 setState(() {});
@@ -349,7 +361,8 @@ class MapFormSt extends State<MapForm> {
         leftButtons.add(Expanded(child: Container()));
         leftButtons.addAll(rightButtons);
         if (fullScreen) {
-          leftButtons.add(buildActionButtonFull(context, Icons.fullscreen_exit, "Exit Full Screen", () {
+          leftButtons.add(buildActionButtonFull(
+              context, Icons.fullscreen_exit, "Exit Full Screen", () {
             setState(() {
               fullScreen = false;
               map.fullscreen = false;
@@ -411,7 +424,8 @@ class MapFormSt extends State<MapForm> {
                   },
                   onPointerSignal: (pointerSignal) {
                     if (pointerSignal is PointerScrollEvent) {
-                      map.scroll(pointerSignal.scrollDelta, pointerSignal.localPosition);
+                      map.scroll(pointerSignal.scrollDelta,
+                          pointerSignal.localPosition);
                     }
                   },
                   onPointerHover: (event) {
@@ -446,10 +460,12 @@ class MapFormSt extends State<MapForm> {
                     },
                     onScaleStart: (details) {
                       FocusScope.of(context).requestFocus(_focusNode);
-                      map.startMoving(details.pointerCount, details.localFocalPoint);
+                      map.startMoving(
+                          details.pointerCount, details.localFocalPoint);
                     },
                     onScaleUpdate: (details) {
-                      map.updateMoving(details.pointerCount, details.localFocalPoint, details.scale);
+                      map.updateMoving(details.pointerCount,
+                          details.localFocalPoint, details.scale);
                     },
                     onScaleEnd: (details) {
                       map.stopMoving(details.pointerCount);
@@ -483,17 +499,32 @@ class MapFormSt extends State<MapForm> {
                               });
 
                               if (ev is RawKeyDownEvent) {
-                                if (ev.isControlPressed && ev.physicalKey == PhysicalKeyboardKey.keyC) {
+                                if (ev.isControlPressed &&
+                                    ev.physicalKey ==
+                                        PhysicalKeyboardKey.keyC) {
                                   map.copySelectedItem();
                                 }
-                                if (ev.isControlPressed && ev.physicalKey == PhysicalKeyboardKey.keyV) {
+                                if (ev.isControlPressed &&
+                                    ev.physicalKey ==
+                                        PhysicalKeyboardKey.keyV) {
                                   map.pasteFromClipboard();
                                 }
-                                if (ev.physicalKey == PhysicalKeyboardKey.delete) {
+                                if (ev.physicalKey ==
+                                    PhysicalKeyboardKey.delete) {
                                   map.removeSelectedItem();
                                 }
-                                if (ev.physicalKey == PhysicalKeyboardKey.escape) {
+                                if (ev.physicalKey ==
+                                    PhysicalKeyboardKey.escape) {
                                   map.entire();
+                                }
+                                if (ev.physicalKey == PhysicalKeyboardKey.f11) {
+                                  setState(() {
+                                    fullScreen = true;
+                                    map.fullscreen = true;
+                                    map.entire();
+                                  });
+                                  FocusScope.of(context)
+                                      .requestFocus(_focusNode);
                                 }
                               }
                             },
@@ -505,16 +536,19 @@ class MapFormSt extends State<MapForm> {
                       },
                       onAcceptWithDetails: (details) {
                         if (lastRenderBox_ != null) {
-                          var localOffset = lastRenderBox_!.globalToLocal(details.offset);
+                          var localOffset =
+                              lastRenderBox_!.globalToLocal(details.offset);
                           var data = details.data;
 
                           if (data.name.contains("/")) {
                             setState(() {
-                              map.addItem("text.02", localOffset, {"data_source": data.name});
+                              map.addItem("text.02", localOffset,
+                                  {"data_source": data.name});
                             });
                           } else {
                             setState(() {
-                              map.addItem("unit.table.01", localOffset, {"data_source": data.name});
+                              map.addItem("unit.table.01", localOffset,
+                                  {"data_source": data.name});
                             });
                           }
 
@@ -538,7 +572,9 @@ class MapFormSt extends State<MapForm> {
               ),
               Container(
                 constraints: const BoxConstraints(maxHeight: 55),
-                child: fullScreen ? Opacity(opacity: 0.2, child: buildMapToolbar(context)) : Container(),
+                child: fullScreen
+                    ? Opacity(opacity: 0.2, child: buildMapToolbar(context))
+                    : Container(),
               ),
             ],
           ),
@@ -577,64 +613,65 @@ class MapFormSt extends State<MapForm> {
 
         return Scaffold(
           appBar: TitleBar(
-            widget.arg.connection, nodeName() + " - Map - " + mapName,
+            widget.arg.connection,
+            nodeName() + " - Map - " + mapName,
             actions: <Widget>[
               !fullScreen
-                  ? buildActionButton(context, Icons.fullscreen, "Full Screen", () {
-                setState(() {
-                  fullScreen = true;
-                  map.fullscreen = true;
-                  map.entire();
-                });
-              })
+                  ? buildActionButton(context, Icons.fullscreen, "Full Screen",
+                      () {
+                      setState(() {
+                        fullScreen = true;
+                        map.fullscreen = true;
+                        map.entire();
+                      });
+                    })
                   : Container(),
               !map.editing()
                   ? buildActionButton(context, Icons.edit, "Edit", () {
-                saveOriginal();
-                map.setEditing(true);
-              })
+                      saveOriginal();
+                      map.setEditing(true);
+                    })
                   : Container(),
               (map.editing() && !saving)
                   ? Padding(
-                padding: const EdgeInsets.all(10),
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    load();
-                    map.setEditing(false);
-                  },
-                  icon: const Icon(Icons.cancel),
-                  label: const Text("Reject"),
-                ),
-              )
+                      padding: const EdgeInsets.all(10),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          load();
+                          map.setEditing(false);
+                        },
+                        icon: const Icon(Icons.cancel),
+                        label: const Text("Reject"),
+                      ),
+                    )
                   : Container(),
               (map.editing() && !saving)
                   ? Padding(
-                padding: const EdgeInsets.all(10),
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    save();
-                  },
-                  icon: const Icon(Icons.save),
-                  label: const Text("Save"),
-                ),
-              )
+                      padding: const EdgeInsets.all(10),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          save();
+                        },
+                        icon: const Icon(Icons.save),
+                        label: const Text("Save"),
+                      ),
+                    )
                   : Container(),
               (saving)
                   ? Padding(
-                padding: const EdgeInsets.all(10),
-                child: SizedBox(
-                  width: 100,
-                  height: 20,
-                  child: LinearProgressIndicator(
-                    value: savingProgress,
-                  ),
-                ),
-              )
+                      padding: const EdgeInsets.all(10),
+                      child: SizedBox(
+                        width: 100,
+                        height: 20,
+                        child: LinearProgressIndicator(
+                          value: savingProgress,
+                        ),
+                      ),
+                    )
                   : Container(),
               buildHomeButton(context),
             ],
           ),
-
           body: Container(
             color: DesignColors.mainBackgroundColor,
             child: Column(
