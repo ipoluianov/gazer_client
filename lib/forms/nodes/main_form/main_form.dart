@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -28,6 +29,8 @@ class MainFormSt extends State<MainForm> {
   MainFormCubit bloc = MainFormCubit(MainFormState([]));
   int updateCounter = 0;
 
+  late Timer timerUpdate_;
+
   @override
   void initState() {
     super.initState();
@@ -37,11 +40,17 @@ class MainFormSt extends State<MainForm> {
       if (value is Connection) {
         Navigator.of(context).popUntil((route) => route.isFirst);
         Navigator.of(context).pop();
-        Navigator.pushNamed(context, "/node", arguments: NodeFormArgument(value));
+        Navigator.pushNamed(context, "/node",
+            arguments: NodeFormArgument(value));
         return;
       }
 
       bloc.load();
+    });
+
+    timerUpdate_ = Timer.periodic(const Duration(seconds: 5), (timer) { 
+        updateCounter++;
+        bloc.load();
     });
   }
 
@@ -55,7 +64,8 @@ class MainFormSt extends State<MainForm> {
               return NodeWidget(e, () {
                 Navigator.of(context).popUntil((route) => route.isFirst);
                 Navigator.of(context).pop();
-                Navigator.pushNamed(context, "/node", arguments: NodeFormArgument(e));
+                Navigator.pushNamed(context, "/node",
+                    arguments: NodeFormArgument(e));
               }, () {
                 bloc.remove(e.id);
               }, key: Key(e.id + updateCounter.toString()));
@@ -88,40 +98,24 @@ class MainFormSt extends State<MainForm> {
                 child: Column(
                   children: [
                     const Text(
-                      "Connect to the node via GazerCloud",
+                      "Connect via XCHG",
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.white30,
                       ),
                     ),
                     Container(
-                        margin: const EdgeInsets.only(top: 5),
-                        child: ElevatedButton(
-                            onPressed: () {
-                              addNode(true);
-                            },
-                            child: const Text("Connect via GazerCloud"))),
-                  ],
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(top: 20),
-                child: Column(
-                  children: [
-                    const Text(
-                      "Direct connect to the node via LAN",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white30,
+                      margin: const EdgeInsets.only(top: 20),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          addNode(false);
+                        },
+                        child: Container(
+                          child: const Text("CONNECT"),
+                          padding: EdgeInsets.all(20),
+                        ),
                       ),
                     ),
-                    Container(
-                        margin: const EdgeInsets.only(top: 5),
-                        child: ElevatedButton(
-                            onPressed: () {
-                              addNode(false);
-                            },
-                            child: const Text("Direct Connect"))),
                   ],
                 ),
               ),
@@ -140,7 +134,9 @@ class MainFormSt extends State<MainForm> {
   }
 
   void addNode(bool toCloud) {
-    Navigator.pushNamed(context, "/node_add", arguments: NodeAddFormArgument(toCloud)).then(
+    Navigator.pushNamed(context, "/node_add",
+            arguments: NodeAddFormArgument(toCloud))
+        .then(
       (value) {
         updateCounter++;
         bloc.load();
@@ -158,13 +154,14 @@ class MainFormSt extends State<MainForm> {
 
         return Scaffold(
           appBar: TitleBar(
-            Connection.makeDefault(), "Nodes Gazer.Cloud",
+            Connection.makeDefault(),
+            "Nodes Gazer.Cloud",
             actions: <Widget>[
               buildActionButton(
                 context,
                 Icons.add,
                 "Add Node",
-                    () {
+                () {
                   addNode(true);
                 },
               ),
@@ -172,36 +169,35 @@ class MainFormSt extends State<MainForm> {
                 context,
                 Icons.refresh,
                 "Refresh",
-                    () {
+                () {
                   updateCounter++;
                   bloc.load();
                 },
               ),
             ],
           ),
-
           body: Container(
             color: DesignColors.mainBackgroundColor,
             child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const LeftNavigator(false),
-                    BlocBuilder<MainFormCubit, MainFormState>(
-                      bloc: bloc,
-                      builder: (context, state) {
-                        return buildContent(context, state);
-                      },
-                    ),
-                  ],
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const LeftNavigator(false),
+                      BlocBuilder<MainFormCubit, MainFormState>(
+                        bloc: bloc,
+                        builder: (context, state) {
+                          return buildContent(context, state);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const BottomNavigator(false),
-            ],
-          ),
+                const BottomNavigator(false),
+              ],
+            ),
           ),
         );
       },
