@@ -57,15 +57,6 @@ class MoreFormSt extends State<MoreForm> {
                             child: Wrap(
                               children: [
                                 MoreButton(() {
-                                  Navigator.pushNamed(context, "/remote_access", arguments: RemoteAccessFormArgument(widget.arg.connection));
-                                },
-                                    "Remote\r\nAccess",
-                                    const Icon(
-                                      Icons.cloud_queue,
-                                      size: 48,
-                                    ),
-                                    0),
-                                MoreButton(() {
                                   Navigator.pushNamed(context, "/users", arguments: UsersFormArgument(widget.arg.connection));
                                 }, "Users", const Icon(Icons.supervisor_account, size: 48), 0),
                                 MoreButton(() {

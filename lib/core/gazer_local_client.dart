@@ -597,7 +597,7 @@ class GazerLocalClient {
 
     // Gazer request body
     var reqString = jsonEncode(request);
-    CallResult res = await Repository().peer.call("#whucrl4odswdr7fccok3speepprdgdkym2pk45xep2dkhpqj", "pass", function, Uint8List.fromList(utf8.encode(reqString)));
+    CallResult res = await Repository().peer.call(address, session, function, Uint8List.fromList(utf8.encode(reqString)));
 
     if (!res.isError()) {
       String s = utf8.decode(res.data);
