@@ -130,12 +130,12 @@ class RemotePeer {
     request[0] = 0x20;
     copyBytes(request, 8, nonce);
     copyBytes(request, 8 + 16, Uint8List.fromList(addressBS));
-    peer.requestUDP(udpAddress, request);
+    peer.requestUDP(udpAddress, [request]);
   }
 
   Future<void> checkLANConnectionPoint() async {
     return;
-    var nonce = nonces.next();
+    /*var nonce = nonces.next();
     var addressBS = utf8.encode(remoteAddress);
     var request = Uint8List(8 + 16 + addressBS.length);
     request[0] = 0x20;
@@ -146,7 +146,7 @@ class RemotePeer {
 
     for (int i = 42000; i < 42100; i++) {
       peer.requestUDP(UdpAddress(InternetAddress("255.255.255.255"), i), request);
-    }
+    }*/
   }
 
   void checkInternetConnectionPoint() {
@@ -155,7 +155,7 @@ class RemotePeer {
     var request = Uint8List(8 + addressBS.length);
     request[0] = 0x06;
     copyBytes(request, 8, Uint8List.fromList(addressBS));
-    peer.requestUDP(UdpAddress(InternetAddress("127.0.0.1"), 8484), request);
+    peer.requestUDP(UdpAddress(InternetAddress("54.37.73.160"), 8484), [request]);
   }
 
   UdpAddress? getConnectionPoint() {
@@ -357,6 +357,8 @@ class RemotePeer {
     tr.data = data;
     outgoingTransactions[tr.transactionId] = tr;
 
+    List<Uint8List> frames = [];
+
     int offset = 0;
     int blockSize = 1024;
     while (offset < tr.data.length) {
@@ -376,10 +378,11 @@ class RemotePeer {
           tr.data.sublist(offset, offset + currentBlockSize);
 
       Uint8List blockFrame = Uint8List.fromList(blockTransaction.serialize());
-      peer.requestUDP(remoteConnectionPoint, blockFrame);
+      frames.add(blockFrame);
       //print("sent: $sentBytes");
       offset += currentBlockSize;
     }
+      peer.requestUDP(remoteConnectionPoint, frames);
 
     print("------------------waiting for transaction");
 

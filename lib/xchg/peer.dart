@@ -63,7 +63,7 @@ class Peer {
     _timer.cancel();
   }
 
-  Future<void> requestUDP(UdpAddress address, Uint8List data) async {
+  Future<void> requestUDP(UdpAddress address, List<Uint8List> frames) async {
     print("requestUDP: $address");
     InternetAddress bindAddr = InternetAddress.anyIPv4;
 
@@ -92,7 +92,9 @@ class Peer {
     udpSocket.listen(
         (event) {
           if (event == RawSocketEvent.write) {
-            udpSocket.send(data, address.address, address.port);
+            for (var fr in frames) {
+              udpSocket.send(fr, address.address, address.port);
+            }
           }
           if (event == RawSocketEvent.read) {
             Datagram? dg = udpSocket.receive();
@@ -117,7 +119,7 @@ class Peer {
           udpSocket.close();
         });
 
-    await Future.delayed(const Duration(milliseconds: 1000));
+    await Future.delayed(const Duration(milliseconds: 2000));
     udpSocket.close();
   }
 
@@ -173,7 +175,7 @@ class Peer {
     frame[0] = 0x01;
     frame[1] = 0x00;
     //socket.send(frame, sourceAddress.address, sourceAddress.port);
-    requestUDP(sourceAddress, frame);
+    requestUDP(sourceAddress, [frame]);
   }
 
   void processFrame01(UdpAddress sourceAddress, Uint8List frame) {}
@@ -218,7 +220,7 @@ class Peer {
     request.addAll(data);
 
     //socket.send(request, sourceAddress.address, sourceAddress.port);
-    requestUDP(sourceAddress, request);
+    requestUDP(sourceAddress, [request]);
   }
 
   void processFrame07(UdpAddress sourceAddress, Uint8List frame) {
@@ -369,7 +371,7 @@ class Peer {
     response.addAll(nonce);
     response.addAll(signature);
     response.addAll(publicKeyBS);
-    requestUDP(sourceAddress, response);
+    requestUDP(sourceAddress, [response]);
     //socket.send(response, sourceAddress.address, sourceAddress.port);
   }
 
@@ -399,7 +401,7 @@ class Peer {
     response.addAll(frame.sublist(0, 8));
     response[0] = 0x23;
     response.addAll(publicKeyBS);
-    requestUDP(sourceAddress, response);
+    requestUDP(sourceAddress, [response]);
     //socket.send(response, sourceAddress.address, sourceAddress.port);
   }
 
