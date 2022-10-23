@@ -21,6 +21,7 @@ class NodeWidgetSt extends State<NodeWidget> {
   String nodeName = "";
   String status = "";
   bool errorExists = false;
+  late Timer _timer;
 
   @override
   void initState() {
@@ -30,7 +31,20 @@ class NodeWidgetSt extends State<NodeWidget> {
     });
     Repository().client(widget.conn).infoReceived = false; // Reset info in connection
     updateNodeInfo();
+
+ _timer = Timer.periodic(const Duration(milliseconds: 5000), (timer) {
+  if (errorExists) {
+      updateNodeInfo();
   }
+    });    
+  }
+
+    @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
 
   void updateNodeInfo() {
     setState(() {
@@ -54,11 +68,6 @@ class NodeWidgetSt extends State<NodeWidget> {
         });
       }
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   Widget buildStatus() {

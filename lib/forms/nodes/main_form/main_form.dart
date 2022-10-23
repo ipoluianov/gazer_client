@@ -49,15 +49,15 @@ class MainFormSt extends State<MainForm> {
     });
 
     timerUpdate_ = Timer.periodic(const Duration(seconds: 5), (timer) { 
-        updateCounter++;
-        bloc.load();
+        //updateCounter++;
+        //bloc.load();
     });
   }
 
   Widget buildNodeList(BuildContext context, MainFormState state) {
     return Expanded(
       child: Scrollbar(
-        isAlwaysShown: true,
+        isAlwaysShown: false,
         child: SingleChildScrollView(
           child: Wrap(
             children: state.connections.map<Widget>((e) {
