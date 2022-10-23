@@ -12,11 +12,13 @@ import 'package:pointycastle/asymmetric/api.dart';
 
 import 'network.dart';
 import 'nonces.dart';
+import 'peer.dart';
 import 'transaction.dart';
 import 'udp_address.dart';
 import 'utils.dart';
 
 class RemotePeer {
+  Peer peer;
   String remoteAddress;
   String authData;
   XchgNetwork network;
@@ -28,8 +30,8 @@ class RemotePeer {
 
   Nonces nonces = Nonces(100);
 
-  UdpAddress? lanConnectionPoint;
-  UdpAddress? internetConnectionPoint;
+  UdpAddress? lanConnectionPoint1;
+  UdpAddress? internetConnectionPoint1;
 
   bool findingConnection = false;
   bool authProcessing = false;
@@ -39,7 +41,7 @@ class RemotePeer {
   Map<int, Transaction> outgoingTransactions = {};
   int nextTransactionId = 1;
 
-  RemotePeer(this.remoteAddress, this.authData, this.keyPair, this.network);
+  RemotePeer(this.peer, this.remoteAddress, this.authData, this.keyPair, this.network);
 
   static String connectionPointString(UdpAddress? udpAddress) {
     if (udpAddress != null) {
@@ -61,8 +63,16 @@ class RemotePeer {
 
     print("setLANConnectionPoint for $remoteAddress is $udpAddress");
 
-    lanConnectionPoint = udpAddress;
+    lanConnectionPoint1 = udpAddress;
     remotePublicKey = publicKey;
+  }
+
+  void setInternetConnectionPoint(
+      RawDatagramSocket socket, String address, UdpAddress udpAddress) {
+    if (remoteAddress == address) {
+      internetConnectionPoint1 = udpAddress;
+      send0x20(socket, udpAddress);
+    }
   }
 
   void setRemotePublicKey(RSAPublicKey publicKeyToSet) {
@@ -70,11 +80,11 @@ class RemotePeer {
   }
 
   String lanConnectionPointString() {
-    return connectionPointString(lanConnectionPoint);
+    return connectionPointString(lanConnectionPoint1);
   }
 
   String internetConnectionPointString() {
-    return connectionPointString(internetConnectionPoint);
+    return connectionPointString(internetConnectionPoint1);
   }
 
   void processFrame(
@@ -113,7 +123,18 @@ class RemotePeer {
     }
   }
 
-  Future<void> checkLANConnectionPoint(RawDatagramSocket socket) async {
+  void send0x20(RawDatagramSocket socket, UdpAddress udpAddress) {
+    var nonce = nonces.next();
+    var addressBS = utf8.encode(remoteAddress);
+    var request = Uint8List(8 + 16 + addressBS.length);
+    request[0] = 0x20;
+    copyBytes(request, 8, nonce);
+    copyBytes(request, 8 + 16, Uint8List.fromList(addressBS));
+    socket.send(request, udpAddress.address, udpAddress.port);
+  }
+
+  Future<void> checkLANConnectionPoint() async {
+    //return;
     var nonce = nonces.next();
     var addressBS = utf8.encode(remoteAddress);
     var request = Uint8List(8 + 16 + addressBS.length);
@@ -124,39 +145,58 @@ class RemotePeer {
     //socket.send(request, InternetAddress("255.255.255.255"), 42000);
 
     for (int i = 42000; i < 42100; i++) {
-      socket.send(request, InternetAddress("255.255.255.255"), i);
-      //socket.send(request, InternetAddress("127.0.0.1"), 42000);
+      peer.requestUDP(UdpAddress(InternetAddress("255.255.255.255"), i), request);
     }
   }
 
-  void checkInternetConnectionPoint() {}
+  void checkInternetConnectionPoint() {
+    return;
+    /*var addressBS = utf8.encode(remoteAddress);
+    var request = Uint8List(8 + addressBS.length);
+    request[0] = 0x06;
+    copyBytes(request, 8, Uint8List.fromList(addressBS));
+    int sentBytes = socket.send(request, InternetAddress("127.0.0.1"), 8484);
+    if (sentBytes != request.length) {
+      print("Cannot sent data checkInternetConnectionPoint");
+    }*/
+  }
 
-  Future<CallResult> call(
-      RawDatagramSocket socket, String function, Uint8List data) async {
-    for (int i = 0; i < 5; i++) {
-      if (lanConnectionPoint == null) {
-        checkLANConnectionPoint(socket);
+  UdpAddress? getConnectionPoint() {
+    if (lanConnectionPoint1 != null) {
+      return lanConnectionPoint1!;
+    }
+
+    return internetConnectionPoint1;
+  }
+
+  Future<CallResult> call(String function, Uint8List data) async {
+    UdpAddress? connectionPoint = getConnectionPoint();
+    if (connectionPoint == null) {
+      if (lanConnectionPoint1 == null) {
+        checkLANConnectionPoint();
       }
 
-      if (internetConnectionPoint == null) {
+      if (internetConnectionPoint1 == null) {
         checkInternetConnectionPoint();
       }
-
-      if (lanConnectionPoint != null || internetConnectionPoint != null) {
+    }
+    for (int i = 0; i < 5; i++) {
+      connectionPoint = getConnectionPoint();
+      if (connectionPoint != null) {
         break;
       }
       await Future.delayed(const Duration(milliseconds: 100));
     }
 
-    if (lanConnectionPoint == null && internetConnectionPoint == null) {
+    connectionPoint = getConnectionPoint();
+
+    if (connectionPoint == null) {
       return CallResult.createError("no route to peer");
     }
 
-    print("lanConnectionPoint ${lanConnectionPoint}");
-
     if (sessionId == 0) {
       print("auth start");
-      String authRes = await auth(socket, lanConnectionPoint!);
+      String authRes = await auth(connectionPoint);
       if (authRes.isNotEmpty) {
         CallResult result = CallResult();
         result.error = "auth error:" + authRes;
@@ -168,20 +208,19 @@ class RemotePeer {
     }
 
     CallResult result =
-        await regularCall(socket, lanConnectionPoint!, function, data, aesKey);
+        await regularCall(connectionPoint, function, data, aesKey);
     return result;
   }
 
-  Future<String> auth(
-      RawDatagramSocket socket, UdpAddress remoteConnectionPoint) async {
+  Future<String> auth(UdpAddress remoteConnectionPoint) async {
     if (authProcessing) {
       return "auth processing ...";
     }
 
     try {
       authProcessing = true;
-      var getNonceResult = await regularCall(socket, remoteConnectionPoint,
-          "/xchg-get-nonce", Uint8List(0), Uint8List(0));
+      var getNonceResult = await regularCall(
+          remoteConnectionPoint, "/xchg-get-nonce", Uint8List(0), Uint8List(0));
       if (getNonceResult.isError()) {
         authProcessing = false;
         return "get nonce error:" + getNonceResult.error;
@@ -213,7 +252,7 @@ class RemotePeer {
       copyBytes(authFrame, 4 + localPublicKeyBS.length, encryptedAuthFrame);
 
       CallResult authResult = await regularCall(
-          socket, remoteConnectionPoint, "/xchg-auth", authFrame, Uint8List(0));
+          remoteConnectionPoint, "/xchg-auth", authFrame, Uint8List(0));
       if (authResult.isError()) {
         authProcessing = false;
         return "auth error:" + authResult.error;
@@ -236,12 +275,8 @@ class RemotePeer {
     return "";
   }
 
-  Future<CallResult> regularCall(
-      RawDatagramSocket socket,
-      UdpAddress remoteConnectionPoint,
-      String function,
-      Uint8List data,
-      Uint8List aesKey) async {
+  Future<CallResult> regularCall(UdpAddress remoteConnectionPoint,
+      String function, Uint8List data, Uint8List aesKey) async {
     CallResult result = CallResult();
 
     Uint8List functionBS = Uint8List.fromList(utf8.encode(function));
@@ -272,8 +307,8 @@ class RemotePeer {
       copyBytes(frame, 1 + functionBS.length, data);
     }
 
-    CallResult callResult = await executeTransaction(
-        socket, remoteConnectionPoint, sessionId, frame);
+    CallResult callResult =
+        await executeTransaction(remoteConnectionPoint, sessionId, frame);
     if (callResult.isError()) {
       return callResult;
     }
@@ -311,7 +346,7 @@ class RemotePeer {
     return result;
   }
 
-  Future<CallResult> executeTransaction(RawDatagramSocket socket,
+  Future<CallResult> executeTransaction(
       UdpAddress remoteConnectionPoint, int sessionId, Uint8List data) async {
     int localTransactionId = nextTransactionId;
     nextTransactionId++;
@@ -344,11 +379,7 @@ class RemotePeer {
           tr.data.sublist(offset, offset + currentBlockSize);
 
       Uint8List blockFrame = Uint8List.fromList(blockTransaction.serialize());
-      int sentBytes = socket.send(blockFrame, remoteConnectionPoint.address,
-          remoteConnectionPoint.port);
-      if (sentBytes != blockFrame.length) {
-        return CallResult.createError("cannot send $sentBytes");
-      }
+      peer.requestUDP(remoteConnectionPoint, blockFrame);
       //print("sent: $sentBytes");
       offset += currentBlockSize;
     }
@@ -370,7 +401,11 @@ class RemotePeer {
     }
 
     outgoingTransactions.remove(localTransactionId);
-    lanConnectionPoint = null;
+    resetConnectionPoint();
     return CallResult.createError("transaction timeout");
+  }
+
+  void resetConnectionPoint() {
+    lanConnectionPoint1 = null;
   }
 }

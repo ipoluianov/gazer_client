@@ -37,11 +37,11 @@ class MapItemCardState extends State<MapItemCard> {
 
   void loadThumbnail() {
     if (widget.mapItem.thumbnail == null) {
-      Repository().client(widget.conn).resGetThumbnail(widget.mapItem.id).then((value) {
+      /*Repository().client(widget.conn).resGetThumbnail(widget.mapItem.id).then((value) {
         setState(() {
           _bytesImage = value.item.content;
         });
-      });
+      });*/
     }
   }
 

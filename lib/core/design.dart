@@ -5,13 +5,13 @@ import 'package:gazer_client/core/tools/hex_colors.dart';
 class DesignColors {
   static Color _accent = const Color(0xFFFFBF00);
 
-  static Color _fore = const Color(0xFF00BCD4);
-  static Color _fore1 = const Color(0x9000BCD4);
-  static Color _fore2 = const Color(0x6000BCD4);
+  static Color _fore = Color(0xFF00BCFF);
+  static Color _fore1 = const Color(0xB000BCFF);
+  static Color _fore2 = const Color(0x9000BCFF);
 
-  static Color _back = const Color(0xFF222222);
-  static Color _back1 = const Color(0x1000BCD4);
-  static Color _back2 = const Color(0x3000BCD4);
+  static Color _back = const Color(0xFF262626);
+  static Color _back1 = const Color(0x1000BCFF);
+  static Color _back2 = const Color(0x3000BCFF);
 
   static Color mainBackgroundColor = _back;
 
