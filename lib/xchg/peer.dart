@@ -64,7 +64,30 @@ class Peer {
   }
 
   Future<void> requestUDP(UdpAddress address, Uint8List data) async {
-    var udpSocket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
+    print("requestUDP: $address");
+    InternetAddress bindAddr = InternetAddress.anyIPv4;
+
+    /*if (address.address.type == InternetAddressType.IPv6) {
+      bindAddr = InternetAddress.anyIPv6;
+    }*/
+
+    //String addrStr = address.address.rawAddress[];
+
+    if (address.address.rawAddress.length == 16) {
+      if (address.address.rawAddress[10] == 255 &&
+          address.address.rawAddress[11] == 255) {
+        address = UdpAddress(
+            InternetAddress.fromRawAddress(
+                address.address.rawAddress.sublist(12)),
+            address.port);
+      }
+    }
+
+    print("ADDR: ${address.address.rawAddress}");
+
+    //address = UdpAddress(InternetAddress("127.0.0.1"), address.port);
+
+    var udpSocket = await RawDatagramSocket.bind(bindAddr, 0);
     udpSocket.broadcastEnabled = true;
     udpSocket.listen(
         (event) {
@@ -74,7 +97,7 @@ class Peer {
           if (event == RawSocketEvent.read) {
             Datagram? dg = udpSocket.receive();
             if (dg != null) {
-              processFrame(udpSocket, UdpAddress(dg.address, dg.port), dg.data);
+              processFrame(UdpAddress(dg.address, dg.port), dg.data);
             }
             //udpSocket.close();
           }
@@ -94,12 +117,11 @@ class Peer {
           udpSocket.close();
         });
 
-        await Future.delayed(const Duration(milliseconds: 1000));
-        udpSocket.close();
+    await Future.delayed(const Duration(milliseconds: 1000));
+    udpSocket.close();
   }
 
-  void processFrame(
-      RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame(UdpAddress sourceAddress, Uint8List frame) {
     print("received: $sourceAddress ${frame.length} ${frame[0]}");
 
     if (frame.length < 8) {
@@ -110,63 +132,60 @@ class Peer {
 
     switch (frameType) {
       case 0x00:
-        processFrame00(socket, sourceAddress, frame);
+        processFrame00(sourceAddress, frame);
         break;
       case 0x01:
-        processFrame01(socket, sourceAddress, frame);
+        processFrame01(sourceAddress, frame);
         break;
       case 0x02:
-        processFrame02(socket, sourceAddress, frame);
+        processFrame02(sourceAddress, frame);
         break;
       case 0x03:
-        processFrame03(socket, sourceAddress, frame);
+        processFrame03(sourceAddress, frame);
         break;
       case 0x07:
-        processFrame07(socket, sourceAddress, frame);
+        processFrame07(sourceAddress, frame);
         break;
       case 0x10:
-        processFrame10(socket, sourceAddress, frame);
+        processFrame10(sourceAddress, frame);
         break;
       case 0x11:
-        processFrame11(socket, sourceAddress, frame);
+        processFrame11(sourceAddress, frame);
         break;
       case 0x20:
-        processFrame20(socket, sourceAddress, frame);
+        processFrame20(sourceAddress, frame);
         break;
       case 0x21:
-        processFrame21(socket, sourceAddress, frame);
+        processFrame21(sourceAddress, frame);
         break;
       case 0x22:
-        processFrame22(socket, sourceAddress, frame);
+        processFrame22(sourceAddress, frame);
         break;
       case 0x23:
-        processFrame23(socket, sourceAddress, frame);
+        processFrame23(sourceAddress, frame);
         break;
       default:
     }
   }
 
   // Ping
-  void processFrame00(
-      RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame00(UdpAddress sourceAddress, Uint8List frame) {
     frame[0] = 0x01;
     frame[1] = 0x00;
-    socket.send(frame, sourceAddress.address, sourceAddress.port);
+    //socket.send(frame, sourceAddress.address, sourceAddress.port);
+    requestUDP(sourceAddress, frame);
   }
 
-  void processFrame01(
-      RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {}
+  void processFrame01(UdpAddress sourceAddress, Uint8List frame) {}
 
 // ----------------------------------------
 // Nonce
 // ----------------------------------------
 
-  void processFrame02(
-      RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame02(UdpAddress sourceAddress, Uint8List frame) {
     // nothing to do
   }
-  void processFrame03(
-      RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame03(UdpAddress sourceAddress, Uint8List frame) {
     if (frame[1] != 0) {
       return;
     }
@@ -198,11 +217,11 @@ class Peer {
     request.addAll(publicKeyBS);
     request.addAll(data);
 
-    socket.send(request, sourceAddress.address, sourceAddress.port);
+    //socket.send(request, sourceAddress.address, sourceAddress.port);
+    requestUDP(sourceAddress, request);
   }
 
-  void processFrame07(
-      RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame07(UdpAddress sourceAddress, Uint8List frame) {
     List<int> addressBS = [];
     int dataOffset = -1;
     for (int i = 8; i < frame.length; i++) {
@@ -248,7 +267,7 @@ class Peer {
       UdpAddress udpAddress = UdpAddress(addr, port);
 
       for (var remotePeer in remotePeers.values) {
-        //remotePeer.setInternetConnectionPoint(socket, address, udpAddress);
+        remotePeer.setInternetConnectionPoint(address, udpAddress);
       }
     }
   }
@@ -257,8 +276,7 @@ class Peer {
 // Incoming Call - Server Role
 // ----------------------------------------
 
-  void processFrame10(
-      RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame10(UdpAddress sourceAddress, Uint8List frame) {
     Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
 
     List<String> transactionsToRemove = [];
@@ -314,8 +332,7 @@ class Peer {
     }
   }
 
-  void processFrame11(
-      RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame11(UdpAddress sourceAddress, Uint8List frame) {
     RemotePeer? remotePeer;
     String receivedFromConnectionPoint =
         RemotePeer.connectionPointString(sourceAddress);
@@ -330,13 +347,12 @@ class Peer {
       }
     }
     if (remotePeer != null) {
-      remotePeer.processFrame(socket, sourceAddress, frame);
+      remotePeer.processFrame(sourceAddress, frame);
     }
   }
 
   // ARP LAN request
-  void processFrame20(
-      RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame20(UdpAddress sourceAddress, Uint8List frame) {
     String localAddress = addressForPublicKey(keyPair.publicKey);
     Uint8List nonce = frame.sublist(8, 8 + 16);
     Uint8List nonceHash = Uint8List.fromList(sha256.convert(nonce).bytes);
@@ -353,12 +369,12 @@ class Peer {
     response.addAll(nonce);
     response.addAll(signature);
     response.addAll(publicKeyBS);
-    socket.send(response, sourceAddress.address, sourceAddress.port);
+    requestUDP(sourceAddress, response);
+    //socket.send(response, sourceAddress.address, sourceAddress.port);
   }
 
   // ARP LAN response
-  void processFrame21(
-      RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame21(UdpAddress sourceAddress, Uint8List frame) {
     Uint8List receivedPublicKeyBS = frame.sublist(8 + 16 + 256);
     var receivedPublicKey = decodePublicKeyFromPKCS1(receivedPublicKeyBS);
     String receivedAddress = addressForPublicKey(receivedPublicKey);
@@ -371,8 +387,7 @@ class Peer {
   }
 
   // Get Public Key request
-  void processFrame22(
-      RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame22(UdpAddress sourceAddress, Uint8List frame) {
     String localAddress = addressForPublicKey(keyPair.publicKey);
     String requestedAddress = utf8.decode(frame.sublist(8));
     if (requestedAddress != localAddress) {
@@ -384,12 +399,12 @@ class Peer {
     response.addAll(frame.sublist(0, 8));
     response[0] = 0x23;
     response.addAll(publicKeyBS);
-    socket.send(response, sourceAddress.address, sourceAddress.port);
+    requestUDP(sourceAddress, response);
+    //socket.send(response, sourceAddress.address, sourceAddress.port);
   }
 
   // Get Public Key response
-  void processFrame23(
-      RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame23(UdpAddress sourceAddress, Uint8List frame) {
     Uint8List receivedPublicKeyBS = frame.sublist(8);
     var receivedPublicKey = decodePublicKeyFromPKCS1(receivedPublicKeyBS);
     String receivedAddress = addressForPublicKey(receivedPublicKey);
@@ -400,8 +415,7 @@ class Peer {
     }
   }
 
-  void processFrame24(
-      RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {}
+  void processFrame24(UdpAddress sourceAddress, Uint8List frame) {}
 
   void setProcessor(XchgServerProcessor processor) {}
 

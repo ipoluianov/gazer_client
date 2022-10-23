@@ -68,10 +68,10 @@ class RemotePeer {
   }
 
   void setInternetConnectionPoint(
-      RawDatagramSocket socket, String address, UdpAddress udpAddress) {
+      String address, UdpAddress udpAddress) {
     if (remoteAddress == address) {
       internetConnectionPoint1 = udpAddress;
-      send0x20(socket, udpAddress);
+      send0x20(udpAddress);
     }
   }
 
@@ -88,15 +88,15 @@ class RemotePeer {
   }
 
   void processFrame(
-      RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {
+      UdpAddress sourceAddress, Uint8List frame) {
     var frameType = frame[0];
     if (frameType == 0x11) {
-      processFrame11(socket, sourceAddress, frame);
+      processFrame11(sourceAddress, frame);
     }
   }
 
   void processFrame11(
-      RawDatagramSocket socket, UdpAddress sourceAddress, Uint8List frame) {
+      UdpAddress sourceAddress, Uint8List frame) {
     Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
 
     if (outgoingTransactions.containsKey(transaction.transactionId)) {
@@ -123,18 +123,18 @@ class RemotePeer {
     }
   }
 
-  void send0x20(RawDatagramSocket socket, UdpAddress udpAddress) {
+  void send0x20(UdpAddress udpAddress) {
     var nonce = nonces.next();
     var addressBS = utf8.encode(remoteAddress);
     var request = Uint8List(8 + 16 + addressBS.length);
     request[0] = 0x20;
     copyBytes(request, 8, nonce);
     copyBytes(request, 8 + 16, Uint8List.fromList(addressBS));
-    socket.send(request, udpAddress.address, udpAddress.port);
+    peer.requestUDP(udpAddress, request);
   }
 
   Future<void> checkLANConnectionPoint() async {
-    //return;
+    return;
     var nonce = nonces.next();
     var addressBS = utf8.encode(remoteAddress);
     var request = Uint8List(8 + 16 + addressBS.length);
@@ -150,15 +150,12 @@ class RemotePeer {
   }
 
   void checkInternetConnectionPoint() {
-    return;
-    /*var addressBS = utf8.encode(remoteAddress);
+    //return;
+    var addressBS = utf8.encode(remoteAddress);
     var request = Uint8List(8 + addressBS.length);
     request[0] = 0x06;
     copyBytes(request, 8, Uint8List.fromList(addressBS));
-    int sentBytes = socket.send(request, InternetAddress("127.0.0.1"), 8484);
-    if (sentBytes != request.length) {
-      print("Cannot sent data checkInternetConnectionPoint");
-    }*/
+    peer.requestUDP(UdpAddress(InternetAddress("127.0.0.1"), 8484), request);
   }
 
   UdpAddress? getConnectionPoint() {
