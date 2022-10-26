@@ -339,11 +339,13 @@ class Peer {
     String receivedFromConnectionPoint =
         RemotePeer.connectionPointString(sourceAddress);
     for (RemotePeer peer in remotePeers.values) {
-      if (peer.lanConnectionPointString() == receivedFromConnectionPoint) {
+      String lanPoint = peer.lanConnectionPointString();
+      if (lanPoint == receivedFromConnectionPoint) {
         remotePeer = peer;
         break;
       }
-      if (peer.internetConnectionPointString() == receivedFromConnectionPoint) {
+      String inPoint = peer.internetConnectionPointString();
+      if (inPoint == receivedFromConnectionPoint) {
         remotePeer = peer;
         break;
       }

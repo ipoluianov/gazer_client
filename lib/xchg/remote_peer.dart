@@ -45,6 +45,17 @@ class RemotePeer {
 
   static String connectionPointString(UdpAddress? udpAddress) {
     if (udpAddress != null) {
+      
+    if (udpAddress.address.rawAddress.length == 16) {
+      if (udpAddress.address.rawAddress[10] == 255 &&
+          udpAddress.address.rawAddress[11] == 255) {
+        udpAddress = UdpAddress(
+            InternetAddress.fromRawAddress(
+                udpAddress.address.rawAddress.sublist(12)),
+            udpAddress.port);
+      }
+    }
+
       return udpAddress.toString();
     }
     return "";
@@ -407,5 +418,6 @@ class RemotePeer {
 
   void resetConnectionPoint() {
     lanConnectionPoint1 = null;
+    internetConnectionPoint1 = null;
   }
 }
