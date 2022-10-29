@@ -268,9 +268,9 @@ class Peer {
 
       UdpAddress udpAddress = UdpAddress(addr, port);
 
-      for (var remotePeer in remotePeers.values) {
+      /*for (var remotePeer in remotePeers.values) {
         remotePeer.setInternetConnectionPoint(address, udpAddress);
-      }
+      }*/
     }
   }
 
@@ -344,11 +344,11 @@ class Peer {
         remotePeer = peer;
         break;
       }
-      String inPoint = peer.internetConnectionPointString();
+      /*String inPoint = peer.internetConnectionPointString();
       if (inPoint == receivedFromConnectionPoint) {
         remotePeer = peer;
         break;
-      }
+      }*/
     }
     if (remotePeer != null) {
       remotePeer.processFrame(sourceAddress, frame);

@@ -31,7 +31,7 @@ class RemotePeer {
   Nonces nonces = Nonces(100);
 
   UdpAddress? lanConnectionPoint1;
-  UdpAddress? internetConnectionPoint1;
+  //UdpAddress? internetConnectionPoint1;
 
   bool findingConnection = false;
   bool authProcessing = false;
@@ -41,20 +41,20 @@ class RemotePeer {
   Map<int, Transaction> outgoingTransactions = {};
   int nextTransactionId = 1;
 
-  RemotePeer(this.peer, this.remoteAddress, this.authData, this.keyPair, this.network);
+  RemotePeer(
+      this.peer, this.remoteAddress, this.authData, this.keyPair, this.network);
 
   static String connectionPointString(UdpAddress? udpAddress) {
     if (udpAddress != null) {
-      
-    if (udpAddress.address.rawAddress.length == 16) {
-      if (udpAddress.address.rawAddress[10] == 255 &&
-          udpAddress.address.rawAddress[11] == 255) {
-        udpAddress = UdpAddress(
-            InternetAddress.fromRawAddress(
-                udpAddress.address.rawAddress.sublist(12)),
-            udpAddress.port);
+      if (udpAddress.address.rawAddress.length == 16) {
+        if (udpAddress.address.rawAddress[10] == 255 &&
+            udpAddress.address.rawAddress[11] == 255) {
+          udpAddress = UdpAddress(
+              InternetAddress.fromRawAddress(
+                  udpAddress.address.rawAddress.sublist(12)),
+              udpAddress.port);
+        }
       }
-    }
 
       return udpAddress.toString();
     }
@@ -78,13 +78,13 @@ class RemotePeer {
     remotePublicKey = publicKey;
   }
 
-  void setInternetConnectionPoint(
+  /*void setInternetConnectionPoint(
       String address, UdpAddress udpAddress) {
     if (remoteAddress == address) {
       internetConnectionPoint1 = udpAddress;
       send0x20(udpAddress);
     }
-  }
+  }*/
 
   void setRemotePublicKey(RSAPublicKey publicKeyToSet) {
     remotePublicKey = publicKeyToSet;
@@ -94,20 +94,18 @@ class RemotePeer {
     return connectionPointString(lanConnectionPoint1);
   }
 
-  String internetConnectionPointString() {
+  /*String internetConnectionPointString() {
     return connectionPointString(internetConnectionPoint1);
-  }
+  }*/
 
-  void processFrame(
-      UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame(UdpAddress sourceAddress, Uint8List frame) {
     var frameType = frame[0];
     if (frameType == 0x11) {
       processFrame11(sourceAddress, frame);
     }
   }
 
-  void processFrame11(
-      UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame11(UdpAddress sourceAddress, Uint8List frame) {
     Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
 
     if (outgoingTransactions.containsKey(transaction.transactionId)) {
@@ -145,8 +143,7 @@ class RemotePeer {
   }
 
   Future<void> checkLANConnectionPoint() async {
-    return;
-    /*var nonce = nonces.next();
+    var nonce = nonces.next();
     var addressBS = utf8.encode(remoteAddress);
     var request = Uint8List(8 + 16 + addressBS.length);
     request[0] = 0x20;
@@ -156,8 +153,8 @@ class RemotePeer {
     //socket.send(request, InternetAddress("255.255.255.255"), 42000);
 
     for (int i = 42000; i < 42100; i++) {
-      peer.requestUDP(UdpAddress(InternetAddress("255.255.255.255"), i), request);
-    }*/
+      peer.requestUDP(UdpAddress(InternetAddress("127.0.0.1"), i), [request]);
+    }
   }
 
   void checkInternetConnectionPoint() {
@@ -166,15 +163,12 @@ class RemotePeer {
     var request = Uint8List(8 + addressBS.length);
     request[0] = 0x06;
     copyBytes(request, 8, Uint8List.fromList(addressBS));
-    peer.requestUDP(UdpAddress(InternetAddress("54.37.73.160"), 8484), [request]);
+    peer.requestUDP(
+        UdpAddress(InternetAddress("54.37.73.160"), 8484), [request]);
   }
 
   UdpAddress? getConnectionPoint() {
-    if (lanConnectionPoint1 != null) {
-      return lanConnectionPoint1!;
-    }
-
-    return internetConnectionPoint1;
+    return lanConnectionPoint1;
   }
 
   Future<CallResult> call(String function, Uint8List data) async {
@@ -182,10 +176,6 @@ class RemotePeer {
     if (connectionPoint == null) {
       if (lanConnectionPoint1 == null) {
         checkLANConnectionPoint();
-      }
-
-      if (internetConnectionPoint1 == null) {
-        checkInternetConnectionPoint();
       }
     }
     for (int i = 0; i < 5; i++) {
@@ -393,7 +383,7 @@ class RemotePeer {
       //print("sent: $sentBytes");
       offset += currentBlockSize;
     }
-      peer.requestUDP(remoteConnectionPoint, frames);
+    peer.requestUDP(remoteConnectionPoint, frames);
 
     print("------------------waiting for transaction");
 
@@ -418,6 +408,5 @@ class RemotePeer {
 
   void resetConnectionPoint() {
     lanConnectionPoint1 = null;
-    internetConnectionPoint1 = null;
   }
 }

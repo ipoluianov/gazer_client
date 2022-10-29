@@ -28,6 +28,8 @@ class MainForm extends StatefulWidget {
 class MainFormSt extends State<MainForm> {
   MainFormCubit bloc = MainFormCubit(MainFormState([]));
   int updateCounter = 0;
+  ScrollController scrollController1 = ScrollController();
+  ScrollController scrollController2 = ScrollController();
 
   late Timer timerUpdate_;
 
@@ -48,17 +50,19 @@ class MainFormSt extends State<MainForm> {
       bloc.load();
     });
 
-    timerUpdate_ = Timer.periodic(const Duration(seconds: 5), (timer) { 
-        //updateCounter++;
-        //bloc.load();
+    timerUpdate_ = Timer.periodic(const Duration(seconds: 5), (timer) {
+      //updateCounter++;
+      //bloc.load();
     });
   }
 
   Widget buildNodeList(BuildContext context, MainFormState state) {
     return Expanded(
       child: Scrollbar(
+        controller: scrollController1,
         isAlwaysShown: false,
         child: SingleChildScrollView(
+          controller: scrollController1,
           child: Wrap(
             children: state.connections.map<Widget>((e) {
               return NodeWidget(e, () {
@@ -79,8 +83,10 @@ class MainFormSt extends State<MainForm> {
   Widget buildEmptyNodeList(context, state) {
     return Expanded(
       child: Scrollbar(
+        controller: scrollController2,
         isAlwaysShown: true,
         child: SingleChildScrollView(
+          controller: scrollController2,
           child: Column(
             children: [
               Container(

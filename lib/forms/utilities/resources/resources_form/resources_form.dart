@@ -47,6 +47,9 @@ class ResourcesFormSt extends State<ResourcesForm> {
   List<ResListItemItemResponse> items = [];
   List<ResListItemItemResponse> folders = [];
 
+  ScrollController scrollController1 = ScrollController();
+  ScrollController scrollController2 = ScrollController();
+
   ItemsFilter filter = ItemsFilter.all;
 
   String currentFolder = "";
@@ -69,7 +72,10 @@ class ResourcesFormSt extends State<ResourcesForm> {
       return;
     }
     loadingFolders = true;
-    Repository().client(widget.arg.connection).resList(widget.arg.type + "_folder", "", 0, 10000).then((value) {
+    Repository()
+        .client(widget.arg.connection)
+        .resList(widget.arg.type + "_folder", "", 0, 10000)
+        .then((value) {
       loadingFolders = false;
       if (mounted) {
         setState(() {
@@ -94,7 +100,10 @@ class ResourcesFormSt extends State<ResourcesForm> {
       return;
     }
     loadingItems = true;
-    Repository().client(widget.arg.connection).resList(widget.arg.type, "", 0, 10000).then((value) {
+    Repository()
+        .client(widget.arg.connection)
+        .resList(widget.arg.type, "", 0, 10000)
+        .then((value) {
       loadingItems = false;
       if (mounted) {
         setState(() {
@@ -155,8 +164,10 @@ class ResourcesFormSt extends State<ResourcesForm> {
   Widget buildEmptyNodeList(context) {
     return Expanded(
       child: Scrollbar(
+        controller: scrollController1,
         isAlwaysShown: true,
         child: SingleChildScrollView(
+          controller: scrollController1,
           child: Column(
             children: [
               Container(
@@ -240,7 +251,8 @@ class ResourcesFormSt extends State<ResourcesForm> {
     return LayoutBuilder(
       builder: (context, constraints) {
         List<Widget> buttons = [];
-        buttons.add(buildActionButtonFull(context, Icons.favorite, "Favorites", () {
+        buttons.add(buildActionButtonFull(context, Icons.favorite, "Favorites",
+            () {
           if (filter == ItemsFilter.favorite) {
             setState(() {
               filter = ItemsFilter.all;
@@ -250,7 +262,10 @@ class ResourcesFormSt extends State<ResourcesForm> {
               filter = ItemsFilter.favorite;
             });
           }
-        }, false, imageColor: (filter == ItemsFilter.favorite) ? DesignColors.accent() : DesignColors.fore2()));
+        }, false,
+            imageColor: (filter == ItemsFilter.favorite)
+                ? DesignColors.accent()
+                : DesignColors.fore2()));
 
         int countOfButtons = ((constraints.maxWidth - 200) / 65).round();
         if (countOfButtons < 1) {
@@ -280,7 +295,8 @@ class ResourcesFormSt extends State<ResourcesForm> {
           color: DesignColors.fore2(),
           height: 1,
         ),
-        /*viewType == ViewType.items ?*/ buildContent(context) /*: buildContentFolders(context)*/,
+        /*viewType == ViewType.items ?*/ buildContent(
+            context) /*: buildContentFolders(context)*/,
       ],
     ));
   }
@@ -340,8 +356,10 @@ class ResourcesFormSt extends State<ResourcesForm> {
 
     return Expanded(
       child: Scrollbar(
+        controller: scrollController2,
         isAlwaysShown: true,
         child: SingleChildScrollView(
+          controller: scrollController2,
           child: Container(
             padding: const EdgeInsets.all(12),
             child: Wrap(
@@ -386,13 +404,20 @@ class ResourcesFormSt extends State<ResourcesForm> {
                           Navigator.of(context)
                               .pushNamed("/resource_rename",
                                   arguments: ResourceChangeFormArgument(
-                                      widget.arg.connection, e.id, e, widget.arg.type, widget.arg.typeName, widget.arg.typeNamePlural))
+                                      widget.arg.connection,
+                                      e.id,
+                                      e,
+                                      widget.arg.type,
+                                      widget.arg.typeName,
+                                      widget.arg.typeNamePlural))
                               .then((value) {
                             load();
                           });
                         },
                         () {
-                          Repository().client(widget.arg.connection).resPropSet(e.id, {"folder": ""}).then((value) {
+                          Repository()
+                              .client(widget.arg.connection)
+                              .resPropSet(e.id, {"folder": ""}).then((value) {
                             load();
                           });
                         },
@@ -400,7 +425,10 @@ class ResourcesFormSt extends State<ResourcesForm> {
                           load();
                         },
                         () {
-                          Repository().client(widget.arg.connection).resRemove(e.id).then((value) {
+                          Repository()
+                              .client(widget.arg.connection)
+                              .resRemove(e.id)
+                              .then((value) {
                             //print("load after remove");
                             load();
                           }).catchError((err) {
@@ -413,7 +441,8 @@ class ResourcesFormSt extends State<ResourcesForm> {
                     onAcceptWithDetails: (details) {
                       if (e.type == widget.arg.type + "_folder") {
                         if (details.data.id != e.id) {
-                          Repository().client(widget.arg.connection).resPropSet(details.data.id, {"folder": e.id}).then((value) {
+                          Repository().client(widget.arg.connection).resPropSet(
+                              details.data.id, {"folder": e.id}).then((value) {
                             load();
                           });
                         }
@@ -432,7 +461,12 @@ class ResourcesFormSt extends State<ResourcesForm> {
   void addFolder() {
     Navigator.of(context)
         .pushNamed("/resource_add",
-            arguments: ResourceItemAddFormArgument(widget.arg.connection, "${widget.arg.type}_folder", currentFolder, "Folder", "Folders"))
+            arguments: ResourceItemAddFormArgument(
+                widget.arg.connection,
+                "${widget.arg.type}_folder",
+                currentFolder,
+                "Folder",
+                "Folders"))
         .then((value) {
       if (value != null) {
         load();
@@ -443,7 +477,12 @@ class ResourcesFormSt extends State<ResourcesForm> {
   void addItem() {
     Navigator.of(context)
         .pushNamed("/resource_add",
-            arguments: ResourceItemAddFormArgument(widget.arg.connection, widget.arg.type, currentFolder, widget.arg.typeName, widget.arg.typeNamePlural))
+            arguments: ResourceItemAddFormArgument(
+                widget.arg.connection,
+                widget.arg.type,
+                currentFolder,
+                widget.arg.typeName,
+                widget.arg.typeNamePlural))
         .then((value) {
       if (value != null) {
         load();
@@ -461,18 +500,20 @@ class ResourcesFormSt extends State<ResourcesForm> {
 
         return Scaffold(
           appBar: TitleBar(
-              widget.arg.connection, widget.arg.typeNamePlural + " " + fullFolderName(),
+            widget.arg.connection,
+            widget.arg.typeNamePlural + " " + fullFolderName(),
             actions: <Widget>[
-              buildActionButton(context, Icons.add, "Add ${widget.arg.typeName}", () {
+              buildActionButton(
+                  context, Icons.add, "Add ${widget.arg.typeName}", () {
                 addItem();
               }),
-              buildActionButton(context, Icons.create_new_folder_outlined, "Add Folder", () {
+              buildActionButton(
+                  context, Icons.create_new_folder_outlined, "Add Folder", () {
                 addFolder();
               }),
               buildHomeButton(context),
             ],
           ),
-
           body: Container(
             color: DesignColors.mainBackgroundColor,
             child: Column(

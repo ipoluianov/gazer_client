@@ -51,6 +51,9 @@ class NodeFormSt extends State<NodeForm> {
   String loadingError = "";
   List<UnitStateAllItemResponse> items = [];
 
+  ScrollController scrollController1 = ScrollController();
+  ScrollController scrollController2 = ScrollController();
+
   bool addingUnits = false;
 
   void load() {
@@ -104,7 +107,9 @@ class NodeFormSt extends State<NodeForm> {
 
   Widget buildUnitsList(BuildContext context) {
     return DesignColors.buildScrollBar(
+      controller: scrollController1,
       child: SingleChildScrollView(
+        controller: scrollController1,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -160,7 +165,8 @@ class NodeFormSt extends State<NodeForm> {
   }
 
   void addUnit() {
-    Navigator.of(context).pushNamed("/unit_add", arguments: UnitAddFormArgument(widget.arg.connection));
+    Navigator.of(context).pushNamed("/unit_add",
+        arguments: UnitAddFormArgument(widget.arg.connection));
   }
 
   Widget buildAddButton(BuildContext context) {
@@ -179,9 +185,15 @@ class NodeFormSt extends State<NodeForm> {
     setState(() {
       addingUnits = true;
     });
-    await Repository().client(widget.arg.connection).unitsAdd("computer_memory", "Memory", "{}");
-    await Repository().client(widget.arg.connection).unitsAdd("computer_network", "Network", "{}");
-    await Repository().client(widget.arg.connection).unitsAdd("computer_storage", "Storage", "{}");
+    await Repository()
+        .client(widget.arg.connection)
+        .unitsAdd("computer_memory", "Memory", "{}");
+    await Repository()
+        .client(widget.arg.connection)
+        .unitsAdd("computer_network", "Network", "{}");
+    await Repository()
+        .client(widget.arg.connection)
+        .unitsAdd("computer_storage", "Storage", "{}");
     setState(() {
       addingUnits = false;
     });
@@ -193,10 +205,12 @@ class NodeFormSt extends State<NodeForm> {
       children: [
         Container(
           child: Scrollbar(
+            controller: scrollController2,
             isAlwaysShown: true,
             thickness: 15,
             radius: const Radius.circular(5),
             child: SingleChildScrollView(
+              controller: scrollController2,
               child: Column(
                 children: [
                   Container(
@@ -228,8 +242,10 @@ class NodeFormSt extends State<NodeForm> {
                               addUnit();
                             },
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all(Colors.green),
-                              padding: MaterialStateProperty.all(const EdgeInsets.all(32)),
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.green),
+                              padding: MaterialStateProperty.all(
+                                  const EdgeInsets.all(32)),
                             ),
                             label: const Text("Add a Unit"),
                           ),
@@ -257,7 +273,8 @@ class NodeFormSt extends State<NodeForm> {
                                     onPressed: () {
                                       addLocalSystemUnits();
                                     },
-                                    child: const Text("Add local system units"))),
+                                    child:
+                                        const Text("Add local system units"))),
                       ],
                     ),
                   ),
@@ -297,7 +314,10 @@ class NodeFormSt extends State<NodeForm> {
             actions: [
               buildAddButton(context),
               buildActionButton(context, Icons.edit, "Node Name", () {
-                Repository().client(widget.arg.connection).serviceInfo().then((value) {
+                Repository()
+                    .client(widget.arg.connection)
+                    .serviceInfo()
+                    .then((value) {
                   _textFieldController.text = value.nodeName;
                   _displayNodeNameDialog(context).then((value) {
                     incrementTitleKey();
@@ -369,7 +389,10 @@ class NodeFormSt extends State<NodeForm> {
                 child: const Text('OK'),
                 onPressed: () {
                   setState(() {
-                    Repository().client(widget.arg.connection).serviceSetNodeName(txtNodeName).then((value) {
+                    Repository()
+                        .client(widget.arg.connection)
+                        .serviceSetNodeName(txtNodeName)
+                        .then((value) {
                       Navigator.pop(context);
                     });
                   });
