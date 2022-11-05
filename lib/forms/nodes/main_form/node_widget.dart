@@ -8,7 +8,8 @@ class NodeWidget extends StatefulWidget {
   final Connection conn;
   final Function() onNavigate;
   final Function() onRemove;
-  const NodeWidget(this.conn, this.onNavigate, this.onRemove, {Key? key}) : super(key: key);
+  const NodeWidget(this.conn, this.onNavigate, this.onRemove, {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -29,22 +30,22 @@ class NodeWidgetSt extends State<NodeWidget> {
     setState(() {
       nodeName = widget.conn.address;
     });
-    Repository().client(widget.conn).infoReceived = false; // Reset info in connection
+    Repository().client(widget.conn).infoReceived =
+        false; // Reset info in connection
     updateNodeInfo();
 
- _timer = Timer.periodic(const Duration(milliseconds: 5000), (timer) {
-  if (errorExists) {
-      updateNodeInfo();
-  }
-    });    
+    _timer = Timer.periodic(const Duration(milliseconds: 5000), (timer) {
+      if (errorExists) {
+        updateNodeInfo();
+      }
+    });
   }
 
-    @override
+  @override
   void dispose() {
     _timer.cancel();
     super.dispose();
   }
-
 
   void updateNodeInfo() {
     setState(() {
@@ -73,24 +74,24 @@ class NodeWidgetSt extends State<NodeWidget> {
   Widget buildStatus() {
     if (status != "") {
       return Container(
-        constraints: const BoxConstraints(
-          maxHeight: 50
-        ),
+        constraints: const BoxConstraints(maxHeight: 50),
         child: Container(
           child: Text(
             status,
-            style: TextStyle(fontSize: 12, color: errorExists ? Colors.red : Colors.green),
+            style: TextStyle(
+                fontSize: 12, color: errorExists ? Colors.red : Colors.green),
           ),
         ),
       );
     }
 
     return Container(
-      child: Center( child: Container(
-        constraints: const BoxConstraints(maxWidth: 20, maxHeight: 20),
-        child: const CircularProgressIndicator(),
+      child: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 20, maxHeight: 20),
+          child: const CircularProgressIndicator(),
+        ),
       ),
-    ),
     );
   }
 
@@ -134,7 +135,9 @@ class NodeWidgetSt extends State<NodeWidget> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Icon(
-                      (widget.conn.transport == "http/local") ? Icons.computer : Icons.cloud_queue,
+                      (widget.conn.transport == "http/local")
+                          ? Icons.computer
+                          : Icons.cloud_queue,
                       color: Colors.blue,
                     ),
                     Expanded(
@@ -144,13 +147,16 @@ class NodeWidgetSt extends State<NodeWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              nodeName,
+                              "nodeName",
+                              //nodeName,
                               style: const TextStyle(fontSize: 14),
                               overflow: TextOverflow.fade,
                             ),
                             Text(
-                              widget.conn.transport + " : " + widget.conn.address,
-                              style: const TextStyle(fontSize: 14, color: Colors.white24),
+                              "---",
+                              //widget.conn.transport + " : " + widget.conn.address,
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.white24),
                               overflow: TextOverflow.fade,
                             ),
                           ],
@@ -203,7 +209,6 @@ class NodeWidgetSt extends State<NodeWidget> {
     );
   }
 
-
   Widget buildOriginal(BuildContext context) {
     return MouseRegion(
       onEnter: (_) {
@@ -244,10 +249,12 @@ class NodeWidgetSt extends State<NodeWidget> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(child: Text(
-                      widget.conn.transport + " : " + widget.conn.address,
-                      style: const TextStyle(fontSize: 12, color: Colors.white60),
-                    ),
+                    Expanded(
+                      child: Text(
+                        widget.conn.transport + " : " + widget.conn.address,
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.white60),
+                      ),
                     ),
                     IconButton(
                         onPressed: () {

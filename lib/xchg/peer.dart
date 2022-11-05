@@ -130,7 +130,7 @@ class Peer {
       return;
     }
 
-    int frameType = frame[0];
+    int frameType = frame[8];
 
     switch (frameType) {
       case 0x00:
@@ -295,20 +295,23 @@ class Peer {
       incomingTransactions.remove(trKey);
     }
 
-    Transaction incomingTransaction = Transaction();
+    Transaction incomingTransaction =
+        Transaction(0, "", "", 0, 0, 0, 0, Uint8List(0));
 
     String incomingTransactionCode =
         sourceAddress.toString() + "-" + transaction.transactionId.toString();
     if (incomingTransactions.containsKey(incomingTransactionCode)) {
       incomingTransaction = incomingTransactions[incomingTransactionCode]!;
     } else {
-      incomingTransaction = Transaction();
+      incomingTransaction = Transaction(0, "", "", 0, 0, 0, 0, Uint8List(0));
       incomingTransaction.frameType = transaction.frameType;
       incomingTransaction.transactionId = transaction.frameType;
       incomingTransaction.sessionId = transaction.frameType;
       incomingTransaction.offset = 0;
       incomingTransaction.totalSize = transaction.totalSize;
       incomingTransaction.dtBegin = DateTime.now();
+      incomingTransaction.srcAddress = transaction.srcAddress;
+      incomingTransaction.destAddress = transaction.destAddress;
     }
 
     if (incomingTransaction.data.length != incomingTransaction.totalSize) {
@@ -379,13 +382,16 @@ class Peer {
 
   // ARP LAN response
   void processFrame21(UdpAddress sourceAddress, Uint8List frame) {
-    Uint8List receivedPublicKeyBS = frame.sublist(8 + 16 + 256);
+    Uint8List receivedPublicKeyBS = frame.sublist(128 + 16 + 256);
     var receivedPublicKey = decodePublicKeyFromPKCS1(receivedPublicKeyBS);
     String receivedAddress = addressForPublicKey(receivedPublicKey);
     for (var peer in remotePeers.values) {
       if (peer.remoteAddress == receivedAddress) {
-        peer.setLANConnectionPoint(sourceAddress, receivedPublicKey,
-            frame.sublist(8, 8 + 16), frame.sublist(8 + 16, 8 + 16 + 256));
+        peer.setLANConnectionPoint(
+            sourceAddress,
+            receivedPublicKey,
+            frame.sublist(128, 128 + 16),
+            frame.sublist(128 + 16, 128 + 16 + 256));
       }
     }
   }
@@ -427,6 +433,7 @@ class Peer {
       String function, Uint8List data) async {
     RemotePeer? remotePeer;
     CallResult? res;
+    res = CallResult();
     try {
       // Waiting for socket
       if (remotePeers.containsKey(remoteAddress)) {

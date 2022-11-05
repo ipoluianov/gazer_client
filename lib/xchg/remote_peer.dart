@@ -99,7 +99,7 @@ class RemotePeer {
   }*/
 
   void processFrame(UdpAddress sourceAddress, Uint8List frame) {
-    var frameType = frame[0];
+    var frameType = frame[8];
     if (frameType == 0x11) {
       processFrame11(sourceAddress, frame);
     }
@@ -145,19 +145,26 @@ class RemotePeer {
   Future<void> checkLANConnectionPoint() async {
     var nonce = nonces.next();
     var addressBS = utf8.encode(remoteAddress);
-    var request = Uint8List(8 + 16 + addressBS.length);
-    request[0] = 0x20;
-    copyBytes(request, 8, nonce);
-    copyBytes(request, 8 + 16, Uint8List.fromList(addressBS));
+    var data = Uint8List(16 + addressBS.length);
+    copyBytes(data, 0, nonce);
+    copyBytes(data, 16, Uint8List.fromList(addressBS));
+
+    Transaction tr = Transaction(
+        0x20, localAddress(), remoteAddress, 0, 0, 0, data.length, data);
+
     //socket.broadcastEnabled = true;
     //socket.send(request, InternetAddress("255.255.255.255"), 42000);
 
+    var frame = tr.serialize();
+
+    var frameBS = Uint8List.fromList(frame);
+
     for (int i = 42000; i < 42100; i++) {
-      peer.requestUDP(UdpAddress(InternetAddress("127.0.0.1"), i), [request]);
+      peer.requestUDP(UdpAddress(InternetAddress("127.0.0.1"), i), [frameBS]);
     }
   }
 
-  void checkInternetConnectionPoint() {
+  /*void checkInternetConnectionPoint() {
     //return;
     var addressBS = utf8.encode(remoteAddress);
     var request = Uint8List(8 + addressBS.length);
@@ -165,7 +172,7 @@ class RemotePeer {
     copyBytes(request, 8, Uint8List.fromList(addressBS));
     peer.requestUDP(
         UdpAddress(InternetAddress("54.37.73.160"), 8484), [request]);
-  }
+  }*/
 
   UdpAddress? getConnectionPoint() {
     return lanConnectionPoint1;
@@ -344,18 +351,17 @@ class RemotePeer {
     return result;
   }
 
+  String localAddress() {
+    return addressForPublicKey(keyPair.publicKey);
+  }
+
   Future<CallResult> executeTransaction(
       UdpAddress remoteConnectionPoint, int sessionId, Uint8List data) async {
     int localTransactionId = nextTransactionId;
     nextTransactionId++;
 
-    Transaction tr = Transaction();
-    tr.frameType = 0x10;
-    tr.transactionId = localTransactionId;
-    tr.sessionId = sessionId;
-    tr.offset = 0;
-    tr.totalSize = data.length;
-    tr.data = data;
+    Transaction tr = Transaction(0x10, localAddress(), remoteAddress,
+        localTransactionId, sessionId, 0, data.length, data);
     outgoingTransactions[tr.transactionId] = tr;
 
     List<Uint8List> frames = [];
@@ -369,14 +375,15 @@ class RemotePeer {
         currentBlockSize = restDataLen;
       }
 
-      var blockTransaction = Transaction();
-      blockTransaction.frameType = tr.frameType;
-      blockTransaction.transactionId = tr.transactionId;
-      blockTransaction.sessionId = tr.sessionId;
-      blockTransaction.offset = offset;
-      blockTransaction.totalSize = tr.data.length;
-      blockTransaction.data =
-          tr.data.sublist(offset, offset + currentBlockSize);
+      var blockTransaction = Transaction(
+          tr.frameType,
+          tr.srcAddress,
+          tr.destAddress,
+          tr.transactionId,
+          tr.sessionId,
+          offset,
+          tr.totalSize,
+          tr.data.sublist(offset, offset + currentBlockSize));
 
       Uint8List blockFrame = Uint8List.fromList(blockTransaction.serialize());
       frames.add(blockFrame);
