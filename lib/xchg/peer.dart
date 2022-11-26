@@ -28,7 +28,7 @@ class Peer {
   XchgServerProcessor? processor;
 
   static int udpStartPort = 42000;
-  static int udpEndPort = 42100;
+  static int udpEndPort = 42002;
   int currentUdpPort = 42000;
   bool currentUdpPortTrying = false;
   bool currentUdpPortValid = false;
@@ -123,7 +123,7 @@ class Peer {
     udpSocket.close();
   }
 
-  void processFrame(UdpAddress sourceAddress, Uint8List frame) {
+  Future<void> processFrame(UdpAddress sourceAddress, Uint8List frame) async {
     print("received: $sourceAddress ${frame.length} ${frame[0]}");
 
     if (frame.length < 8) {
@@ -158,7 +158,7 @@ class Peer {
         processFrame20(sourceAddress, frame);
         break;
       case 0x21:
-        processFrame21(sourceAddress, frame);
+        await processFrame21(sourceAddress, frame);
         break;
       case 0x22:
         processFrame22(sourceAddress, frame);
@@ -213,7 +213,7 @@ class Peer {
     var signature = rsaSign(keyPair.privateKey, request.sublist(8, 32));
     request.addAll(signature);
 
-    var publicKeyBS = encodePublicKeyToPemPKCS1(keyPair.publicKey);
+    var publicKeyBS = encodePublicKeyToPKIX(keyPair.publicKey);
     request.addAll(Uint8List(4));
     request.buffer.asInt32List(288)[0] = publicKeyBS.length;
     request.addAll(publicKeyBS);
@@ -368,7 +368,7 @@ class Peer {
       return; // This is not my address
     }
     // Send my public key
-    Uint8List publicKeyBS = encodePublicKeyToPemPKCS1(keyPair.publicKey);
+    Uint8List publicKeyBS = encodePublicKeyToPKIX(keyPair.publicKey);
     Uint8List signature = rsaSign(keyPair.privateKey, nonceHash);
     Uint8List response = Uint8List(0);
     response.addAll(frame.sublist(0, 8));
@@ -381,18 +381,24 @@ class Peer {
   }
 
   // ARP LAN response
-  void processFrame21(UdpAddress sourceAddress, Uint8List frame) {
-    Uint8List receivedPublicKeyBS = frame.sublist(128 + 16 + 256);
-    var receivedPublicKey = decodePublicKeyFromPKCS1(receivedPublicKeyBS);
-    String receivedAddress = addressForPublicKey(receivedPublicKey);
-    for (var peer in remotePeers.values) {
-      if (peer.remoteAddress == receivedAddress) {
-        peer.setLANConnectionPoint(
-            sourceAddress,
-            receivedPublicKey,
-            frame.sublist(128, 128 + 16),
-            frame.sublist(128 + 16, 128 + 16 + 256));
+  Future<void> processFrame21(UdpAddress sourceAddress, Uint8List frame) async {
+    try {
+      Uint8List receivedPublicKeyBS = frame.sublist(128 + 16 + 256);
+      var receivedPublicKey = decodePublicKeyFromPKIX(receivedPublicKeyBS);
+      String receivedAddress = addressForPublicKey(receivedPublicKey);
+      print(receivedPublicKey.n);
+      print(receivedPublicKey.e);
+      for (var peer in remotePeers.values) {
+        if (peer.remoteAddress == receivedAddress) {
+          await peer.setLANConnectionPoint(
+              sourceAddress,
+              receivedPublicKey,
+              frame.sublist(128, 128 + 16),
+              frame.sublist(128 + 16, 128 + 16 + 256));
+        }
       }
+    } catch (ex) {
+      print("Exception (0x21)" + ex.toString());
     }
   }
 
@@ -404,7 +410,7 @@ class Peer {
       return; // This is not my address
     }
     // Send my public key
-    Uint8List publicKeyBS = encodePublicKeyToPemPKCS1(keyPair.publicKey);
+    Uint8List publicKeyBS = encodePublicKeyToPKIX(keyPair.publicKey);
     Uint8List response = Uint8List(0);
     response.addAll(frame.sublist(0, 8));
     response[0] = 0x23;
@@ -416,7 +422,7 @@ class Peer {
   // Get Public Key response
   void processFrame23(UdpAddress sourceAddress, Uint8List frame) {
     Uint8List receivedPublicKeyBS = frame.sublist(8);
-    var receivedPublicKey = decodePublicKeyFromPKCS1(receivedPublicKeyBS);
+    var receivedPublicKey = decodePublicKeyFromPKIX(receivedPublicKeyBS);
     String receivedAddress = addressForPublicKey(receivedPublicKey);
     for (var peer in remotePeers.values) {
       if (peer.remoteAddress == receivedAddress) {

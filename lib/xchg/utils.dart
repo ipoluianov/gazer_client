@@ -25,7 +25,7 @@ class CallResult {
 }
 
 String addressForPublicKey(RSAPublicKey publicKey) {
-  var publicKeyBS = encodePublicKeyToPemPKCS1(publicKey);
+  var publicKeyBS = encodePublicKeyToPKIX(publicKey);
   var d = sha256.convert(publicKeyBS);
   return "#" +
       base32.encode(Uint8List.fromList(d.bytes.sublist(0, 30))).toLowerCase();

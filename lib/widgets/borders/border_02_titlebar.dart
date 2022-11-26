@@ -9,14 +9,16 @@ class Border02Painter extends CustomPainter {
     return Container(
       padding: const EdgeInsets.all(3),
       child: CustomPaint(
-      painter: Border02Painter(hover),
-      child: Container(),
-      key: UniqueKey(),
-    ),);
+        painter: Border02Painter(hover),
+        child: Container(),
+        key: UniqueKey(),
+      ),
+    );
   }
 
   Rect buildRect(Rect rectOriginal) {
-    return Rect.fromLTWH(rectOriginal.left, rectOriginal.top, rectOriginal.width, rectOriginal.height);
+    return Rect.fromLTWH(rectOriginal.left, rectOriginal.top,
+        rectOriginal.width, rectOriginal.height);
   }
 
   Path buildPath(Rect rectOriginal) {
@@ -42,8 +44,10 @@ class Border02Painter extends CustomPainter {
 
     if (plateWidth > 200) {
       points.add(Offset(rect.width / 2 + plateWidth / 2, rect.bottom));
-      points.add(Offset(rect.width / 2 + plateWidth / 2 - cornerRadius, rect.bottom - cornerRadius));
-      points.add(Offset(rect.width / 2 - plateWidth / 2 + cornerRadius, rect.bottom - cornerRadius));
+      points.add(Offset(rect.width / 2 + plateWidth / 2 - cornerRadius,
+          rect.bottom - cornerRadius));
+      points.add(Offset(rect.width / 2 - plateWidth / 2 + cornerRadius,
+          rect.bottom - cornerRadius));
       points.add(Offset(rect.width / 2 - plateWidth / 2, rect.bottom));
     }
 
@@ -61,8 +65,10 @@ class Border02Painter extends CustomPainter {
 
     if (plateWidth > 200) {
       points.add(Offset(rect.width / 2 + plateWidth / 2, rect.bottom));
-      points.add(Offset(rect.width / 2 + plateWidth / 2 - cornerRadius, rect.bottom - cornerRadius));
-      points.add(Offset(rect.width / 2 - plateWidth / 2 + cornerRadius, rect.bottom - cornerRadius));
+      points.add(Offset(rect.width / 2 + plateWidth / 2 - cornerRadius,
+          rect.bottom - cornerRadius));
+      points.add(Offset(rect.width / 2 - plateWidth / 2 + cornerRadius,
+          rect.bottom - cornerRadius));
       points.add(Offset(rect.width / 2 - plateWidth / 2, rect.bottom));
     }
 
@@ -83,7 +89,11 @@ class Border02Painter extends CustomPainter {
     path.addPolygon(buildPoints(rect), true);
     canvas.clipPath(path);
     canvas.drawRect(
-        Rect.fromLTWH(-calcCornerRadius(), -calcCornerRadius(), size.width + calcCornerRadius() * 2, size.height + calcCornerRadius() * 2),
+        Rect.fromLTWH(
+            -calcCornerRadius(),
+            -calcCornerRadius(),
+            size.width + calcCornerRadius() * 2,
+            size.height + calcCornerRadius() * 2),
         Paint()
           ..style = PaintingStyle.fill
           ..color = backColor);
@@ -94,12 +104,21 @@ class Border02Painter extends CustomPainter {
       canvas.drawPath(
           buildPathBorder(rect),
           Paint()
-          //..isAntiAlias = false
+            //..isAntiAlias = false
             ..style = PaintingStyle.stroke
-            ..color = DesignColors.fore2()
+            ..color = DesignColors.fore2().withOpacity(0.1)
             ..strokeCap = StrokeCap.round
             ..strokeJoin = StrokeJoin.round
-            ..strokeWidth = 2);
+            ..strokeWidth = 6);
+      canvas.drawPath(
+          buildPathBorder(rect),
+          Paint()
+            //..isAntiAlias = false
+            ..style = PaintingStyle.stroke
+            ..color = DesignColors.fore()
+            ..strokeCap = StrokeCap.round
+            ..strokeJoin = StrokeJoin.round
+            ..strokeWidth = 3);
     }
   }
 

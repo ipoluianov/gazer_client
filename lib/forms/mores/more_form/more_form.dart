@@ -19,6 +19,8 @@ class MoreForm extends StatefulWidget {
 }
 
 class MoreFormSt extends State<MoreForm> {
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -34,12 +36,12 @@ class MoreFormSt extends State<MoreForm> {
 
         return Scaffold(
           appBar: TitleBar(
-              widget.arg.connection, "More",
+            widget.arg.connection,
+            "More",
             actions: <Widget>[
               buildHomeButton(context),
             ],
           ),
-
           body: Container(
             color: DesignColors.mainBackgroundColor,
             child: Column(
@@ -52,16 +54,29 @@ class MoreFormSt extends State<MoreForm> {
                       LeftNavigator(showLeft),
                       Expanded(
                         child: Scrollbar(
+                          controller: _scrollController,
                           isAlwaysShown: true,
                           child: SingleChildScrollView(
+                            controller: _scrollController,
                             child: Wrap(
                               children: [
                                 MoreButton(() {
-                                  Navigator.pushNamed(context, "/users", arguments: UsersFormArgument(widget.arg.connection));
-                                }, "Users", const Icon(Icons.supervisor_account, size: 48), 0),
+                                  Navigator.pushNamed(context, "/users",
+                                      arguments: UsersFormArgument(
+                                          widget.arg.connection));
+                                },
+                                    "Users",
+                                    const Icon(Icons.supervisor_account,
+                                        size: 48),
+                                    0),
                                 MoreButton(() {
-                                  Navigator.pushNamed(context, "/about", arguments: AboutFormArgument(widget.arg.connection));
-                                }, "About", const Icon(Icons.info_outline, size: 48), 0),
+                                  Navigator.pushNamed(context, "/about",
+                                      arguments: AboutFormArgument(
+                                          widget.arg.connection));
+                                },
+                                    "About",
+                                    const Icon(Icons.info_outline, size: 48),
+                                    0),
                               ],
                             ),
                           ),
