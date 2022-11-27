@@ -64,7 +64,6 @@ class Peer {
   }
 
   Future<void> requestUDP(UdpAddress address, List<Uint8List> frames) async {
-    print("requestUDP: $address");
     InternetAddress bindAddr = InternetAddress.anyIPv4;
 
     /*if (address.address.type == InternetAddressType.IPv6) {
@@ -82,10 +81,6 @@ class Peer {
             address.port);
       }
     }
-
-    print("ADDR: ${address.address.rawAddress}");
-
-    //address = UdpAddress(InternetAddress("127.0.0.1"), address.port);
 
     var udpSocket = await RawDatagramSocket.bind(bindAddr, 0);
     udpSocket.broadcastEnabled = true;
@@ -440,6 +435,9 @@ class Peer {
     RemotePeer? remotePeer;
     CallResult? res;
     res = CallResult();
+
+    testRSA();
+
     try {
       // Waiting for socket
       if (remotePeers.containsKey(remoteAddress)) {

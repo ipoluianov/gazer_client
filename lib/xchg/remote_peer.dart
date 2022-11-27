@@ -403,8 +403,6 @@ class RemotePeer {
     }
     peer.requestUDP(remoteConnectionPoint, frames);
 
-    print("------------------waiting for transaction");
-
     for (int i = 0; i < 100; i++) {
       if (tr.complete) {
         outgoingTransactions.remove(localTransactionId);
