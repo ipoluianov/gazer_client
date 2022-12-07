@@ -7,7 +7,6 @@ import 'package:gazer_client/core/navigation/navigation.dart';
 import 'package:gazer_client/forms/maps/map_form/map_item_library.dart';
 import 'package:gazer_client/core/navigation/route_generator.dart';
 
-
 import 'map_item_card.dart';
 
 class MapItemAddForm extends StatefulWidget {
@@ -32,7 +31,8 @@ class MapItemAddFormItem {
   String type;
   ImageProvider? thumbnail;
   Set<String> tags = {};
-  MapItemAddFormItem(this.id, this.name, this.type, this.thumbnail, {this.tags = const {}});
+  MapItemAddFormItem(this.id, this.name, this.type, this.thumbnail,
+      {this.tags = const {}});
 }
 
 class MapItemAddFormSt extends State<MapItemAddForm> {
@@ -41,6 +41,8 @@ class MapItemAddFormSt extends State<MapItemAddForm> {
     super.initState();
     load();
   }
+
+  final ScrollController _scrollController = ScrollController();
 
   bool loaded = false;
   List<MapItemAddFormItem> items = [];
@@ -51,7 +53,8 @@ class MapItemAddFormSt extends State<MapItemAddForm> {
     items = [];
     var internalMapItemTypes = MapItemsLibrary().internalMapItemTypes();
     for (var i in internalMapItemTypes) {
-      var mapItem = MapItemsLibrary().makeItemByType(i.type, widget.arg.connection);
+      var mapItem =
+          MapItemsLibrary().makeItemByType(i.type, widget.arg.connection);
       var rr = mapItem.zoom;
       var mapItemType = MapItemAddFormItem(i.id, i.name, i.type, null);
       items.add(mapItemType);
@@ -62,7 +65,10 @@ class MapItemAddFormSt extends State<MapItemAddForm> {
       });
     }
 
-    Repository().client(widget.arg.connection).resList("map", "", 0, 10000).then((value) {
+    Repository()
+        .client(widget.arg.connection)
+        .resList("map", "", 0, 10000)
+        .then((value) {
       setState(() {
         for (var i in value.item.items) {
           //var thumbnail = Image.memory(i.thumbnail);
@@ -80,15 +86,18 @@ class MapItemAddFormSt extends State<MapItemAddForm> {
     }
     return Expanded(
       child: Scrollbar(
-        isAlwaysShown: true,
+        controller: _scrollController,
+        thumbVisibility: true,
         child: SingleChildScrollView(
+          controller: _scrollController,
           child: Container(
-            padding: EdgeInsets.all(6),
+            padding: const EdgeInsets.all(6),
             child: Wrap(
               children: items.map<Widget>(
-                    (e) {
+                (e) {
                   return MapItemCard(widget.arg.connection, e, () {
-                    Navigator.of(context).pop(MapItemAddFormResult(e.type, e.id));
+                    Navigator.of(context)
+                        .pop(MapItemAddFormResult(e.type, e.id));
                   });
                 },
               ).toList(),

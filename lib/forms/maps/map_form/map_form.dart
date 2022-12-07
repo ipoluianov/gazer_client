@@ -176,11 +176,11 @@ class MapFormSt extends State<MapForm> {
       map.setEditing(false);
       map.entire();
 
-      drawMapToImage().then((value) {
+      /*drawMapToImage().then((value) {
         Repository()
             .client(widget.arg.connection)
             .resSet(widget.arg.id, "thumbnail", 0, value);
-      });
+      });*/
     } else {
       _showErrorMessage("Error", "Can not save the map. Please try again.");
     }

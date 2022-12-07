@@ -76,12 +76,13 @@ class DesignColors {
     _warning = colorFromHex(_settings.get("warning"));
   }
 
-  static Widget buildScrollBar({required Widget child, ScrollController? controller}) {
+  static Widget buildScrollBar(
+      {required Widget child, ScrollController? controller}) {
     return RawScrollbar(
       thumbColor: back2(),
       //shape: StadiumBorder(side: BorderSide(color: DesignColors.back1, width: 2.0)),
       //shape: RoundedRectangleBorder(side: BorderSide(color: back1(), width: 2.0)),
-      isAlwaysShown: true,
+      thumbVisibility: true,
       thickness: 12,
       controller: controller,
       child: child,

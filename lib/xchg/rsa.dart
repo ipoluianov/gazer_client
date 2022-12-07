@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:pointycastle/asn1/asn1_object.dart';
 import 'package:pointycastle/asn1/asn1_parser.dart';
 import 'package:pointycastle/asn1/primitives/asn1_bit_string.dart';
 import 'package:pointycastle/asn1/primitives/asn1_integer.dart';
@@ -11,8 +10,6 @@ import 'package:pointycastle/asn1/primitives/asn1_object_identifier.dart';
 import 'package:pointycastle/asn1/primitives/asn1_sequence.dart';
 import "package:pointycastle/export.dart";
 import 'dart:math';
-
-import 'package:fast_rsa/fast_rsa.dart' as frsa;
 
 SecureRandom exampleSecureRandom() {
   final _sGen = Random.secure();
@@ -55,9 +52,7 @@ Uint8List encodePublicKeyToPKIX(RSAPublicKey publicKey) {
     var id = ASN1ObjectIdentifier.fromBytes(Uint8List.fromList(
         [0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01]));
     seqType.add(id);
-  } catch (ee) {
-    print(ee);
-  }
+  } catch (ee) {}
   seqType.add(ASN1Null());
   topLevel.add(seqType);
 
@@ -68,10 +63,6 @@ Uint8List encodePublicKeyToPKIX(RSAPublicKey publicKey) {
   var seqPubKeyBS = ASN1BitString(stringValues: pubKeySeqBS);
   topLevel.add(seqPubKeyBS);
 
-  /*var topLevel = ASN1Sequence();
-  topLevel.add(ASN1Integer(publicKey.modulus));
-  topLevel.add(ASN1Integer(publicKey.exponent));
-  var bytes = topLevel.encode();*/
   var bytes = topLevel.encode();
   return bytes;
 }
@@ -102,7 +93,7 @@ BigInt readBytes(Uint8List bytes) {
       for (int i = end - 1; i >= start; i--) {
         result = result * 256 + bytes[i];
       }
-      return new BigInt.from(result);
+      return BigInt.from(result);
     }
     int mid = start + ((end - start) >> 1);
     var result =
@@ -297,25 +288,6 @@ bool emsaPSSVerify(List<int> mHash, List<int> em, int emBits, int sLen) {
   return true;
 }
 
-/*
-func fillBytes(m big.Int, len int) []byte {
-	result := make([]byte, len)
-	bytes := (m.BitLen() + 7) >> 3
-	bb := make([]byte, bytes)
-	offset := len - 1
-	for i := 0; i < bytes; i++ {
-		var z big.Int
-		z = *z.Mod(&m, big.NewInt(256))
-		bb = append(bb)
-		m = *m.Rsh(&m, 8)
-		result[offset] = byte(z.Uint64())
-		offset--
-	}
-
-	return result
-}
- */
-
 List<int> fillBytes(BigInt v, int len) {
   List<int> result = List.filled(len, 0);
   int bytes = (v.bitLength + 7) >> 3;
@@ -329,43 +301,12 @@ List<int> fillBytes(BigInt v, int len) {
   return result;
 }
 
-void testRSA1() {
-  print("---- BEGIN TEST RSA --------");
-  var publicKeyBS64 =
-      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuE+vROTQEI3/MmQ3tbKT4s2xpIJqmMa/tK8tzSGDZJKX2uBqcD+RRXoPP2ZNtkjR6hcvbcTJMFX8QEy49rQfwXKqo4VMavObp0JRsQMmGrbMuVXMTq6J6oszY43d+/zBDh1u1d2pytLB3rPgRmrf9rddLWRVoT/ijReJdA9krrJmfog/wvmL/FABbVgJPc6XFGOjJxptE7/xQlZIsG2lA8H89vZnkJ27HtuIkcYET0OxdUy4iyJ4q+LGryg+eeYT0wBBSI3dCXrb90VMheKmkY5KPG33uxdBkl7ULSIprt/uaGq6MSsYN1vURa9wSlZhnNQA9ixzR2EhEdy/TYVEdQIDAQAB";
-  var signature64 =
-      "ht0rp3bf59TULImpwIZwsodwhhhyxg9Spe3mfAh5zstCSrm8iYMdDZVqEGcW6goIT1NZeacFi3Fndq4vJ9lU6pnyM7Kl32bLgFIeGXp8m8l63k8hMeiq2WaFIQ7HVAz5XslBmJHw8nNoQwss6Rv8s0ktCSvhbKhDSFnAt0Txv0BFPEPFRQyipDJ3c0X7EnRDuLiiqdVibMssnPhf8FtdAEeEPXvN1Z7ACnup/+JaaCYp4fwUVgkhISTge/ikmVVeXsqyquEyBhk3DR2wTvWdol4zD0wmr6PJyuMXHscF0ZUsMB7jNDvvpuRUJRn3lJVwzMIbYB4zo80af2SHkSqnMw==";
-  var publicKeyBS = base64Decode(publicKeyBS64);
-  var signatureBS = base64Decode(signature64);
-  var receivedPublicKey = decodePublicKeyFromPKIX(publicKeyBS);
-  List<int> data = [42, 43, 44];
-  rsaVerify(receivedPublicKey, data, signatureBS);
-  //print(receivedPublicKey.n);
-
-  print("---- END TEST RSA --------");
-}
-
-void testRSA() {
-  print("---- BEGIN TEST RSA --------");
-  var publicKeyBS64 =
-      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuE+vROTQEI3/MmQ3tbKT4s2xpIJqmMa/tK8tzSGDZJKX2uBqcD+RRXoPP2ZNtkjR6hcvbcTJMFX8QEy49rQfwXKqo4VMavObp0JRsQMmGrbMuVXMTq6J6oszY43d+/zBDh1u1d2pytLB3rPgRmrf9rddLWRVoT/ijReJdA9krrJmfog/wvmL/FABbVgJPc6XFGOjJxptE7/xQlZIsG2lA8H89vZnkJ27HtuIkcYET0OxdUy4iyJ4q+LGryg+eeYT0wBBSI3dCXrb90VMheKmkY5KPG33uxdBkl7ULSIprt/uaGq6MSsYN1vURa9wSlZhnNQA9ixzR2EhEdy/TYVEdQIDAQAB";
-  var publicKeyBS = base64Decode(publicKeyBS64);
-  var receivedPublicKey = decodePublicKeyFromPKIX(publicKeyBS);
-  List<int> data = [42, 43, 44];
-  var encData = rsaEncrypt(receivedPublicKey, Uint8List.fromList(data));
-  print("ENCDATA: $encData");
-
-  print("---- END TEST RSA --------");
-}
-
 bool rsaVerify(
     RSAPublicKey publicKey, List<int> signedData, Uint8List signature) {
-  print("---------BEGIN RSA_VERIFY---------");
   var hash = sha256.convert(signedData);
   var digest = hash;
 
   var s = bytesToBigInt(signature);
-  print("HH: $s");
 
   var m = encrypt(publicKey, s);
   var emBits = publicKey.n!.bitLength - 1;
@@ -373,12 +314,8 @@ bool rsaVerify(
   if (m.bitLength > emLen * 8) {
     return false;
   }
-  print("");
   var em = fillBytes(m, emLen);
   var res = emsaPSSVerify(digest.bytes, em, emBits, 32);
-  //var em = m..FillBytes(make([]byte, emLen))
-
-  print("---------END RSA_VERIFY--------- $res");
   return res;
 }
 
@@ -404,52 +341,24 @@ Future<Uint8List> rsaEncrypt(
   var msgSize = dataToEncrypt.length;
   em[dbOffset + (dbSize - msgSize - 1)] = 1;
 
-  var msgOffset = dbSize - msgSize; //len(db)-len(msg)
+  var msgOffset = dbSize - msgSize;
   for (int i = 0; i < msgSize; i++) {
     em[dbOffset + msgOffset + i] = dataToEncrypt[i];
   }
 
+  var rng = Random();
   for (int i = 0; i < 32; i++) {
-    em[1 + i] = 21; // TODO: Random
+    em[1 + i] = rng.nextInt(255);
   }
 
-  print("HH: $em");
   mgf1XOR(em, dbOffset, dbSize, em, seedOffset, seedSize);
   mgf1XOR(em, seedOffset, seedSize, em, dbOffset, dbSize);
-
   var m = bytesToBigInt(em);
   var c = encrypt(myPublic, m);
-
   var result = fillBytes(c, k);
 
   return Uint8List.fromList(result);
 }
-
-Future<Uint8List> rsaEncryptOld(
-    RSAPublicKey myPublic, Uint8List dataToEncrypt) async {
-  var publicKeyPem = rsaPublicKeyToPem(myPublic);
-  var result = await frsa.RSA
-      .encryptOAEPBytes(dataToEncrypt, "", frsa.Hash.SHA256, publicKeyPem);
-  return result;
-
-  /*final encryptor = OAEPEncoding(RSAEngine())
-    ..init(true, PublicKeyParameter<RSAPublicKey>(myPublic)); // true=encrypt
-
-  final output = Uint8List(encryptor.outputBlockSize);
-  encryptor.processBlock(dataToEncrypt, 0, dataToEncrypt.length, output, 0);
-  return output;*/
-
-  //return _processInBlocks(encryptor, dataToEncrypt);
-}
-
-/*Future<Uint8List> rsaDecrypt(
-    RSAPrivateKey myPrivate, Uint8List cipherText) async {
-  final decryptor = OAEPEncoding(RSAEngine())
-    ..init(
-        false, PrivateKeyParameter<RSAPrivateKey>(myPrivate)); // false=decrypt
-
-  return _processInBlocks(decryptor, cipherText);
-}*/
 
 Uint8List rsaSign(RSAPrivateKey privateKey, Uint8List dataToSign) {
   final signer = RSASigner(SHA256Digest(), '0609608648016503040201');
@@ -468,43 +377,4 @@ String rsaPublicKeyToPem(RSAPublicKey publicKey) {
   var result =
       "-----BEGIN PUBLIC KEY-----\r\n" + bs64 + "\r\n-----END PUBLIC KEY-----";
   return result;
-}
-
-Future<bool> rsaVerifyClassic(
-    RSAPublicKey publicKey, Uint8List signedData, Uint8List signature) async {
-  var publicKeyPem = rsaPublicKeyToPem(publicKey);
-  bool result = false;
-  try {
-    result = await frsa.RSA.verifyPSSBytes(signature, signedData,
-        frsa.Hash.SHA256, frsa.SaltLength.EQUALS_HASH, publicKeyPem);
-  } catch (ex) {
-    frsa.RSAException ee = ex as frsa.RSAException;
-    print("RSA EX:" + ee.cause);
-    return false;
-  }
-  return result;
-}
-
-Uint8List _processInBlocks(AsymmetricBlockCipher engine, Uint8List input) {
-  final numBlocks = input.length ~/ engine.inputBlockSize +
-      ((input.length % engine.inputBlockSize != 0) ? 1 : 0);
-
-  final output = Uint8List(numBlocks * engine.outputBlockSize);
-
-  var inputOffset = 0;
-  var outputOffset = 0;
-  while (inputOffset < input.length) {
-    final chunkSize = (inputOffset + engine.inputBlockSize <= input.length)
-        ? engine.inputBlockSize
-        : input.length - inputOffset;
-
-    outputOffset += engine.processBlock(
-        input, inputOffset, chunkSize, output, outputOffset);
-
-    inputOffset += chunkSize;
-  }
-
-  return (output.length == outputOffset)
-      ? output
-      : output.sublist(0, outputOffset);
 }

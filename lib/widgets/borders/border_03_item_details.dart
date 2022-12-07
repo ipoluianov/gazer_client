@@ -12,11 +12,13 @@ class Border03Painter extends CustomPainter {
         painter: Border03Painter(hover),
         child: Container(),
         key: UniqueKey(),
-      ),);
+      ),
+    );
   }
 
   Rect buildRect(Rect rectOriginal) {
-    return Rect.fromLTWH(rectOriginal.left, rectOriginal.top, rectOriginal.width, rectOriginal.height);
+    return Rect.fromLTWH(rectOriginal.left, rectOriginal.top,
+        rectOriginal.width, rectOriginal.height);
   }
 
   Path buildPath(Rect rectOriginal) {
@@ -34,25 +36,29 @@ class Border03Painter extends CustomPainter {
   List<Offset> buildPoints(Rect rect) {
     List<Offset> points = [];
     var cornerRadius = calcCornerRadius();
-    points.add(Offset(rect.left + cornerRadius, rect.top));
+    points.add(Offset(rect.left, rect.top));
 
     double plateWidth = rect.width / 3;
 
-    if (plateWidth > 200) {
+    /*if (plateWidth > 200) {
       points.add(Offset(rect.width / 2 - plateWidth / 2, rect.top));
-      points.add(Offset(rect.width / 2 - plateWidth / 2 + cornerRadius, rect.top + cornerRadius));
-      points.add(Offset(rect.width / 2 + plateWidth / 2 - cornerRadius, rect.top + cornerRadius));
+      points.add(Offset(rect.width / 2 - plateWidth / 2 + cornerRadius,
+          rect.top + cornerRadius));
+      points.add(Offset(rect.width / 2 + plateWidth / 2 - cornerRadius,
+          rect.top + cornerRadius));
       points.add(Offset(rect.width / 2 + plateWidth / 2, rect.top));
-    }
+    }*/
 
     points.add(Offset(rect.right, rect.top));
-    points.add(Offset(rect.right, rect.bottom - cornerRadius));
-    points.add(Offset(rect.right - cornerRadius, rect.bottom));
+    points.add(Offset(rect.right, rect.bottom - cornerRadius * 4));
+    points.add(Offset(rect.right - cornerRadius * 4, rect.bottom));
 
     if (plateWidth > 200) {
       points.add(Offset(rect.width / 2 + plateWidth / 2, rect.bottom));
-      points.add(Offset(rect.width / 2 + plateWidth / 2 - cornerRadius, rect.bottom - cornerRadius));
-      points.add(Offset(rect.width / 2 - plateWidth / 2 + cornerRadius, rect.bottom - cornerRadius));
+      points.add(Offset(rect.width / 2 + plateWidth / 2 - cornerRadius,
+          rect.bottom - cornerRadius));
+      points.add(Offset(rect.width / 2 - plateWidth / 2 + cornerRadius,
+          rect.bottom - cornerRadius));
       points.add(Offset(rect.width / 2 - plateWidth / 2, rect.bottom));
     }
 
@@ -76,10 +82,23 @@ class Border03Painter extends CustomPainter {
     path.addPolygon(buildPoints(rect), true);
     canvas.clipPath(path);
     canvas.drawRect(
-        Rect.fromLTWH(-calcCornerRadius(), -calcCornerRadius(), size.width + calcCornerRadius() * 2, size.height + calcCornerRadius() * 2),
+        Rect.fromLTWH(
+            -calcCornerRadius(),
+            -calcCornerRadius(),
+            size.width + calcCornerRadius() * 2,
+            size.height + calcCornerRadius() * 2),
         Paint()
           ..style = PaintingStyle.fill
           ..color = backColor);
+
+    for (double i = 0; i < size.width; i += 10) {
+      canvas.drawLine(
+          Offset(i, 0),
+          Offset(i + size.height, size.height),
+          Paint()
+            ..color = Colors.blue.withOpacity(0.1)
+            ..strokeWidth = 3);
+    }
     canvas.restore();
 
     {

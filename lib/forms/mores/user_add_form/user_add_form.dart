@@ -45,13 +45,18 @@ class UserAddFormSt extends State<UserAddForm> {
     loadNodeInfo();
   }
 
-  final TextEditingController _textEditingControllerUserName = TextEditingController();
-  final TextEditingController _textEditingControllerPassword = TextEditingController();
+  final TextEditingController _textEditingControllerUserName =
+      TextEditingController();
+  final TextEditingController _textEditingControllerPassword =
+      TextEditingController();
   String userName = "";
   String password = "";
 
   void save() {
-    Repository().client(widget.arg.connection).userAdd(userName, password).then((value) {
+    Repository()
+        .client(widget.arg.connection)
+        .userAdd(userName, password)
+        .then((value) {
       Navigator.of(context).pop();
     });
   }
@@ -59,7 +64,7 @@ class UserAddFormSt extends State<UserAddForm> {
   Widget buildContent(BuildContext context) {
     return Expanded(
       child: Scrollbar(
-        isAlwaysShown: true,
+        thumbVisibility: true,
         child: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(6),

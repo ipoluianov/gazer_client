@@ -36,27 +36,34 @@ class UnitEditFormSt extends State<UnitEditForm> {
 
   late Future<UnitTypeConfigMetaResponse> _futureUnitTypeConfigMeta;
   late Future<UnitGetConfigResponse> _futureUnitGetConfig;
-  final ScrollController _scrollController = ScrollController();
-  late ScrollController _scrollController1;
-  late ScrollController _scrollController2;
+  //final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController1 = ScrollController();
+  //final ScrollController _scrollController2 = ScrollController();
   final TextEditingController _txtNameController = TextEditingController();
 
   @override
   void initState() {
     if (widget.arg.unitId == "") {
       currentConfig = <String, dynamic>{};
-      _futureUnitTypeConfigMeta = Repository().client(widget.arg.connection).unitTypeConfigMeta(widget.arg.unitType);
+      _futureUnitTypeConfigMeta = Repository()
+          .client(widget.arg.connection)
+          .unitTypeConfigMeta(widget.arg.unitType);
     } else {
-      _futureUnitGetConfig = Repository().client(widget.arg.connection).unitsGetConfig(widget.arg.unitId);
+      _futureUnitGetConfig = Repository()
+          .client(widget.arg.connection)
+          .unitsGetConfig(widget.arg.unitId);
+      _futureUnitGetConfig.catchError(() {}); // TODO: error
     }
 
-    Repository().client(widget.arg.connection).unitsGetConfig(widget.arg.unitId).then((value) {
+    Repository()
+        .client(widget.arg.connection)
+        .unitsGetConfig(widget.arg.unitId)
+        .then((value) {
       name = value.unitName;
       _txtNameController.text = value.unitName;
+    }).catchError(() {
+      // TODO: error
     });
-
-    _scrollController1 = ScrollController();
-    _scrollController2 = ScrollController();
 
     super.initState();
 
@@ -68,7 +75,7 @@ class UnitEditFormSt extends State<UnitEditForm> {
   @override
   void dispose() {
     _scrollController1.dispose();
-    _scrollController2.dispose();
+    //_scrollController2.dispose();
 
     super.dispose();
   }
@@ -104,7 +111,8 @@ class UnitEditFormSt extends State<UnitEditForm> {
                   },
                 ),
               ),
-              UnitConfigObject(Repository().client(widget.arg.connection), currentConfigMeta, currentConfig, () {
+              UnitConfigObject(Repository().client(widget.arg.connection),
+                  currentConfigMeta, currentConfig, () {
                 setState(() {});
               }),
             ],
@@ -147,7 +155,8 @@ class UnitEditFormSt extends State<UnitEditForm> {
                   },
                 ),
               ),
-              UnitConfigObject(Repository().client(widget.arg.connection), currentConfigMeta, currentConfig, () {
+              UnitConfigObject(Repository().client(widget.arg.connection),
+                  currentConfigMeta, currentConfig, () {
                 setState(() {});
               }),
             ],
@@ -161,7 +170,9 @@ class UnitEditFormSt extends State<UnitEditForm> {
   }
 
   Widget buildConfigWidget() {
-    return widget.arg.unitId == "" ? buildNewUnitConfig() : buildEditUnitConfig();
+    return widget.arg.unitId == ""
+        ? buildNewUnitConfig()
+        : buildEditUnitConfig();
   }
 
   void save() {
@@ -236,7 +247,7 @@ class UnitEditFormSt extends State<UnitEditForm> {
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       child: Scrollbar(
-                        isAlwaysShown: true,
+                        thumbVisibility: true,
                         controller: _scrollController1,
                         child: SingleChildScrollView(
                           controller: _scrollController1,

@@ -36,7 +36,7 @@ class MapItemPropertiesFormSt extends State<MapItemPropertiesForm> {
       child: Scrollbar(
         thickness: 20,
         radius: const Radius.circular(10),
-        isAlwaysShown: true,
+        thumbVisibility: true,
         child: ListView(
           children: [
             Column(
@@ -62,7 +62,8 @@ class MapItemPropertiesFormSt extends State<MapItemPropertiesForm> {
 
         return Scaffold(
           appBar: TitleBar(
-            widget.arg.connection, "Map Item Properties",
+            widget.arg.connection,
+            "Map Item Properties",
             actions: <Widget>[
               buildHomeButton(context),
             ],

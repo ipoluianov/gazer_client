@@ -60,7 +60,7 @@ class MainFormSt extends State<MainForm> {
     return Expanded(
       child: Scrollbar(
         controller: scrollController1,
-        isAlwaysShown: false,
+        thumbVisibility: false,
         child: SingleChildScrollView(
           controller: scrollController1,
           child: Wrap(
@@ -84,7 +84,7 @@ class MainFormSt extends State<MainForm> {
     return Expanded(
       child: Scrollbar(
         controller: scrollController2,
-        isAlwaysShown: true,
+        thumbVisibility: true,
         child: SingleChildScrollView(
           controller: scrollController2,
           child: Column(

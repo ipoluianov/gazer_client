@@ -48,15 +48,16 @@ class MapItemDecorationAddFormSt extends State<MapItemDecorationAddForm> {
     }
     return Expanded(
       child: Scrollbar(
-        isAlwaysShown: true,
+        thumbVisibility: true,
         child: SingleChildScrollView(
           child: Container(
             padding: EdgeInsets.all(6),
             child: Wrap(
               children: items.map<Widget>(
-                    (e) {
+                (e) {
                   return MapItemDecorationCard(widget.arg.connection, e, () {
-                    Navigator.of(context).pop(MapItemDecorationAddFormResult(e.type, ""));
+                    Navigator.of(context)
+                        .pop(MapItemDecorationAddFormResult(e.type, ""));
                   });
                 },
               ).toList(),

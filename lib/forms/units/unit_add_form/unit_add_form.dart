@@ -34,6 +34,8 @@ class UnitAddFormSt extends State<UnitAddForm> {
     load();
   }
 
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void dispose() {
     super.dispose();
@@ -55,7 +57,10 @@ class UnitAddFormSt extends State<UnitAddForm> {
       category = selectedCategory!.name;
     }
 
-    Repository().client(widget.arg.connection).unitTypeList(category, filterString, 0, 1000).then((value) {
+    Repository()
+        .client(widget.arg.connection)
+        .unitTypeList(category, filterString, 0, 1000)
+        .then((value) {
       setState(() {
         types = value.types;
         loading = false;
@@ -69,7 +74,10 @@ class UnitAddFormSt extends State<UnitAddForm> {
   }
 
   void loadCategories() {
-    Repository().client(widget.arg.connection).unitTypeCategories().then((value) {
+    Repository()
+        .client(widget.arg.connection)
+        .unitTypeCategories()
+        .then((value) {
       print("load cats");
       setState(() {
         categories = value.items;
@@ -89,13 +97,17 @@ class UnitAddFormSt extends State<UnitAddForm> {
   Widget buildContentList(BuildContext context) {
     return Expanded(
       child: Scrollbar(
-        isAlwaysShown: true,
+        thumbVisibility: true,
+        controller: _scrollController,
         child: SingleChildScrollView(
+          controller: _scrollController,
           child: Wrap(
             children: types.asMap().entries.map((entry) {
               var w = UnitType(
                 (unitType, str) {
-                  Navigator.pushNamed(context, "/unit_edit", arguments: UnitEditFormArgument(widget.arg.connection, "", unitType));
+                  Navigator.pushNamed(context, "/unit_edit",
+                      arguments: UnitEditFormArgument(
+                          widget.arg.connection, "", unitType));
                 },
                 entry.value,
                 entry.key,
@@ -125,14 +137,16 @@ class UnitAddFormSt extends State<UnitAddForm> {
         );
         load();
       },
-      items: categories.map<DropdownMenuItem<UnitTypeCategoriesItemResponse>>((UnitTypeCategoriesItemResponse value) {
+      items: categories.map<DropdownMenuItem<UnitTypeCategoriesItemResponse>>(
+          (UnitTypeCategoriesItemResponse value) {
         Uint8List _bytesImage = const Base64Decoder().convert(value.image);
 
         return DropdownMenuItem<UnitTypeCategoriesItemResponse>(
           value: value,
           child: Row(children: [
             ColorFiltered(
-              colorFilter: const ColorFilter.mode(Colors.orange, BlendMode.srcATop),
+              colorFilter:
+                  const ColorFilter.mode(Colors.orange, BlendMode.srcATop),
               child: Image.memory(
                 _bytesImage,
                 width: 24,

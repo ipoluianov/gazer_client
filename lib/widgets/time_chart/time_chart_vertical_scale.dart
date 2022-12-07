@@ -37,7 +37,8 @@ class TimeChartVerticalScale {
     height = h;
   }
 
-  void draw(Canvas canvas, Size size, Color color, int index, bool showLegend, int totalCount) {
+  void draw(Canvas canvas, Size size, Color color, int index, bool showLegend,
+      int totalCount) {
     canvas.save();
     if (showLegend && totalCount > 1) {
       canvas.clipRect(Rect.fromLTWH(xOffset, (index + 1) * 22, width, height));
@@ -58,7 +59,8 @@ class TimeChartVerticalScale {
 
     var vertScalePointsCount = (height / 70).round();
 
-    var verticalScale = getBeautifulScale(displayedMinY, displayedMaxY, vertScalePointsCount);
+    var verticalScale =
+        getBeautifulScale(displayedMinY, displayedMaxY, vertScalePointsCount);
     for (var vertScaleItem in verticalScale) {
       var posY = verValueToPixel(vertScaleItem);
       if (posY.isNaN) {
@@ -71,16 +73,8 @@ class TimeChartVerticalScale {
             ..strokeWidth = 1
             ..color = Colors.black.withOpacity(0.5));
 
-      drawText(
-          canvas,
-          xOffset,
-          posY - 8,
-          width - 5,
-          20,
-          formatValue(vertScaleItem),
-          12,
-          color,
-          TextAlign.right);
+      drawText(canvas, xOffset, posY - 8, width - 5, 20,
+          formatValue(vertScaleItem), 12, color, TextAlign.right);
       canvas.drawLine(
           Offset(xOffset + width - 3, posY),
           Offset(xOffset + width, posY),
@@ -88,6 +82,14 @@ class TimeChartVerticalScale {
             ..style = PaintingStyle.stroke
             ..strokeWidth = 2
             ..color = color);
+
+      canvas.drawLine(
+          Offset(xOffset + width - 3, posY),
+          Offset(xOffset + width + size.width, posY),
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 1
+            ..color = color.withOpacity(0.2));
     }
 
     /*canvas.drawLine(
@@ -99,10 +101,10 @@ class TimeChartVerticalScale {
           ..color = Colors.redAccent);*/
 
     canvas.restore();
-
   }
 
-  void updateVerticalScaleValues(List<DataItemHistoryChartItemValueResponse> history, bool united) {
+  void updateVerticalScaleValues(
+      List<DataItemHistoryChartItemValueResponse> history, bool united) {
     if (!united) {
       targetDisplayedMinY = double.maxFinite;
       targetDisplayedMaxY = -double.maxFinite;
@@ -117,8 +119,10 @@ class TimeChartVerticalScale {
       }
     }
     if (targetDisplayedMinY != targetDisplayedMaxY) {
-      targetDisplayedMinY = targetDisplayedMinY - (targetDisplayedMaxY - targetDisplayedMinY) * verticalValuePadding01;
-      targetDisplayedMaxY = targetDisplayedMaxY + (targetDisplayedMaxY - targetDisplayedMinY) * verticalValuePadding01;
+      targetDisplayedMinY = targetDisplayedMinY -
+          (targetDisplayedMaxY - targetDisplayedMinY) * verticalValuePadding01;
+      targetDisplayedMaxY = targetDisplayedMaxY +
+          (targetDisplayedMaxY - targetDisplayedMinY) * verticalValuePadding01;
     } else {
       targetDisplayedMinY = targetDisplayedMinY - 1;
       targetDisplayedMaxY = targetDisplayedMaxY + 1;
@@ -126,7 +130,8 @@ class TimeChartVerticalScale {
   }
 
   void expandToZero() {
-    if (targetDisplayedMinY == double.maxFinite || targetDisplayedMaxY == -double.maxFinite) {
+    if (targetDisplayedMinY == double.maxFinite ||
+        targetDisplayedMaxY == -double.maxFinite) {
       return;
     }
 
@@ -173,7 +178,8 @@ class TimeChartVerticalScale {
     return scale;
   }
 
-  void drawText(Canvas canvas, double x, double y, double width, double height, String text, double size, Color color, TextAlign align) {
+  void drawText(Canvas canvas, double x, double y, double width, double height,
+      String text, double size, Color color, TextAlign align) {
     var textSpan = TextSpan(
       text: text,
       style: TextStyle(
@@ -182,7 +188,8 @@ class TimeChartVerticalScale {
         overflow: TextOverflow.fade,
       ),
     );
-    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
+    final textPainter = TextPainter(
+        text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
     textPainter.layout(
       minWidth: width,
       maxWidth: width,
@@ -193,16 +200,13 @@ class TimeChartVerticalScale {
   double verValueToPixel(double value) {
     var diapason = displayedMaxY - displayedMinY;
     var offsetOfValueFromMin = value - displayedMinY;
-    var onePixelValue =
-        height / diapason;
+    var onePixelValue = height / diapason;
     return height - onePixelValue * offsetOfValueFromMin;
   }
 
   double verPixelToValue(double pixels) {
     var diapason = displayedMaxY - displayedMinY;
-    var onePixelValue =
-        height / diapason;
+    var onePixelValue = height / diapason;
     return pixels / onePixelValue + displayedMinY;
   }
 }
-

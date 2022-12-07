@@ -47,18 +47,23 @@ class MapItemPropertiesWidgetSt extends State<MapItemPropertiesWidget> {
       pagesButtons.add(
         Expanded(
           child: TextButton.icon(
-          onPressed: () {
-            setState(() {
-              currentPageIndex = pageIndex;
-            });
-          },
-          icon: propPage.icon,
-          label: Padding(padding: const EdgeInsets.only(top: 12, bottom: 12), child: Text(propPage.name)),
+            onPressed: () {
+              setState(() {
+                currentPageIndex = pageIndex;
+              });
+            },
+            icon: propPage.icon,
+            label: Padding(
+                padding: const EdgeInsets.only(top: 12, bottom: 12),
+                child: Text(propPage.name)),
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all((pageIndex == currentPageIndex) ? Colors.blue.withOpacity(0.3) : Colors.transparent)
+                backgroundColor: MaterialStateProperty.all(
+                    (pageIndex == currentPageIndex)
+                        ? Colors.blue.withOpacity(0.3)
+                        : Colors.transparent)
                 //color: (pageIndex == currentPageIndex) ? Colors.green : Colors.white
-            ),
-        ),
+                ),
+          ),
         ),
       );
     }
@@ -93,7 +98,7 @@ class MapItemPropertiesWidgetSt extends State<MapItemPropertiesWidget> {
               controller: scrollController,
               thickness: 15,
               radius: const Radius.circular(5),
-              isAlwaysShown: true,
+              thumbVisibility: true,
               child: ListView(
                 controller: scrollController,
                 children: [
@@ -124,7 +129,7 @@ class MapItemPropertiesWidgetSt extends State<MapItemPropertiesWidget> {
         controller: scrollController,
         thickness: 10,
         radius: const Radius.circular(5),
-        isAlwaysShown: true,
+        thumbVisibility: true,
         child: ListView(
           controller: scrollController,
           children: [

@@ -62,7 +62,8 @@ class UnitFormSt extends State<UnitForm> {
     _chartSettings = TimeChartSettings(widget.arg.connection, []);
     _tableSettings = TimeTableSettings(widget.arg.connection);
 
-    unitState = UnitStateResponse(widget.arg.unitId, "", "", "", "", "", "", "", []);
+    unitState =
+        UnitStateResponse(widget.arg.unitId, "", "", "", "", "", "", "", []);
 
     updateUnitInfo();
     _timer = Timer.periodic(const Duration(milliseconds: 500), (t) {
@@ -78,13 +79,16 @@ class UnitFormSt extends State<UnitForm> {
 
   void updateUnitInfo() {
     unitName = widget.arg.unitId;
-    Repository().client(widget.arg.connection).unitPropGet(widget.arg.unitId).then((value) {
+    Repository()
+        .client(widget.arg.connection)
+        .unitPropGet(widget.arg.unitId)
+        .then((value) {
       setState(() {
         mainItem = value.getProp("main_item");
       });
       unitInfoLoaded = true;
       updateItems();
-    });
+    }).catchError((err) {});
   }
 
   bool unitStateLoaded = false;
@@ -105,12 +109,13 @@ class UnitFormSt extends State<UnitForm> {
           goToMainItem();
         });
       }
-    });
+    }).catchError((err) {});
   }
 
   String formatDateTime(DateTime dt) {
     String result = "";
-    result += '${dt.year}-${dt.month}-${dt.day} ${dt.hour}:${dt.minute}:${dt.second}';
+    result +=
+        '${dt.year}-${dt.month}-${dt.day} ${dt.hour}:${dt.minute}:${dt.second}';
     return result;
   }
 
@@ -119,12 +124,15 @@ class UnitFormSt extends State<UnitForm> {
   }
 
   void loadItemProperties(String itemName) {
-    Repository().client(widget.arg.connection).dataItemPropGet(itemName).then((value) {
+    Repository()
+        .client(widget.arg.connection)
+        .dataItemPropGet(itemName)
+        .then((value) {
       setState(() {
         itemPropView = value.getProp("view");
         itemPropLoading = false;
       });
-    });
+    }).catchError((err) {});
   }
 
   ScrollController listScrollController = ScrollController();
@@ -138,12 +146,18 @@ class UnitFormSt extends State<UnitForm> {
 
       _chartSettings.areas = [];
       _chartSettings.areas.add(TimeChartSettingsArea(
-          widget.arg.connection, <TimeChartSettingsSeries>[TimeChartSettingsSeries(widget.arg.connection, itemName, [], colorByIndex(0))]));
+          widget.arg.connection, <TimeChartSettingsSeries>[
+        TimeChartSettingsSeries(
+            widget.arg.connection, itemName, [], colorByIndex(0))
+      ]));
     });
   }
 
   void goToMainItem() {
-    if (!mainItemSelected && mainItem != "" && unitInfoLoaded && unitStateLoaded) {
+    if (!mainItemSelected &&
+        mainItem != "" &&
+        unitInfoLoaded &&
+        unitStateLoaded) {
       mainItemSelected = true;
       for (int i = 0; i < filteredItems.length; i++) {
         if (filteredItems[i].name == mainItem) {
@@ -159,7 +173,8 @@ class UnitFormSt extends State<UnitForm> {
     }
   }
 
-  Widget buildTable(List<UnitStateValuesResponseItem> items, bool showPopupMenu) {
+  Widget buildTable(
+      List<UnitStateValuesResponseItem> items, bool showPopupMenu) {
     showPopupMenu = false;
 
     return DesignColors.buildScrollBar(
@@ -193,7 +208,8 @@ class UnitFormSt extends State<UnitForm> {
                   height: 40,
                   child: Stack(
                     children: [
-                      Border08Painter.build(hoverIndex == index, selectedIndex == index),
+                      Border08Painter.build(
+                          hoverIndex == index, selectedIndex == index),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -203,7 +219,8 @@ class UnitFormSt extends State<UnitForm> {
                                   enableFeedback: false,
                                   icon: const Icon(Icons.menu_open),
                                   itemBuilder: (BuildContext context) {
-                                    return {'Logout', 'Settings'}.map((String choice) {
+                                    return {'Logout', 'Settings'}
+                                        .map((String choice) {
                                       return PopupMenuItem<String>(
                                         value: choice,
                                         height: 30,
@@ -224,8 +241,11 @@ class UnitFormSt extends State<UnitForm> {
                             child: Text(
                               shortName(items[index].name),
                               style: TextStyle(
-                                color: items[index].name == mainItem ? DesignColors.accent() : DesignColors.fore(),
-                                fontSize: items[index].name == mainItem ? 16 : 14,
+                                color: items[index].name == mainItem
+                                    ? DesignColors.accent()
+                                    : DesignColors.fore(),
+                                fontSize:
+                                    items[index].name == mainItem ? 16 : 14,
                               ),
                             ),
                           ),
@@ -234,7 +254,9 @@ class UnitFormSt extends State<UnitForm> {
                               constraints: const BoxConstraints(minWidth: 50),
                               padding: const EdgeInsets.only(right: 20),
                               child: Text(
-                                items[index].value.value + " " + items[index].value.uom,
+                                items[index].value.value +
+                                    " " +
+                                    items[index].value.uom,
                                 style: TextStyle(
                                   color: colorByUOM(items[index].value.uom),
                                 ),
@@ -256,16 +278,20 @@ class UnitFormSt extends State<UnitForm> {
     );
   }
 
-  UnitStateValuesResponseItem getSelectedItem(List<UnitStateValuesResponseItem> items) {
+  UnitStateValuesResponseItem getSelectedItem(
+      List<UnitStateValuesResponseItem> items) {
     if (selectedIndex >= 0 && selectedIndex < items.length) {
       return items[selectedIndex];
     }
     return UnitStateValuesResponseItem.makeDefault();
   }
 
-  Widget buildItemContent(BuildContext context, List<UnitStateValuesResponseItem> items) {
+  Widget buildItemContent(
+      BuildContext context, List<UnitStateValuesResponseItem> items) {
     if (itemPropLoading) {
-      return Center(child: SizedBox(width: 32, height: 32, child: CircularProgressIndicator()));
+      return Center(
+          child: SizedBox(
+              width: 32, height: 32, child: CircularProgressIndicator()));
     }
     if (itemPropView == "control-01") {
       return Container(
@@ -278,7 +304,9 @@ class UnitFormSt extends State<UnitForm> {
               margin: const EdgeInsets.all(10),
               child: ElevatedButton(
                 onPressed: () {
-                  Repository().client(widget.arg.connection).dataItemWrite(items[selectedIndex].name, "1");
+                  Repository()
+                      .client(widget.arg.connection)
+                      .dataItemWrite(items[selectedIndex].name, "1");
                 },
                 child: Container(
                   margin: const EdgeInsets.all(10),
@@ -293,7 +321,9 @@ class UnitFormSt extends State<UnitForm> {
               margin: const EdgeInsets.all(10),
               child: ElevatedButton(
                 onPressed: () {
-                  Repository().client(widget.arg.connection).dataItemWrite(items[selectedIndex].name, "0");
+                  Repository()
+                      .client(widget.arg.connection)
+                      .dataItemWrite(items[selectedIndex].name, "0");
                 },
                 child: Container(
                   margin: const EdgeInsets.all(10),
@@ -329,7 +359,8 @@ class UnitFormSt extends State<UnitForm> {
     );
   }
 
-  Widget buildWide(BuildContext context, List<UnitStateValuesResponseItem> items) {
+  Widget buildWide(
+      BuildContext context, List<UnitStateValuesResponseItem> items) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -364,7 +395,8 @@ class UnitFormSt extends State<UnitForm> {
     );
   }
 
-  Widget buildNarrow(BuildContext context, List<UnitStateValuesResponseItem> items, BoxConstraints constraints) {
+  Widget buildNarrow(BuildContext context,
+      List<UnitStateValuesResponseItem> items, BoxConstraints constraints) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -402,7 +434,8 @@ class UnitFormSt extends State<UnitForm> {
 
   Widget buildDetails(UnitStateValuesResponseItem item) {
     var client = Repository().client(widget.arg.connection);
-    return WidgetDataItemDetail(widget.arg.connection, client, unitName, widget.arg.unitId, item, () {
+    return WidgetDataItemDetail(
+        widget.arg.connection, client, unitName, widget.arg.unitId, item, () {
       updateUnitInfo();
     });
   }
@@ -423,7 +456,9 @@ class UnitFormSt extends State<UnitForm> {
             actions: <Widget>[
               showExtraButtons
                   ? buildActionButton(context, Icons.play_arrow, "Start", () {
-                      Repository().client(widget.arg.connection).unitsStart([widget.arg.unitId]).then((value) {
+                      Repository()
+                          .client(widget.arg.connection)
+                          .unitsStart([widget.arg.unitId]).then((value) {
                         //cubit.load(widget.arg.connection, widget.arg.unitId);
                         updateItems();
                       });
@@ -431,13 +466,18 @@ class UnitFormSt extends State<UnitForm> {
                   : Container(),
               showExtraButtons
                   ? buildActionButton(context, Icons.pause, "Stop", () {
-                      Repository().client(widget.arg.connection).unitsStop([widget.arg.unitId]).then((value) {
+                      Repository()
+                          .client(widget.arg.connection)
+                          .unitsStop([widget.arg.unitId]).then((value) {
                         updateItems();
                       });
                     })
                   : Container(),
               buildActionButton(context, Icons.edit, "Edit", () {
-                Navigator.pushNamed(context, "/unit_edit", arguments: UnitEditFormArgument(widget.arg.connection, widget.arg.unitId, "")).then((value) {
+                Navigator.pushNamed(context, "/unit_edit",
+                        arguments: UnitEditFormArgument(
+                            widget.arg.connection, widget.arg.unitId, ""))
+                    .then((value) {
                   setState(() {
                     try {
                       unitName = value as String;

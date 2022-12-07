@@ -21,7 +21,6 @@ class UserEditForm extends StatefulWidget {
 }
 
 class UserEditFormSt extends State<UserEditForm> {
-
   @override
   void initState() {
     super.initState();
@@ -29,10 +28,11 @@ class UserEditFormSt extends State<UserEditForm> {
     _textEditingControllerUserName.text = widget.arg.userName;
   }
 
-  final TextEditingController _textEditingControllerUserName = TextEditingController();
-  final TextEditingController _textEditingControllerDisplayName = TextEditingController();
+  final TextEditingController _textEditingControllerUserName =
+      TextEditingController();
+  final TextEditingController _textEditingControllerDisplayName =
+      TextEditingController();
   String displayName = "";
-
 
   bool loaded = false;
   bool loading = false;
@@ -43,7 +43,10 @@ class UserEditFormSt extends State<UserEditForm> {
       return;
     }
     loading = true;
-    Repository().client(widget.arg.connection).userPropGet(widget.arg.userName).then((value) {
+    Repository()
+        .client(widget.arg.connection)
+        .userPropGet(widget.arg.userName)
+        .then((value) {
       setState(() {
         for (var prop in value.props) {
           if (prop.propName == "display_name") {
@@ -54,19 +57,17 @@ class UserEditFormSt extends State<UserEditForm> {
         loading = false;
         loaded = true;
       });
-    }).catchError((e){
+    }).catchError((e) {
       setState(() {
         errorMessage = e.toString();
         loading = false;
       });
     });
-
   }
 
   void save() {
-    Repository().client(widget.arg.connection).userPropSet(widget.arg.userName, {
-      "display_name" : displayName
-    }).then((value) {
+    Repository().client(widget.arg.connection).userPropSet(
+        widget.arg.userName, {"display_name": displayName}).then((value) {
       Navigator.of(context).pop();
     });
   }
@@ -82,7 +83,7 @@ class UserEditFormSt extends State<UserEditForm> {
 
     return Expanded(
       child: Scrollbar(
-        isAlwaysShown: true,
+        thumbVisibility: true,
         child: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(6),
@@ -127,7 +128,8 @@ class UserEditFormSt extends State<UserEditForm> {
 
         return Scaffold(
           appBar: TitleBar(
-            widget.arg.connection, "Edit user",
+            widget.arg.connection,
+            "Edit user",
             actions: [
               Padding(
                 padding: const EdgeInsets.all(10),
@@ -142,24 +144,23 @@ class UserEditFormSt extends State<UserEditForm> {
               buildHomeButton(context),
             ],
           ),
-
           body: Container(
             color: DesignColors.mainBackgroundColor,
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    LeftNavigator(showLeft),
-                    buildContent(context),
-                  ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      LeftNavigator(showLeft),
+                      buildContent(context),
+                    ],
+                  ),
                 ),
-              ),
-              BottomNavigator(showBottom),
-            ],
-          ),
+                BottomNavigator(showBottom),
+              ],
+            ),
           ),
         );
       },

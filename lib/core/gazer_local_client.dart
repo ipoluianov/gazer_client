@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:flutter/cupertino.dart';
 import 'package:gazer_client/core/protocol/cloud/cloud_account_info.dart';
 import 'package:gazer_client/core/protocol/cloud/cloud_add_node.dart';
 import 'package:gazer_client/core/protocol/cloud/cloud_login.dart';
@@ -15,7 +14,6 @@ import 'package:gazer_client/core/protocol/dataitem/data_item_list.dart';
 import 'package:gazer_client/core/protocol/dataitem/data_item_prop_get.dart';
 import 'package:gazer_client/core/protocol/dataitem/data_item_prop_set.dart';
 import 'package:gazer_client/core/protocol/dataitem/data_item_remove.dart';
-import 'package:gazer_client/core/protocol/dataitem/data_item_set_source.dart';
 import 'package:gazer_client/core/protocol/dataitem/data_item_write.dart';
 import 'package:gazer_client/core/protocol/resource/resource_add.dart';
 import 'package:gazer_client/core/protocol/resource/resource_get.dart';
@@ -24,10 +22,8 @@ import 'package:gazer_client/core/protocol/resource/resource_list.dart';
 import 'package:gazer_client/core/protocol/resource/resource_remove.dart';
 import 'package:gazer_client/core/protocol/resource/resource_rename.dart';
 import 'package:gazer_client/core/protocol/resource/resource_set.dart';
-import 'package:gazer_client/core/protocol/service/service_api.dart';
 import 'package:gazer_client/core/protocol/service/service_info.dart';
 import 'package:gazer_client/core/protocol/service/service_lookup.dart';
-import 'package:gazer_client/core/protocol/service/service_node_name.dart';
 import 'package:gazer_client/core/protocol/service/service_set_node_name.dart';
 import 'package:gazer_client/core/protocol/unit/unit_add.dart';
 import 'package:gazer_client/core/protocol/unit/unit_get_config.dart';
@@ -54,7 +50,6 @@ import 'package:gazer_client/core/protocol/user/user_prop_set.dart';
 import 'package:gazer_client/core/protocol/user/user_remove.dart';
 import 'package:gazer_client/core/protocol/user/user_set_password.dart';
 import 'package:gazer_client/core/repository.dart';
-import 'package:gazer_client/core/xchg/xchg.dart';
 import 'package:http/http.dart' as http;
 
 import '../xchg/utils.dart';
@@ -80,7 +75,8 @@ class GazerLocalClient {
   //// Units
   ////////////////////////////////////////////////////////
 
-  Future<UnitAddResponse> unitsAdd(String unitType, String unitName, String config) async {
+  Future<UnitAddResponse> unitsAdd(
+      String unitType, String unitName, String config) async {
     return fetch<UnitAddRequest, UnitAddResponse>(
       'unit_add',
       UnitAddRequest(unitType, unitName, config),
@@ -116,15 +112,18 @@ class GazerLocalClient {
     return fetch<UnitItemsValuesRequest, UnitItemsValuesResponse>(
       'unit_items_values',
       UnitItemsValuesRequest(unitName),
-      (Map<String, dynamic> json) => UnitItemsValuesResponse.fromJson(json, false),
+      (Map<String, dynamic> json) =>
+          UnitItemsValuesResponse.fromJson(json, false),
     );
   }
 
-  Future<UnitItemsValuesResponse> unitItemsValuesWithoutServiceItems(String unitName) async {
+  Future<UnitItemsValuesResponse> unitItemsValuesWithoutServiceItems(
+      String unitName) async {
     return fetch<UnitItemsValuesRequest, UnitItemsValuesResponse>(
       'unit_items_values',
       UnitItemsValuesRequest(unitName),
-      (Map<String, dynamic> json) => UnitItemsValuesResponse.fromJson(json, true),
+      (Map<String, dynamic> json) =>
+          UnitItemsValuesResponse.fromJson(json, true),
     );
   }
 
@@ -152,7 +151,8 @@ class GazerLocalClient {
     );
   }
 
-  Future<UnitSetConfigResponse> unitsSetConfig(String unitId, String unitName, String config) async {
+  Future<UnitSetConfigResponse> unitsSetConfig(
+      String unitId, String unitName, String config) async {
     return fetch<UnitSetConfigRequest, UnitSetConfigResponse>(
       'unit_set_config',
       UnitSetConfigRequest(unitId, unitName, config),
@@ -168,7 +168,8 @@ class GazerLocalClient {
     );
   }
 
-  Future<UnitPropSetResponse> unitPropSet(String unitId, Map<String, String> props) async {
+  Future<UnitPropSetResponse> unitPropSet(
+      String unitId, Map<String, String> props) async {
     List<UnitPropSetItemRequest> propItems = [];
     for (var key in props.keys) {
       var value = props[key];
@@ -178,7 +179,7 @@ class GazerLocalClient {
     return fetch<UnitPropSetRequest, UnitPropSetResponse>(
       'unit_prop_set',
       UnitPropSetRequest(unitId, propItems),
-          (Map<String, dynamic> json) => UnitPropSetResponse.fromJson(json),
+      (Map<String, dynamic> json) => UnitPropSetResponse.fromJson(json),
     );
   }
 
@@ -186,7 +187,7 @@ class GazerLocalClient {
     return fetch<UnitPropGetRequest, UnitPropGetResponse>(
       'unit_prop_get',
       UnitPropGetRequest(unitId),
-          (Map<String, dynamic> json) => UnitPropGetResponse.fromJson(json),
+      (Map<String, dynamic> json) => UnitPropGetResponse.fromJson(json),
     );
   }
 
@@ -194,7 +195,8 @@ class GazerLocalClient {
   //// Unit Types
   ////////////////////////////////////////////////////////
 
-  Future<UnitTypeListResponse> unitTypeList(String category, String filter, int offset, int maxCount) async {
+  Future<UnitTypeListResponse> unitTypeList(
+      String category, String filter, int offset, int maxCount) async {
     return fetch<UnitTypeListRequest, UnitTypeListResponse>(
       'unit_type_list',
       UnitTypeListRequest(category, filter, offset, maxCount),
@@ -222,7 +224,8 @@ class GazerLocalClient {
   //// Service
   ////////////////////////////////////////////////////////
 
-  Future<ServiceLookupResponse> serviceLookup(String entity, String parameters) async {
+  Future<ServiceLookupResponse> serviceLookup(
+      String entity, String parameters) async {
     return fetch<ServiceLookupRequest, ServiceLookupResponse>(
       'service_lookup',
       ServiceLookupRequest(entity, parameters),
@@ -242,7 +245,7 @@ class GazerLocalClient {
     return fetch<ServiceInfoRequest, ServiceInfoResponse>(
       'service_info',
       ServiceInfoRequest(),
-          (Map<String, dynamic> json) => ServiceInfoResponse.fromJson(json),
+      (Map<String, dynamic> json) => ServiceInfoResponse.fromJson(json),
     );
   }
 
@@ -250,14 +253,13 @@ class GazerLocalClient {
     fetch<ServiceInfoRequest, ServiceInfoResponse>(
       'service_info',
       ServiceInfoRequest(),
-          (Map<String, dynamic> json) => ServiceInfoResponse.fromJson(json),
+      (Map<String, dynamic> json) => ServiceInfoResponse.fromJson(json),
     ).then((value) {
       nodeName = value.nodeName;
       nodeVersion = value.version;
       nodeBuildTime = value.buildTime;
     });
   }
-
 
   ////////////////////////////////////////////////////////
   //// Users
@@ -303,7 +305,8 @@ class GazerLocalClient {
     );
   }
 
-  Future<UserSetPasswordResponse> userSetPassword(String userName, String password) async {
+  Future<UserSetPasswordResponse> userSetPassword(
+      String userName, String password) async {
     return fetch<UserSetPasswordRequest, UserSetPasswordResponse>(
       'user_set_password',
       UserSetPasswordRequest(userName, password),
@@ -311,15 +314,17 @@ class GazerLocalClient {
     );
   }
 
-  Future<SessionOpenResponse> sessionOpen(String userName, String password) async {
+  Future<SessionOpenResponse> sessionOpen(
+      String userName, String password) async {
     return fetch<SessionOpenRequest, SessionOpenResponse>(
       'session_open',
       SessionOpenRequest(userName, password),
-          (Map<String, dynamic> json) => SessionOpenResponse.fromJson(json),
+      (Map<String, dynamic> json) => SessionOpenResponse.fromJson(json),
     );
   }
 
-  Future<UserPropSetResponse> userPropSet(String userName, Map<String, String> props) async {
+  Future<UserPropSetResponse> userPropSet(
+      String userName, Map<String, String> props) async {
     List<UserPropSetItemRequest> propItems = [];
     for (var key in props.keys) {
       var value = props[key];
@@ -329,7 +334,7 @@ class GazerLocalClient {
     return fetch<UserPropSetRequest, UserPropSetResponse>(
       'user_prop_set',
       UserPropSetRequest(userName, propItems),
-          (Map<String, dynamic> json) => UserPropSetResponse.fromJson(json),
+      (Map<String, dynamic> json) => UserPropSetResponse.fromJson(json),
     );
   }
 
@@ -337,7 +342,7 @@ class GazerLocalClient {
     return fetch<UserPropGetRequest, UserPropGetResponse>(
       'user_prop_get',
       UserPropGetRequest(unitId),
-          (Map<String, dynamic> json) => UserPropGetResponse.fromJson(json),
+      (Map<String, dynamic> json) => UserPropGetResponse.fromJson(json),
     );
   }
 
@@ -345,21 +350,24 @@ class GazerLocalClient {
   //// Data Items
   ////////////////////////////////////////////////////////
 
-  Future<DataItemHistoryChartResponse> dataItemHistoryChart(List<DataItemHistoryChartItemRequest> reqItems) async {
+  Future<DataItemHistoryChartResponse> dataItemHistoryChart(
+      List<DataItemHistoryChartItemRequest> reqItems) async {
     //DataItemHistoryChartItemRequest reqItem = DataItemHistoryChartItemRequest(itemName, dtBegin, dtEnd, groupTimeRange, outFormat);
 // String itemName, int dtBegin, int dtEnd, int groupTimeRange, String outFormat
     return fetch<DataItemHistoryChartRequest, DataItemHistoryChartResponse>(
       'data_item_history_chart',
       DataItemHistoryChartRequest(reqItems),
-      (Map<String, dynamic> json) => DataItemHistoryChartResponse.fromJson(json),
+      (Map<String, dynamic> json) =>
+          DataItemHistoryChartResponse.fromJson(json),
     );
   }
 
-  Future<DataItemHistoryResponse> dataItemHistory(String itemName, int dtBegin, int dtEnd) async {
+  Future<DataItemHistoryResponse> dataItemHistory(
+      String itemName, int dtBegin, int dtEnd) async {
     return fetch<DataItemHistoryRequest, DataItemHistoryResponse>(
       'data_item_history',
       DataItemHistoryRequest(itemName, dtBegin, dtEnd),
-          (Map<String, dynamic> json) => DataItemHistoryResponse.fromJson(json),
+      (Map<String, dynamic> json) => DataItemHistoryResponse.fromJson(json),
     );
   }
 
@@ -379,15 +387,17 @@ class GazerLocalClient {
     );
   }
 
-  Future<DataItemWriteResponse> dataItemWrite(String itemName, String value) async {
+  Future<DataItemWriteResponse> dataItemWrite(
+      String itemName, String value) async {
     return fetch<DataItemWriteRequest, DataItemWriteResponse>(
       'data_item_write',
       DataItemWriteRequest(itemName, value),
-          (Map<String, dynamic> json) => DataItemWriteResponse.fromJson(json),
+      (Map<String, dynamic> json) => DataItemWriteResponse.fromJson(json),
     );
   }
 
-  Future<DataItemPropSetResponse> dataItemPropSet(String itemName, Map<String, String> props) async {
+  Future<DataItemPropSetResponse> dataItemPropSet(
+      String itemName, Map<String, String> props) async {
     List<DataItemPropSetItemRequest> propItems = [];
     for (var key in props.keys) {
       var value = props[key];
@@ -397,7 +407,7 @@ class GazerLocalClient {
     return fetch<DataItemPropSetRequest, DataItemPropSetResponse>(
       'data_item_prop_set',
       DataItemPropSetRequest(itemName, propItems),
-          (Map<String, dynamic> json) => DataItemPropSetResponse.fromJson(json),
+      (Map<String, dynamic> json) => DataItemPropSetResponse.fromJson(json),
     );
   }
 
@@ -405,10 +415,9 @@ class GazerLocalClient {
     return fetch<DataItemPropGetRequest, DataItemPropGetResponse>(
       'data_item_prop_get',
       DataItemPropGetRequest(itemName),
-          (Map<String, dynamic> json) => DataItemPropGetResponse.fromJson(json),
+      (Map<String, dynamic> json) => DataItemPropGetResponse.fromJson(json),
     );
   }
-
 
   ////////////////////////////////////////////////////////
   //// Cloud
@@ -430,7 +439,8 @@ class GazerLocalClient {
     );
   }
 
-  Future<CloudLoginResponse> cloudLogin(String userName, String password) async {
+  Future<CloudLoginResponse> cloudLogin(
+      String userName, String password) async {
     return fetch<CloudLoginRequest, CloudLoginResponse>(
       'cloud_login',
       CloudLoginRequest(userName, password),
@@ -462,15 +472,18 @@ class GazerLocalClient {
     return fetch<CloudRegisteredNodesRequest, CloudRegisteredNodesResponse>(
       's-registered-nodes',
       CloudRegisteredNodesRequest(),
-      (Map<String, dynamic> json) => CloudRegisteredNodesResponse.fromJson(json),
+      (Map<String, dynamic> json) =>
+          CloudRegisteredNodesResponse.fromJson(json),
     );
   }
 
-  Future<CloudSetCurrentNodeIdResponse> cloudSetCurrentNodeId(String nodeId) async {
+  Future<CloudSetCurrentNodeIdResponse> cloudSetCurrentNodeId(
+      String nodeId) async {
     return fetch<CloudSetCurrentNodeIdRequest, CloudSetCurrentNodeIdResponse>(
       'cloud_set_current_node_id',
       CloudSetCurrentNodeIdRequest(nodeId),
-      (Map<String, dynamic> json) => CloudSetCurrentNodeIdResponse.fromJson(json),
+      (Map<String, dynamic> json) =>
+          CloudSetCurrentNodeIdResponse.fromJson(json),
     );
   }
 
@@ -478,7 +491,8 @@ class GazerLocalClient {
   //// Resources
   ////////////////////////////////////////////////////////
 
-  Future<ResAddResponse> resAdd(String name, String type, Uint8List content) async {
+  Future<ResAddResponse> resAdd(
+      String name, String type, Uint8List content) async {
     var contentString = const Base64Encoder().convert(content);
 
     return fetch<ResAddRequest, ResAddResponse>(
@@ -488,7 +502,8 @@ class GazerLocalClient {
     );
   }
 
-  Future<ResSetResponse> resSet(String id, String suffix, int offset, Uint8List content) async {
+  Future<ResSetResponse> resSet(
+      String id, String suffix, int offset, Uint8List content) async {
     var contentString = const Base64Encoder().convert(content);
     return fetch<ResSetRequest, ResSetResponse>(
       'resource_set',
@@ -505,12 +520,12 @@ class GazerLocalClient {
     String resHash = "";
     List<int> result = [];
 
-    for (int offset = 0; offset < 100*1000000; offset += step) {
+    for (int offset = 0; offset < 100 * 1000000; offset += step) {
       print("loading res offset $offset");
       var value = await fetch<ResGetRequest, ResGetResponse>(
         'resource_get',
         ResGetRequest(id, offset, step),
-            (Map<String, dynamic> json) => ResGetResponse.fromJson(json),
+        (Map<String, dynamic> json) => ResGetResponse.fromJson(json),
       );
       name = value.name;
       type = value.type;
@@ -522,7 +537,8 @@ class GazerLocalClient {
       result.addAll(value.content.toList());
     }
 
-    return ResGetResponse(id, name, type, Uint8List.fromList(result), resSize, resHash);
+    return ResGetResponse(
+        id, name, type, Uint8List.fromList(result), resSize, resHash);
   }
 
   Future<ResGetResponse> resGet1(String id, int offset, int size) async {
@@ -549,7 +565,8 @@ class GazerLocalClient {
     );
   }
 
-  Future<ResPropSetResponse> resPropSet(String id, Map<String, String> props) async {
+  Future<ResPropSetResponse> resPropSet(
+      String id, Map<String, String> props) async {
     List<ResPropSetItemRequest> propItems = [];
     for (var key in props.keys) {
       var value = props[key];
@@ -563,7 +580,8 @@ class GazerLocalClient {
     );
   }
 
-  Future<ResListResponse> resList(String type, String filter, int offset, int maxCount) async {
+  Future<ResListResponse> resList(
+      String type, String filter, int offset, int maxCount) async {
     return fetch<ResListRequest, ResListResponse>(
       'resource_list',
       ResListRequest(type, filter, offset, maxCount),
@@ -579,8 +597,8 @@ class GazerLocalClient {
   ////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////
 
-
-  Future<TResp> fetch<TReq, TResp>(String function, TReq request, FromJsonFunc fromJson) async {
+  Future<TResp> fetch<TReq, TResp>(
+      String function, TReq request, FromJsonFunc fromJson) async {
     return fetchXchg(function, request, fromJson);
 
     /*if (transport == "https/cloud") {
@@ -592,12 +610,14 @@ class GazerLocalClient {
   Uint8List int32bytes(int value) =>
       Uint8List(4)..buffer.asUint32List()[0] = value;
 
-  Future<TResp> fetchXchg<TReq, TResp>(String function, TReq request, FromJsonFunc fromJson) async {
+  Future<TResp> fetchXchg<TReq, TResp>(
+      String function, TReq request, FromJsonFunc fromJson) async {
     //print("fetchXchg $function");
 
     // Gazer request body
     var reqString = jsonEncode(request);
-    CallResult res = await Repository().peer.call(address, session, function, Uint8List.fromList(utf8.encode(reqString)));
+    CallResult res = await Repository().peer.call(
+        address, session, function, Uint8List.fromList(utf8.encode(reqString)));
 
     if (!res.isError()) {
       String s = utf8.decode(res.data);
@@ -610,8 +630,6 @@ class GazerLocalClient {
       print("RESULT ERROR: ${res.error}");
       throw GazerClientException(res.error);
     }
-
-
   }
 
   /*Future<TResp> fetchLocal<TReq, TResp>(String function, TReq request, FromJsonFunc fromJson) async {

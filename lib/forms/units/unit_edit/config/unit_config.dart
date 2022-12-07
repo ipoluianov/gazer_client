@@ -14,7 +14,8 @@ class UnitConfig extends StatefulWidget {
   final String id;
   final String type;
   final String name;
-  const UnitConfig(this.client, this.id, this.type, this.name, this.unitConfigMeta, this.unitConfig, this.onBack, this.onAccept,
+  const UnitConfig(this.client, this.id, this.type, this.name,
+      this.unitConfigMeta, this.unitConfig, this.onBack, this.onAccept,
       {Key? key})
       : super(key: key);
 

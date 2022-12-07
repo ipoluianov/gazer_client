@@ -67,14 +67,17 @@ class LookupFormSt extends State<LookupForm> {
   String lookupFilter = "";
   TextEditingController lookupFilterController = TextEditingController();
 
-  final ScrollController _scrollControllerDataTable = ScrollController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     loadNodeInfo();
 
-    Repository().client(widget.arg.connection).serviceLookup(widget.arg.lookupParameter, "").then((value) {
+    Repository()
+        .client(widget.arg.connection)
+        .serviceLookup(widget.arg.lookupParameter, "")
+        .then((value) {
       setState(() {
         lookupResponse = value;
         loaded = true;
@@ -122,7 +125,9 @@ class LookupFormSt extends State<LookupForm> {
     List<ServiceLookupRowResponse> rows = [];
     for (var row in filteredRows) {
       List<String> cells = [];
-      for (var colIndex = 0; colIndex < lookupResponse.result.columns.length; colIndex++) {
+      for (var colIndex = 0;
+          colIndex < lookupResponse.result.columns.length;
+          colIndex++) {
         var col = lookupResponse.result.columns[colIndex];
         if (!col.hidden) {
           cells.add(row.cells[colIndex]);
@@ -150,8 +155,10 @@ class LookupFormSt extends State<LookupForm> {
             ),
             Expanded(
               child: Scrollbar(
-                isAlwaysShown: true,
+                controller: _scrollController,
+                thumbVisibility: true,
                 child: SingleChildScrollView(
+                  controller: _scrollController,
                   child: DataTable(
                     headingRowColor: MaterialStateColor.resolveWith((states) {
                       return Colors.black26;
@@ -175,7 +182,8 @@ class LookupFormSt extends State<LookupForm> {
                             });
                           },
                           cells: columns.asMap().keys.map<DataCell>((colIndex) {
-                            return DataCell(Text(rows[rowIndex].cells[colIndex]));
+                            return DataCell(
+                                Text(rows[rowIndex].cells[colIndex]));
                           }).toList());
                     }).toList(),
                     columns: columns.map<DataColumn>((e) {
@@ -227,18 +235,22 @@ class LookupFormSt extends State<LookupForm> {
                 padding: const EdgeInsets.all(10),
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    if (selectedIndex >= 0 && selectedIndex < filteredRows.length) {
+                    if (selectedIndex >= 0 &&
+                        selectedIndex < filteredRows.length) {
                       String selectedCode = "";
                       var selectedRow = filteredRows[selectedIndex];
                       Map<String, String> fields = {};
-                      for (int colIndex = 0; colIndex < lookupResponse.result.columns.length; colIndex++) {
+                      for (int colIndex = 0;
+                          colIndex < lookupResponse.result.columns.length;
+                          colIndex++) {
                         var col = lookupResponse.result.columns[colIndex];
                         fields[col.name] = selectedRow.cells[colIndex];
                         if (lookupResponse.result.keyColumn == col.name) {
                           selectedCode = selectedRow.cells[colIndex];
                         }
                       }
-                      LookupFormResult res = LookupFormResult(selectedCode, fields);
+                      LookupFormResult res =
+                          LookupFormResult(selectedCode, fields);
                       Navigator.pop(context, res);
                     }
                   },

@@ -41,7 +41,10 @@ class UserFormSt extends State<UserForm> {
       return;
     }
     loading = true;
-    Repository().client(widget.arg.connection).sessionList(widget.arg.userName).then((value) {
+    Repository()
+        .client(widget.arg.connection)
+        .sessionList(widget.arg.userName)
+        .then((value) {
       setState(() {
         sessionList = value.items;
         loading = false;
@@ -66,7 +69,7 @@ class UserFormSt extends State<UserForm> {
     }
     return Expanded(
       child: Scrollbar(
-        isAlwaysShown: true,
+        thumbVisibility: true,
         child: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(6),
@@ -89,7 +92,9 @@ class UserFormSt extends State<UserForm> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(padding: const EdgeInsets.all(6), child: Text("User: " + widget.arg.userName)),
+                        Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: Text("User: " + widget.arg.userName)),
                         Padding(
                           padding: const EdgeInsets.all(6),
                           child: OutlinedButton(
@@ -137,7 +142,10 @@ class UserFormSt extends State<UserForm> {
                   children: sessionList.map<Widget>(
                     (e) {
                       return SessionCard(widget.arg.connection, e, () {}, () {
-                        Repository().client(widget.arg.connection).sessionRemove(e.sessionToken).then((value) {
+                        Repository()
+                            .client(widget.arg.connection)
+                            .sessionRemove(e.sessionToken)
+                            .then((value) {
                           loadSessionList();
                         });
                       });

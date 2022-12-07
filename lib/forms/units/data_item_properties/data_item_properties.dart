@@ -35,7 +35,10 @@ class WidgetDataItemPropertiesState extends State<WidgetDataItemProperties> {
 
   @override
   void initState() {
-    Repository().client(widget.arg.connection).dataItemPropGet(widget.arg.itemName).then((value) {
+    Repository()
+        .client(widget.arg.connection)
+        .dataItemPropGet(widget.arg.itemName)
+        .then((value) {
       setState(() {
         for (var prop in value.props) {
           if (prop.propName == "source") {
@@ -87,7 +90,9 @@ class WidgetDataItemPropertiesState extends State<WidgetDataItemProperties> {
       tuneTrimValue = "1";
     }
 
-    Repository().client(widget.arg.connection).dataItemPropSet(widget.arg.itemName, {
+    Repository()
+        .client(widget.arg.connection)
+        .dataItemPropSet(widget.arg.itemName, {
       "source": txtControllerSource.text,
       "tune_trim": tuneTrimValue,
       "tune_on": tuneOnValue,
@@ -103,200 +108,207 @@ class WidgetDataItemPropertiesState extends State<WidgetDataItemProperties> {
         child: Container(
           padding: const EdgeInsets.all(6),
           child: Scrollbar(
-            isAlwaysShown: true,
+            thumbVisibility: true,
             child: ListView(
-            children: [
-              Card(
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: tuneOn,
-                            onChanged: (newValue) {
-                              setState(() {
-                                tuneOn = newValue;
-                              });
-                            },
-                          ),
-                          const Expanded(
-                            child: Text("Tune On"),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            constraints: const BoxConstraints(maxWidth: 150),
-                            padding: const EdgeInsets.only(left: 20),
-                            child: TextField(
-                              enabled: tuneOn,
-                              decoration: const InputDecoration(
-                                labelText: "Tune Scale",
-                                hintText: "Tune Scale",
-                              ),
-                              controller: txtControllerTuneScale,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            constraints: const BoxConstraints(maxWidth: 150),
-                            padding: const EdgeInsets.only(left: 20),
-                            child: TextField(
-                              enabled: tuneOn,
-                              decoration: const InputDecoration(
-                                labelText: "Tune Offset",
-                                hintText: "Tune Offset",
-                              ),
-                              controller: txtControllerTuneOffset,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(child: Container(
-                            padding: const EdgeInsets.only(left: 20),
-                            child: const Text(
-                              "RESULT = value * scale + offset",
-                              style: TextStyle(color: Colors.white30),
-                            ),
-                          ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Card(
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            //constraints: const BoxConstraints(maxWidth: 200),
-                            child: CheckboxListTile(
-                              title: const Text("Trim"),
-                              value: tuneTrim,
+              children: [
+                Card(
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: tuneOn,
                               onChanged: (newValue) {
                                 setState(() {
-                                  tuneTrim = newValue!;
+                                  tuneOn = newValue;
                                 });
                               },
-                              controlAffinity: ListTileControlAffinity.leading, //  <-- leading Checkbox
                             ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(child:
-                          Container(
-                            padding: const EdgeInsets.only(left: 20),
-                            child: const Text(
-                              "Remove characters [\\r & \\n & \\t] at the beginning and end of the value",
-                              style: TextStyle(color: Colors.white30),
+                            const Expanded(
+                              child: Text("Tune On"),
                             ),
-                          ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              constraints: const BoxConstraints(maxWidth: 150),
+                              padding: const EdgeInsets.only(left: 20),
+                              child: TextField(
+                                enabled: tuneOn,
+                                decoration: const InputDecoration(
+                                  labelText: "Tune Scale",
+                                  hintText: "Tune Scale",
+                                ),
+                                controller: txtControllerTuneScale,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              constraints: const BoxConstraints(maxWidth: 150),
+                              padding: const EdgeInsets.only(left: 20),
+                              child: TextField(
+                                enabled: tuneOn,
+                                decoration: const InputDecoration(
+                                  labelText: "Tune Offset",
+                                  hintText: "Tune Offset",
+                                ),
+                                controller: txtControllerTuneOffset,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: const Text(
+                                  "RESULT = value * scale + offset",
+                                  style: TextStyle(color: Colors.white30),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Card(
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Source",
-                        style: TextStyle(fontSize: 24),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 10),
-                        constraints: const BoxConstraints(maxWidth: 200),
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            //border: OutlineInputBorder(),
-                            labelText: "Data Item Id",
-                            hintText: "Data Item Id",
-                          ),
-                          controller: txtControllerSource,
+                Card(
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              //constraints: const BoxConstraints(maxWidth: 200),
+                              child: CheckboxListTile(
+                                title: const Text("Trim"),
+                                value: tuneTrim,
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    tuneTrim = newValue!;
+                                  });
+                                },
+                                controlAffinity: ListTileControlAffinity
+                                    .leading, //  <-- leading Checkbox
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: Text(
-                          sourceItemName,
-                          overflow: TextOverflow.fade,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: const Text(
+                                  "Remove characters [\\r & \\n & \\t] at the beginning and end of the value",
+                                  style: TextStyle(color: Colors.white30),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: OutlinedButton.icon(
-                              onPressed: () {
-                                Navigator.pushNamed(context, "/lookup",
-                                        arguments: LookupFormArgument(Repository().lastSelectedConnection, "Select source item", "data-item"))
-                                    .then((value) {
-                                  if (value != null) {
-                                    var res = value as LookupFormResult;
-                                    txtControllerSource.text = res.code();
-                                    setState(() {
-                                      sourceItemName = res.field("name");
-                                    });
-                                  }
-                                });
-                              },
-                              icon: const Icon(Icons.more_horiz),
-                              label: const Text("select"),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: OutlinedButton(
-                              onPressed: () {
-                                txtControllerSource.text = "";
-                                setState(() {
-                                  sourceItemName = "";
-                                });
-                              },
-                              //icon: const Icon(Icons.arrow_left),
-                              child: const Text("clear"),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(child: Container(
-                            padding: const EdgeInsets.only(left: 20),
-                            child: const Text(
-                              "Write to this item all the values from the source item",
-                              style: TextStyle(color: Colors.white30),
-                            ),
-                          ),
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
+                Card(
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Source",
+                          style: TextStyle(fontSize: 24),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(left: 10),
+                          constraints: const BoxConstraints(maxWidth: 200),
+                          child: TextField(
+                            decoration: const InputDecoration(
+                              //border: OutlineInputBorder(),
+                              labelText: "Data Item Id",
+                              hintText: "Data Item Id",
+                            ),
+                            controller: txtControllerSource,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Text(
+                            sourceItemName,
+                            overflow: TextOverflow.fade,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, "/lookup",
+                                          arguments: LookupFormArgument(
+                                              Repository()
+                                                  .lastSelectedConnection,
+                                              "Select source item",
+                                              "data-item"))
+                                      .then((value) {
+                                    if (value != null) {
+                                      var res = value as LookupFormResult;
+                                      txtControllerSource.text = res.code();
+                                      setState(() {
+                                        sourceItemName = res.field("name");
+                                      });
+                                    }
+                                  });
+                                },
+                                icon: const Icon(Icons.more_horiz),
+                                label: const Text("select"),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  txtControllerSource.text = "";
+                                  setState(() {
+                                    sourceItemName = "";
+                                  });
+                                },
+                                //icon: const Icon(Icons.arrow_left),
+                                child: const Text("clear"),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.only(left: 20),
+                                child: const Text(
+                                  "Write to this item all the values from the source item",
+                                  style: TextStyle(color: Colors.white30),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       );

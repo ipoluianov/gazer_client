@@ -1,12 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:gazer_client/xchg/rsa.dart';
-import 'package:gazer_client/xchg_old/aes.dart';
-import 'package:gazer_client/xchg_old/packer.dart';
+import 'package:gazer_client/xchg/aes.dart';
+import 'package:gazer_client/xchg/packer.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 
@@ -61,14 +60,14 @@ class RemotePeer {
     return "";
   }
 
-  Future<void> setLANConnectionPoint(UdpAddress udpAddress,
-      RSAPublicKey publicKey, Uint8List nonce, Uint8List signature) async {
+  void setLANConnectionPoint(UdpAddress udpAddress, RSAPublicKey publicKey,
+      Uint8List nonce, Uint8List signature) {
     if (!nonces.check(nonce)) {
       return;
     }
 
     //var nonceHash = sha256.convert(nonce);
-    if (!await rsaVerify(publicKey, nonce, signature)) {
+    if (!rsaVerify(publicKey, nonce, signature)) {
       return;
     }
 
@@ -78,14 +77,6 @@ class RemotePeer {
     remotePublicKey = publicKey;
   }
 
-  /*void setInternetConnectionPoint(
-      String address, UdpAddress udpAddress) {
-    if (remoteAddress == address) {
-      internetConnectionPoint1 = udpAddress;
-      send0x20(udpAddress);
-    }
-  }*/
-
   void setRemotePublicKey(RSAPublicKey publicKeyToSet) {
     remotePublicKey = publicKeyToSet;
   }
@@ -93,10 +84,6 @@ class RemotePeer {
   String lanConnectionPointString() {
     return connectionPointString(lanConnectionPoint1);
   }
-
-  /*String internetConnectionPointString() {
-    return connectionPointString(internetConnectionPoint1);
-  }*/
 
   void processFrame(UdpAddress sourceAddress, Uint8List frame) {
     var frameType = frame[8];
@@ -163,16 +150,6 @@ class RemotePeer {
       peer.requestUDP(UdpAddress(InternetAddress("127.0.0.1"), i), [frameBS]);
     }
   }
-
-  /*void checkInternetConnectionPoint() {
-    //return;
-    var addressBS = utf8.encode(remoteAddress);
-    var request = Uint8List(8 + addressBS.length);
-    request[0] = 0x06;
-    copyBytes(request, 8, Uint8List.fromList(addressBS));
-    peer.requestUDP(
-        UdpAddress(InternetAddress("54.37.73.160"), 8484), [request]);
-  }*/
 
   UdpAddress? getConnectionPoint() {
     return lanConnectionPoint1;
@@ -242,15 +219,15 @@ class RemotePeer {
 
       var authDataBS = utf8.encode(authData);
 
-      //var localPublicKeyBS = encodePublicKeyToPKIX(keyPair.publicKey);
       var tempAESKey = Uint8List(32);
-      // TODO: Fill AES KEy
+      var rng = Random();
+      for (int i = 0; i < 32; i++) {
+        tempAESKey[i] = rng.nextInt(255);
+      }
 
       Uint8List authFrameSecret = Uint8List(16 + authDataBS.length);
       copyBytes(authFrameSecret, 0, getNonceResult.data);
       copyBytes(authFrameSecret, 16, Uint8List.fromList(authDataBS));
-
-      print("RSA: ${remotePublicKey!.n}");
 
       Uint8List encryptedAuthFrame =
           await rsaEncrypt(remotePublicKey!, authFrameSecret);
@@ -268,13 +245,7 @@ class RemotePeer {
         return "auth error-:" + authResult.error;
       }
 
-      print("decrypt ...");
       Uint8List authResultDecrypted = aesDecrypt(tempAESKey, authResult.data);
-      /*Uint8List authResultDecrypted =
-          await rsaDecrypt(keyPair.privateKey, authResult.data.sublist(0));*/
-      //Uint8List authResultDecrypted =
-
-      print("decrypt OK");
 
       if (authResultDecrypted.length != 8 + 32) {
         authProcessing = false;
@@ -297,13 +268,13 @@ class RemotePeer {
 
     Uint8List functionBS = Uint8List.fromList(utf8.encode(function));
 
-    if (functionBS.length > 255) {
-      return CallResult.createError("functionBS.length > 255");
-    }
-
     bool encrypted = false;
     int localSessionNonceCounter = sessionNonceCounter;
     sessionNonceCounter++;
+
+    if (functionBS.length > 255) {
+      return CallResult.createError("functionBS.length > 255");
+    }
 
     Uint8List frame = Uint8List(0);
 
@@ -321,6 +292,10 @@ class RemotePeer {
       frame[0] = functionBS.length;
       copyBytes(frame, 1, functionBS);
       copyBytes(frame, 1 + functionBS.length, data);
+    }
+
+    if (!function.contains("data_item_history")) {
+      //print("regularCall: $function len:${frame.length} sessionId:$sessionId");
     }
 
     CallResult callResult =
@@ -348,6 +323,11 @@ class RemotePeer {
       // Success
       result = CallResult();
       result.data = callResult.data.sublist(1);
+
+      if (!function.contains("data_item_history")) {
+        //print("regularCall ok: $function");
+      }
+
       return result;
     }
 
@@ -371,6 +351,8 @@ class RemotePeer {
     int localTransactionId = nextTransactionId;
     nextTransactionId++;
 
+    //print("executeTransaction localTransactionId: $localTransactionId");
+
     Transaction tr = Transaction(0x10, localAddress(), remoteAddress,
         localTransactionId, sessionId, 0, data.length, data);
     outgoingTransactions[tr.transactionId] = tr;
@@ -378,7 +360,7 @@ class RemotePeer {
     List<Uint8List> frames = [];
 
     int offset = 0;
-    int blockSize = 1024;
+    int blockSize = 524;
     while (offset < tr.data.length) {
       int currentBlockSize = blockSize;
       int restDataLen = tr.data.length - offset;
@@ -401,6 +383,7 @@ class RemotePeer {
       //print("sent: $sentBytes");
       offset += currentBlockSize;
     }
+    //print("requestUDP count: ${frames.length}");
     peer.requestUDP(remoteConnectionPoint, frames);
 
     for (int i = 0; i < 100; i++) {

@@ -55,7 +55,7 @@ class MoreFormSt extends State<MoreForm> {
                       Expanded(
                         child: Scrollbar(
                           controller: _scrollController,
-                          isAlwaysShown: true,
+                          thumbVisibility: true,
                           child: SingleChildScrollView(
                             controller: _scrollController,
                             child: Wrap(

@@ -21,7 +21,9 @@ class TimeTable extends StatefulWidget {
   final String itemName;
   final TimeTableSettings _settings;
   final Function onChanged;
-  const TimeTable(this.conn, this.itemName, this._settings, this.onChanged, {Key? key}) : super(key: key);
+  const TimeTable(this.conn, this.itemName, this._settings, this.onChanged,
+      {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -36,7 +38,8 @@ class TimeRange {
 }
 
 class TimeTableState extends State<TimeTable> with TickerProviderStateMixin {
-  late Timer _timerUpdateTimeRange = Timer.periodic(const Duration(milliseconds: 1000), (timer) {});
+  late Timer _timerUpdateTimeRange =
+      Timer.periodic(const Duration(milliseconds: 1000), (timer) {});
 
   late ScrollController _scrollController;
   double scrollOffset = 0;
@@ -61,7 +64,8 @@ class TimeTableState extends State<TimeTable> with TickerProviderStateMixin {
 
   void setUpdateTimePeriodMs(int durationMs) {
     _timerUpdateTimeRange.cancel();
-    _timerUpdateTimeRange = Timer.periodic(Duration(milliseconds: durationMs), (t) {
+    _timerUpdateTimeRange =
+        Timer.periodic(Duration(milliseconds: durationMs), (t) {
       updateTimes();
     });
   }
@@ -212,8 +216,10 @@ class TimeTableState extends State<TimeTable> with TickerProviderStateMixin {
       //height: 25,
       child: TextButton(
         style: ButtonStyle(
-            foregroundColor: MaterialStateProperty.all(isCurrent ? Colors.black87 : Colors.white60),
-            backgroundColor: MaterialStateProperty.all(isCurrent ? Colors.tealAccent : Colors.teal.withOpacity(0.5))),
+            foregroundColor: MaterialStateProperty.all(
+                isCurrent ? Colors.black87 : Colors.white60),
+            backgroundColor: MaterialStateProperty.all(
+                isCurrent ? Colors.tealAccent : Colors.teal.withOpacity(0.5))),
         onPressed: () {
           setState(() {
             dropdownValue = timeString;
@@ -230,7 +236,10 @@ class TimeTableState extends State<TimeTable> with TickerProviderStateMixin {
             child: Center(
               child: Text(
                 displayPeriodName(timeString),
-                style: TextStyle(fontSize: isCurrent ? 16 : 14, fontWeight: isCurrent ? FontWeight.normal : FontWeight.normal),
+                style: TextStyle(
+                    fontSize: isCurrent ? 16 : 14,
+                    fontWeight:
+                        isCurrent ? FontWeight.normal : FontWeight.normal),
               ),
             ),
           ),
@@ -475,16 +484,18 @@ DragTarget<DataItemsObject>(
                       RenderObject? rObject = context.findRenderObject();
                       if (rObject is RenderBox) {
                         lastRenderBox_ = rObject;
-                        widget._settings.currentHeight = lastRenderBox_!.paintBounds.height.toInt();
+                        widget._settings.currentHeight =
+                            lastRenderBox_!.paintBounds.height.toInt();
                       }
                       return Scrollbar(
-                        isAlwaysShown: true,
+                        thumbVisibility: true,
                         controller: _scrollController,
                         child: ListView(
                           controller: _scrollController,
                           children: [
                             CustomPaint(
-                              painter: TimeTablePainter(widget._settings, (int groupTimeRange, int dtBegin, int dtEnd) {
+                              painter: TimeTablePainter(widget._settings,
+                                  (int groupTimeRange, int dtBegin, int dtEnd) {
                                 //currentGroupTimeRange = groupTimeRange;
                               }),
                               child: Container(
@@ -515,5 +526,4 @@ DragTarget<DataItemsObject>(
       ],
     );
   }
-
 }

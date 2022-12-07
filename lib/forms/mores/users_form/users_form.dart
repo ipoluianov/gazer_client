@@ -43,7 +43,7 @@ class UsersFormSt extends State<UsersForm> {
         loading = false;
         errorMessage = "";
       });
-    }).catchError((e){
+    }).catchError((e) {
       setState(() {
         loading = false;
         errorMessage = e.toString();
@@ -62,13 +62,13 @@ class UsersFormSt extends State<UsersForm> {
 
     return Expanded(
       child: Scrollbar(
-        isAlwaysShown: true,
+        thumbVisibility: true,
         child: SingleChildScrollView(
           child: Container(
             padding: const EdgeInsets.all(6),
             child: Wrap(
               children: userList.map<Widget>(
-                    (e) {
+                (e) {
                   return UserCard(widget.arg.connection, e, () {
                     Navigator.of(context).pushNamed(
                       "/user",
@@ -78,7 +78,10 @@ class UsersFormSt extends State<UsersForm> {
                       ),
                     );
                   }, () {
-                    Repository().client(widget.arg.connection).userRemove(e).then((value) {
+                    Repository()
+                        .client(widget.arg.connection)
+                        .userRemove(e)
+                        .then((value) {
                       loadUserList();
                     });
                   });
@@ -101,31 +104,33 @@ class UsersFormSt extends State<UsersForm> {
 
         return Scaffold(
           appBar: TitleBar(
-            widget.arg.connection, "Users",
+            widget.arg.connection,
+            "Users",
             actions: [
               buildActionButton(context, Icons.add, "Add User", () {
-                Navigator.of(context).pushNamed("/user_add", arguments: UserAddFormArgument(widget.arg.connection));
+                Navigator.of(context).pushNamed("/user_add",
+                    arguments: UserAddFormArgument(widget.arg.connection));
               }),
               buildHomeButton(context),
             ],
           ),
           body: Container(
-          color: DesignColors.mainBackgroundColor,
-        child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    LeftNavigator(showLeft),
-                    buildContent(context),
-                  ],
+            color: DesignColors.mainBackgroundColor,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      LeftNavigator(showLeft),
+                      buildContent(context),
+                    ],
+                  ),
                 ),
-              ),
-              BottomNavigator(showBottom),
-            ],
-          ),
+                BottomNavigator(showBottom),
+              ],
+            ),
           ),
         );
       },

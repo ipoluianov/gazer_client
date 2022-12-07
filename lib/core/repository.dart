@@ -2,17 +2,10 @@ import 'package:gazer_client/core/gazer_local_client.dart';
 import 'package:gazer_client/core/history/history.dart';
 import 'package:gazer_client/core/items_watcher/items_watcher.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/core/xchg/xchg.dart';
 
 import '../xchg/peer.dart';
-import '../xchg_old/xchg_connection.dart';
 
-enum NavIndex {
-  units,
-  charts,
-  maps,
-  more
-}
+enum NavIndex { units, charts, maps, more }
 
 class Repository {
   static final Repository _singleton = Repository._internal();
@@ -32,12 +25,14 @@ class Repository {
   Peer peer = Peer(null);
 
   GazerLocalClient client(Connection conn) {
-    String clientKey = conn.address + " / " + conn.sessionKey + " / " + conn.transport;
+    String clientKey =
+        conn.address + " / " + conn.sessionKey + " / " + conn.transport;
     if (clients.containsKey(clientKey)) {
       GazerLocalClient? client = clients[clientKey];
       return client!;
     } else {
-      GazerLocalClient client = GazerLocalClient(clientKey, conn.transport, conn.address, conn.sessionKey);
+      GazerLocalClient client = GazerLocalClient(
+          clientKey, conn.transport, conn.address, conn.sessionKey);
       clients[clientKey] = client;
       print("Created client: $clientKey");
       return client;

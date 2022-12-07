@@ -53,21 +53,26 @@ class TimeChartHorizontalScale {
   }
 
   void draw(Canvas canvas, Size size) {
-
     if (height < 1) {
       return;
     }
 
-    if (xOffset.isInfinite || xOffset.isNaN || yOffset.isInfinite || yOffset.isNaN || width.isInfinite || width.isNaN || height.isInfinite || height.isNaN) {
+    if (xOffset.isInfinite ||
+        xOffset.isNaN ||
+        yOffset.isInfinite ||
+        yOffset.isNaN ||
+        width.isInfinite ||
+        width.isNaN ||
+        height.isInfinite ||
+        height.isNaN) {
       return;
     }
 
-    canvas.save();
-    canvas.clipRect(Rect.fromLTWH(xOffset, yOffset, width, height));
-
     international.DateFormat timeFormat = international.DateFormat("HH:mm:ss");
-    international.DateFormat timeShortFormat = international.DateFormat("HH:mm");
-    international.DateFormat dateFormat = international.DateFormat("yyyy-MM-dd");
+    international.DateFormat timeShortFormat =
+        international.DateFormat("HH:mm");
+    international.DateFormat dateFormat =
+        international.DateFormat("yyyy-MM-dd");
 
     var countOfValues = width / 50;
     double diapasonX = (displayMax - displayMin).toDouble();
@@ -80,7 +85,8 @@ class TimeChartHorizontalScale {
       displayDatesBlocks = false;
     }
 
-    List<int> beautifulScale = getHorBeautifulScale(displayMin, displayMax, countOfValues.toInt(), 0);
+    List<int> beautifulScale =
+        getHorBeautifulScale(displayMin, displayMax, countOfValues.toInt(), 0);
 
     for (int t in beautifulScale) {
       DateTime dt = DateTime.fromMicrosecondsSinceEpoch(t);
@@ -101,8 +107,19 @@ class TimeChartHorizontalScale {
 
       if (diapasonX > 0) {
         double xPos = ((t - displayMin) / diapasonX) * width;
-
         double yPos = 0;
+
+        canvas.drawLine(
+            Offset(xOffset + xPos, 0),
+            Offset(xOffset + xPos, yOffset + yPos + 5),
+            Paint()
+              ..style = PaintingStyle.stroke
+              ..color = Colors.white.withOpacity(0.1)
+              ..strokeWidth = 1);
+
+        canvas.save();
+        canvas.clipRect(Rect.fromLTWH(xOffset, yOffset, width, height));
+
         canvas.drawLine(
             Offset(xOffset + xPos, yOffset + yPos),
             Offset(xOffset + xPos, yOffset + yPos + 5),
@@ -120,17 +137,32 @@ class TimeChartHorizontalScale {
           yOffsetInScale += 12;
         }*/
 
-        drawText(canvas, xPos + xOffset - timeWidth / 2, yPos + yOffsetInScale, timeWidth, 100, timeStr, 10, Colors.blueAccent, TextAlign.center);
+        drawText(canvas, xPos + xOffset - timeWidth / 2, yPos + yOffsetInScale,
+            timeWidth, 100, timeStr, 10, Colors.blueAccent, TextAlign.center);
         yOffsetInScale += 12;
 
         if (!displayDatesBlocks) {
-          drawText(canvas, xPos + xOffset - timeWidth / 2, yPos + yOffsetInScale, timeWidth, 100, dateStr, 12, Colors.blueAccent, TextAlign.center);
+          drawText(
+              canvas,
+              xPos + xOffset - timeWidth / 2,
+              yPos + yOffsetInScale,
+              timeWidth,
+              100,
+              dateStr,
+              12,
+              Colors.blueAccent,
+              TextAlign.center);
         }
+        canvas.restore();
       }
     }
 
+    canvas.save();
+    canvas.clipRect(Rect.fromLTWH(xOffset, yOffset, width, height));
+
     if (displayDatesBlocks && diapasonX > 0) {
-      var beautifulScaleForDates = getBeautifulScaleForDates(displayMin.toInt(), displayMax.toInt());
+      var beautifulScaleForDates =
+          getBeautifulScaleForDates(displayMin.toInt(), displayMax.toInt());
       var off = yOffset + 14;
       for (int d in beautifulScaleForDates) {
         DateTime dt = DateTime.fromMicrosecondsSinceEpoch(d);
@@ -139,7 +171,9 @@ class TimeChartHorizontalScale {
 
         var isToday = false;
         var dateNow = DateTime.now();
-        if (dateNow.year == dt.year && dateNow.month == dt.month && dateNow.day == dt.day) {
+        if (dateNow.year == dt.year &&
+            dateNow.month == dt.month &&
+            dateNow.day == dt.day) {
           isToday = true;
         }
 
@@ -181,7 +215,9 @@ class TimeChartHorizontalScale {
               ..strokeWidth = 1);
 
         double dateTextHeight = 12;
-        var dateTextPosX = xPos1Visible + (xPos2Visible - xPos1Visible) / 2 - (dateTextWidth / 2);
+        var dateTextPosX = xPos1Visible +
+            (xPos2Visible - xPos1Visible) / 2 -
+            (dateTextWidth / 2);
         var dateTextPosY = off + 3;
 
         if (dateTextPosX + dateTextWidth > width) {
@@ -200,17 +236,20 @@ class TimeChartHorizontalScale {
         }
         //(this.left, this.top, this.right, this.bottom
         canvas.drawRect(
-            Rect.fromLTWH(dateTextPosX, dateTextPosY, dateTextWidth, dateTextHeight),
+            Rect.fromLTWH(
+                dateTextPosX, dateTextPosY, dateTextWidth, dateTextHeight),
             Paint()
               ..style = PaintingStyle.fill
               ..color = Colors.green);
         canvas.drawRect(
-            Rect.fromLTWH(dateTextPosX, dateTextPosY, dateTextWidth, dateTextHeight),
+            Rect.fromLTWH(
+                dateTextPosX, dateTextPosY, dateTextWidth, dateTextHeight),
             Paint()
               ..style = PaintingStyle.stroke
               ..color = Colors.green);
 
-        drawText(canvas, dateTextPosX, dateTextPosY - 1, dateTextWidth, dateTextHeight, dateStr, 10, Colors.white, TextAlign.center);
+        drawText(canvas, dateTextPosX, dateTextPosY - 1, dateTextWidth,
+            dateTextHeight, dateStr, 10, Colors.white, TextAlign.center);
       }
     }
 
@@ -225,8 +264,8 @@ class TimeChartHorizontalScale {
     canvas.restore();
   }
 
-
-  List<int> getHorBeautifulScale(double min, double max, int countOfPoints, int minStep) {
+  List<int> getHorBeautifulScale(
+      double min, double max, int countOfPoints, int minStep) {
     List<int> scale = [];
 
     if (max < min) {
@@ -321,7 +360,8 @@ class TimeChartHorizontalScale {
     return scale;
   }
 
-  void drawText(Canvas canvas, double x, double y, double width, double height, String text, double size, Color color, TextAlign align) {
+  void drawText(Canvas canvas, double x, double y, double width, double height,
+      String text, double size, Color color, TextAlign align) {
     var textSpan = TextSpan(
       text: text,
       style: TextStyle(
@@ -329,7 +369,8 @@ class TimeChartHorizontalScale {
         fontSize: size,
       ),
     );
-    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
+    final textPainter = TextPainter(
+        text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
     textPainter.layout(
       minWidth: width,
       maxWidth: width,
@@ -340,17 +381,14 @@ class TimeChartHorizontalScale {
   double horValueToPixel(double time) {
     var diapason = displayMax - displayMin;
     var offsetOfValueFromMin = time - displayMin;
-    var onePixelValue =
-        width / diapason;
+    var onePixelValue = width / diapason;
     return onePixelValue * offsetOfValueFromMin + xOffset;
   }
 
   double horPixelToValue(double pixels) {
     pixels -= xOffset;
     var diapason = displayMax - displayMin;
-    var onePixelValue =
-        width / diapason;
+    var onePixelValue = width / diapason;
     return pixels / onePixelValue + displayMin;
   }
-
 }

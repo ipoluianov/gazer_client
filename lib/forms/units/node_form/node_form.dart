@@ -206,7 +206,7 @@ class NodeFormSt extends State<NodeForm> {
         Container(
           child: Scrollbar(
             controller: scrollController2,
-            isAlwaysShown: true,
+            thumbVisibility: true,
             thickness: 15,
             radius: const Radius.circular(5),
             child: SingleChildScrollView(

@@ -165,7 +165,7 @@ class ResourcesFormSt extends State<ResourcesForm> {
     return Expanded(
       child: Scrollbar(
         controller: scrollController1,
-        isAlwaysShown: true,
+        thumbVisibility: true,
         child: SingleChildScrollView(
           controller: scrollController1,
           child: Column(
@@ -357,7 +357,7 @@ class ResourcesFormSt extends State<ResourcesForm> {
     return Expanded(
       child: Scrollbar(
         controller: scrollController2,
-        isAlwaysShown: true,
+        thumbVisibility: true,
         child: SingleChildScrollView(
           controller: scrollController2,
           child: Container(
