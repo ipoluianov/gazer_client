@@ -360,6 +360,86 @@ Future<Uint8List> rsaEncrypt(
   return Uint8List.fromList(result);
 }
 
+bool checkPub(RSAPrivateKey privateKey) {
+  if (privateKey.n == null) {
+    return false;
+  }
+  if (privateKey.publicExponent == null) {
+    return false;
+  }
+  if (privateKey.publicExponent!.toInt() < 2) {
+    return false;
+  }
+  if (privateKey.publicExponent!.toInt() > 0xFFFFFFFF) {
+    return false;
+  }
+  return true;
+}
+
+BigInt decrypt(RSAPrivateKey privateKey, BigInt c) {
+  BigInt result = c.modPow(privateKey.privateExponent!, privateKey.modulus!);
+  return result;
+}
+
+Future<Uint8List> rsaDecrypt(
+    RSAPrivateKey privateKey, Uint8List ciphertext) async {
+  if (!checkPub(privateKey)) {
+    throw "wrong public key";
+  }
+  var k = (privateKey.n!.bitLength + 7) ~/ 8;
+  var hLen = 32;
+  if (ciphertext.length > k || k < hLen * 2 + 2) {
+    throw "wrong data len";
+  }
+
+  var c = bytesToBigInt(ciphertext);
+
+  var m = decrypt(privateKey, c);
+
+  var em = fillBytes(m, k);
+
+  var firstByteIsZero = em[0] == 0 ? 1 : 0;
+
+  var seed = em.sublist(1, hLen + 1);
+  var db = em.sublist(hLen + 1);
+
+  // mgf1XOR(db, 0, db.length, h, 0, h.length);
+  mgf1XOR(seed, 0, seed.length, db, 0, db.length);
+  mgf1XOR(db, 0, db.length, seed, 0, seed.length);
+
+  // The remainder of the plaintext must be zero or more 0x00, followed
+  // by 0x01, followed by the message.
+  //   lookingForIndex: 1 iff we are still looking for the 0x01
+  //   index: the offset of the first 0x01 byte
+  //   invalid: 1 iff we saw a non-zero byte before the 0x01.
+  int lookingForIndex = 1;
+  int index = 0;
+  int invalid = 0;
+  var rest = db.sublist(hLen);
+
+  for (int i = 0; i < rest.length; i++) {
+    var equals0 = rest[i] == 0 ? 1 : 0;
+    var equals1 = rest[i] == 1 ? 1 : 0;
+    if (lookingForIndex & equals1 == 1) {
+      index = i;
+    }
+    if (equals1 == 1) {
+      lookingForIndex = 0;
+    }
+    if (lookingForIndex & (~equals0) == 1) {
+      invalid = 1;
+    }
+  }
+
+  int checkResult = firstByteIsZero & (~invalid) & (~lookingForIndex);
+
+  if (checkResult != 1) {
+    throw "Error RSA decryption";
+  }
+
+  return Uint8List.fromList(rest.sublist(index + 1));
+}
+
 Uint8List rsaSign(RSAPrivateKey privateKey, Uint8List dataToSign) {
   final signer = RSASigner(SHA256Digest(), '0609608648016503040201');
 

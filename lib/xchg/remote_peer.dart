@@ -219,24 +219,22 @@ class RemotePeer {
 
       var authDataBS = utf8.encode(authData);
 
-      var tempAESKey = Uint8List(32);
-      var rng = Random();
-      for (int i = 0; i < 32; i++) {
-        tempAESKey[i] = rng.nextInt(255);
-      }
+      var localPublicKeyBS = encodePublicKeyToPKIX(keyPair.publicKey);
 
+      // Prepare auth frame
       Uint8List authFrameSecret = Uint8List(16 + authDataBS.length);
       copyBytes(authFrameSecret, 0, getNonceResult.data);
       copyBytes(authFrameSecret, 16, Uint8List.fromList(authDataBS));
-
+      // Encrypt auth frame
       Uint8List encryptedAuthFrame =
           await rsaEncrypt(remotePublicKey!, authFrameSecret);
 
       Uint8List authFrame =
-          Uint8List(4 + tempAESKey.length + encryptedAuthFrame.length);
-      authFrame.buffer.asUint32List(0)[0] = tempAESKey.length;
-      copyBytes(authFrame, 4, tempAESKey);
-      copyBytes(authFrame, 4 + tempAESKey.length, encryptedAuthFrame);
+          Uint8List(4 + localPublicKeyBS.length + encryptedAuthFrame.length);
+      authFrame.buffer.asUint32List(0)[0] =
+          localPublicKeyBS.buffer.lengthInBytes;
+      copyBytes(authFrame, 4, localPublicKeyBS);
+      copyBytes(authFrame, 4 + localPublicKeyBS.length, encryptedAuthFrame);
 
       CallResult authResult = await regularCall(
           remoteConnectionPoint, "/xchg-auth", authFrame, Uint8List(0));
@@ -245,7 +243,12 @@ class RemotePeer {
         return "auth error-:" + authResult.error;
       }
 
-      Uint8List authResultDecrypted = aesDecrypt(tempAESKey, authResult.data);
+      //authResult.data[3] = 0x22;
+
+      Uint8List authResultDecrypted =
+          await rsaDecrypt(keyPair.privateKey, authResult.data);
+
+      //Uint8List authResultDecrypted = aesDecrypt(tempAESKey, authResult.data);
 
       if (authResultDecrypted.length != 8 + 32) {
         authProcessing = false;

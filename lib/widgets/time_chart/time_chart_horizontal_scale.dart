@@ -109,14 +109,6 @@ class TimeChartHorizontalScale {
         double xPos = ((t - displayMin) / diapasonX) * width;
         double yPos = 0;
 
-        canvas.drawLine(
-            Offset(xOffset + xPos, 0),
-            Offset(xOffset + xPos, yOffset + yPos + 5),
-            Paint()
-              ..style = PaintingStyle.stroke
-              ..color = Colors.white.withOpacity(0.1)
-              ..strokeWidth = 1);
-
         canvas.save();
         canvas.clipRect(Rect.fromLTWH(xOffset, yOffset, width, height));
 
