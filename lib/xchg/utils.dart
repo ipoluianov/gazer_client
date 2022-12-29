@@ -31,6 +31,12 @@ String addressForPublicKey(RSAPublicKey publicKey) {
       base32.encode(Uint8List.fromList(d.bytes.sublist(0, 30))).toLowerCase();
 }
 
+Uint8List addressBSForPublicKey(RSAPublicKey publicKey) {
+  var publicKeyBS = encodePublicKeyToPKIX(publicKey);
+  var d = sha256.convert(publicKeyBS);
+  return Uint8List.fromList(d.bytes.sublist(0, 30));
+}
+
 void copyBytes(Uint8List dest, int offset, Uint8List src) {
   for (int i = 0; i < src.length; i++) {
     int destIndex = i + offset;

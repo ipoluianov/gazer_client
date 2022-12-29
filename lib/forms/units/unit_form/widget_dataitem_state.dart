@@ -33,7 +33,7 @@ class WidgetDataItemStateState extends State<WidgetDataItemState> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(milliseconds: 50), (t) {
+    _timer = Timer.periodic(const Duration(milliseconds: 2000), (t) {
       timerUpdate();
     });
   }

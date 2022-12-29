@@ -6,20 +6,16 @@ import 'package:base32/base32.dart';
 class XchgNetworkHost {
   String address;
   String name;
-  String ethAddress;
-  String solAddress;
 
-  XchgNetworkHost(this.address, this.name, this.ethAddress, this.solAddress);
+  XchgNetworkHost(this.address, this.name);
 
   factory XchgNetworkHost.fromJson(Map<String, dynamic> json) {
-    return XchgNetworkHost(json['address'], json['name'], json['eth_addr'], json['sol_addr']);
+    return XchgNetworkHost(json['address'], json['name']);
   }
 
   Map<String, dynamic> toJson() => {
         'address': address,
         'name': name,
-        'eth_addr': ethAddress,
-        'sol_addr': solAddress,
       };
 }
 
@@ -29,7 +25,10 @@ class XchgNetworkRange {
   XchgNetworkRange(this.prefix, this.hosts);
 
   factory XchgNetworkRange.fromJson(Map<String, dynamic> json) {
-    return XchgNetworkRange(json['prefix']??"", List<XchgNetworkHost>.from(json['hosts'].map((model) => XchgNetworkHost.fromJson(model))));
+    return XchgNetworkRange(
+        json['prefix'] ?? "",
+        List<XchgNetworkHost>.from(
+            json['hosts'].map((model) => XchgNetworkHost.fromJson(model))));
   }
 
   Map<String, dynamic> toJson() => {
@@ -50,29 +49,35 @@ Future<XchgNetwork?> loadNetworkFromInternet() async {
 
 class XchgNetwork {
   String name = "";
-  String ethAddress = "";
-  String solAddress = "";
+  int timestamp = 0;
+  List<String> initialPoints = [];
   List<XchgNetworkRange> ranges = [];
-  List<XchgNetworkHost> gateways = [];
 
-  XchgNetwork(this.name, this.ethAddress, this.solAddress, this.ranges, this.gateways);
+  /////////////////////////
+  String debugSource = "";
+  /////////////////////////
+
+  XchgNetwork(this.name, this.timestamp, this.initialPoints, this.ranges);
 
   factory XchgNetwork.empty() {
-    return XchgNetwork("", "", "", [], []);
+    return XchgNetwork("", 0, [], []);
   }
 
-
   factory XchgNetwork.fromJson(Map<String, dynamic> json) {
-    return XchgNetwork(json['prefix']??"", json['eth_addr']??"", json['sol_addr']??"", List<XchgNetworkRange>.from(json['ranges'].map((model) => XchgNetworkRange.fromJson(model))),
-    List<XchgNetworkHost>.from(json['gateways'].map((model) => XchgNetworkHost.fromJson(model))));
+    return XchgNetwork(
+      json['name'] ?? "",
+      json['timestamp'] ?? 0,
+      List<String>.from(json['initial_points'].map((model) => model)),
+      List<XchgNetworkRange>.from(
+          json['ranges'].map((model) => XchgNetworkRange.fromJson(model))),
+    );
   }
 
   Map<String, dynamic> toJson() => {
         'name': name,
-        'eth_addr': ethAddress,
-        'sol_addr': solAddress,
+        'timestamp': timestamp,
+        'initial_points': ranges,
         'ranges': ranges,
-        'gateways': gateways,
       };
 
   List<String> getNodesAddressesByAddress(String address) {
@@ -81,7 +86,12 @@ class XchgNetwork {
     XchgNetworkRange? preferredRange;
     int preferredRangeScore = 0;
 
-    var addressHex = base32.decodeAsHexString(address.toUpperCase()).toLowerCase();
+    if (address.startsWith("#")) {
+      address = address.substring(1);
+    }
+
+    var addressHex =
+        base32.decodeAsHexString(address.toUpperCase()).toLowerCase();
     for (var range in ranges) {
       int rangeScore = 0;
       for (int i = 0; i < addressHex.length && i < range.prefix.length; i++) {

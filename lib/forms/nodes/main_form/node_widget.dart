@@ -34,7 +34,7 @@ class NodeWidgetSt extends State<NodeWidget> {
         false; // Reset info in connection
     updateNodeInfo();
 
-    _timer = Timer.periodic(const Duration(milliseconds: 5000), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 10000), (timer) {
       if (errorExists) {
         updateNodeInfo();
       }

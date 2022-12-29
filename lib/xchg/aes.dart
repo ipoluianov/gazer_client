@@ -1,15 +1,17 @@
+import 'dart:math';
 import 'dart:typed_data';
 import "package:pointycastle/export.dart";
 
 Uint8List aesEncrypt(Uint8List keyBytes, Uint8List dataToEncrypt) {
-  final nonce = Uint8List(12);
-  nonce[0] = 1;
-  nonce[1] = 2;
-  nonce[2] = 3;
-  nonce[3] = 4;
-
-  if (keyBytes.isEmpty) {
+  if (keyBytes.length != 32) {
     return Uint8List(0);
+  }
+
+  // Generate 12 random bytes for nonce
+  final nonce = Uint8List(12);
+  var rnd = Random.secure();
+  for (int i = 0; i < 12; i++) {
+    nonce[i] = rnd.nextInt(255);
   }
 
   final cipher = GCMBlockCipher(AESEngine())
@@ -26,32 +28,22 @@ Uint8List aesEncrypt(Uint8List keyBytes, Uint8List dataToEncrypt) {
   var b = BytesBuilder();
   b.add(nonce);
   b.add(encryptedData);
-  var result = b.toBytes();
-
-  //print(keyBytes);
-  //print(result);
-  //print(result.length);
-
-  //aesDecrypt(keyBytes, encryptedData);
-  return result;
+  return b.toBytes();
 }
 
 Uint8List aesDecrypt(Uint8List keyBytes, Uint8List dataToDecrypt) {
-  final nonce = Uint8List(12);
-
-  for (int i = 0; i < 12; i++) {
-    nonce[i] = dataToDecrypt[i];
-  }
-  dataToDecrypt = dataToDecrypt.sublist(12);
-
-  if (keyBytes.isEmpty) {
+  if (keyBytes.length != 32) {
     return Uint8List(0);
   }
 
-  //dataToDecrypt = base64Decode(utf8.decode(dataToDecrypt));
-  //print("decode---------------------");
-  //print(dataToDecrypt);
-  //print("decode---------------------");
+  // Get nonce from block
+  final nonce = Uint8List(12);
+  for (int i = 0; i < 12; i++) {
+    nonce[i] = dataToDecrypt[i];
+  }
+
+  // Get cipher
+  dataToDecrypt = dataToDecrypt.sublist(12);
 
   final cipher = GCMBlockCipher(AESEngine())
     ..init(
@@ -64,10 +56,5 @@ Uint8List aesDecrypt(Uint8List keyBytes, Uint8List dataToDecrypt) {
         ));
 
   var encryptedData = cipher.process(dataToDecrypt);
-  //print("decrypt:");
-  //print(utf8.decode(encryptedData));
-  //print(base64Encode(keyBytes));
   return encryptedData;
 }
-
-

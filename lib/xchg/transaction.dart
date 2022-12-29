@@ -1,17 +1,16 @@
 import 'dart:typed_data';
 import 'package:base32/base32.dart';
+import 'package:gazer_client/xchg/utils.dart';
 
 class Transaction {
-  int frameType = 0;
-  // Reserved
-
-  int transactionId = 0;
-  int sessionId = 0;
-  int offset = 0;
-  int totalSize = 0;
-  String srcAddress = "";
-  String destAddress = "";
-  Uint8List data = Uint8List(0);
+  int frameType = 0; // offset: 8
+  int transactionId = 0; // offset: 16
+  int sessionId = 0; // offset: 24
+  int offset = 0; // offset: 32
+  int totalSize = 0; // offset: 36
+  String srcAddress = ""; // offset: 40
+  String destAddress = ""; // offset: 70
+  Uint8List data = Uint8List(0); // offset: 128
 
   bool complete = false;
   String error = "";
@@ -60,65 +59,27 @@ class Transaction {
 
   List<int> serialize() {
     int frameLen = 128 + data.length;
-    List<int> result = [];
-    result.addAll(int32bytes(frameLen));
-    result.addAll(int32bytes(0)); // CRC32
+    Uint8List result = Uint8List(frameLen);
+    result.fillRange(0, frameLen, 0);
 
-    result.add(frameType);
-    result.add(0x00);
-    result.add(0x00);
-    result.add(0x00);
+    result.buffer.asUint32List(0)[0] = frameLen;
+    result.buffer.asUint32List(4)[0] = 0; // CRC32
+    result[8] = frameType;
 
-    result.add(0x00);
-    result.add(0x00);
-    result.add(0x00);
-    result.add(0x00);
-
-    result.addAll(int64bytes(transactionId));
-    result.addAll(int64bytes(sessionId));
-    result.addAll(int32bytes(offset));
-    result.addAll(int32bytes(totalSize));
+    result.buffer.asUint64List(16)[0] = transactionId;
+    result.buffer.asUint64List(24)[0] = sessionId;
+    result.buffer.asUint32List(32)[0] = offset;
+    result.buffer.asUint32List(36)[0] = totalSize;
 
     var srcAddressBS =
         base32.decode(srcAddress.replaceAll("#", "").toUpperCase());
     var destAddressBS =
         base32.decode(destAddress.replaceAll("#", "").toUpperCase());
 
-    result.addAll(srcAddressBS);
-    result.addAll(destAddressBS);
+    copyBytes(result, 40, srcAddressBS);
+    copyBytes(result, 70, destAddressBS);
+    copyBytes(result, 128, data);
 
-    result.addAll([
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
-    ]);
-
-    result.addAll(data);
     return result;
   }
 

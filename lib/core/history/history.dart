@@ -19,7 +19,7 @@ class History {
       clear();
     });
     _timerRequester =
-        Timer.periodic(const Duration(milliseconds: 500), (timer) {
+        Timer.periodic(const Duration(milliseconds: 250), (timer) {
       request();
     });
   }
@@ -559,7 +559,7 @@ class HistoryItemTimeRange {
         needToFastLoad = false;
         int diff = needToLoadItem.maxTime - needToLoadItem.minTime;
         int expectedCount = (diff / groupTimeRange).round();
-        int needExpectedCount = 1000;
+        int needExpectedCount = 4000;
         var mTime = needToLoadItem.minTime;
 
         var beginTime = mTime;

@@ -1,28 +1,33 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:gazer_client/xchg/network.dart';
 import 'package:gazer_client/xchg/remote_peer.dart';
+import 'package:gazer_client/xchg/request_udp.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 
+import 'network_container.dart';
 import 'rsa.dart';
 import 'session.dart';
 import 'transaction.dart';
 import 'udp_address.dart';
 import 'utils.dart';
 
+import 'package:http/http.dart' as http;
+
 class XchgServerProcessor {}
 
 class Peer {
   AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> keyPair = generateRSAkeyPair();
-  String localAddress = "";
   bool started = false;
   bool stopping = false;
-  XchgNetwork network = XchgNetwork("", "", "", [], []);
+
+  DateTime lastNetworkUpdateTime = DateTime.now();
+  XchgNetwork? network;
+
   XchgServerProcessor? processor;
 
   static int udpStartPort = 42000;
@@ -49,9 +54,21 @@ class Peer {
     }
     keyPair = privKey;
 
-    _timer = Timer.periodic(const Duration(milliseconds: 500), (t) {
-      //checkConnection();
+    requestIncomingFramesFromInternet();
+    _timer = Timer.periodic(const Duration(milliseconds: 100), (t) {
+      requestIncomingFramesFromInternet();
     });
+  }
+
+  void requestIncomingFramesFromInternet() {
+    checkNetwork();
+    if (network != null) {
+      String localAddress = addressForPublicKey(keyPair.publicKey);
+      var routers = network!.getNodesAddressesByAddress(localAddress);
+      for (var router in routers) {
+        requestFramesFromInternet(router);
+      }
+    }
   }
 
   void start() {}
@@ -60,83 +77,96 @@ class Peer {
     _timer.cancel();
   }
 
-  Future<void> requestUDP(UdpAddress address, List<Uint8List> frames) async {
-    InternetAddress bindAddr = InternetAddress.anyIPv4;
+  int lastReceivedMessageId = 0;
+  bool requestingFromInternet = false;
 
-    /*if (address.address.type == InternetAddressType.IPv6) {
-      bindAddr = InternetAddress.anyIPv6;
-    }*/
-
-    //String addrStr = address.address.rawAddress[];
-
-    if (address.address.rawAddress.length == 16) {
-      if (address.address.rawAddress[10] == 255 &&
-          address.address.rawAddress[11] == 255) {
-        address = UdpAddress(
-            InternetAddress.fromRawAddress(
-                address.address.rawAddress.sublist(12)),
-            address.port);
-      }
+  Future<void> requestFramesFromInternet(String host) async {
+    if (requestingFromInternet) {
+      return;
     }
 
-    var udpSocket = await RawDatagramSocket.bind(bindAddr, 0);
-    //udpSocket.broadcastEnabled = true;
-    udpSocket.listen(
-        (event) {
-          if (event == RawSocketEvent.write) {
-            for (var fr in frames) {
-              for (var i = 0; i < 10; i++) {
-                var sentBytes =
-                    udpSocket.send(fr, address.address, address.port);
-                if (sentBytes == fr.length) {
-                  break;
-                }
-                print("Sent Error $sentBytes");
-              }
-            }
-          }
-          if (event == RawSocketEvent.read) {
-            Datagram? dg = udpSocket.receive();
-            if (dg != null) {
-              processFrame(UdpAddress(dg.address, dg.port), dg.data);
-            }
-            //udpSocket.close();
-          }
+    requestingFromInternet = true;
+    Uint8List localAddressBS = addressBSForPublicKey(keyPair.publicKey);
+    Uint8List getMessagesRequest = Uint8List(16 + 30);
+    getMessagesRequest.buffer.asUint64List(0)[0] = lastReceivedMessageId;
+    getMessagesRequest.buffer.asUint64List(8)[0] = 1024 * 1024;
+    copyBytes(getMessagesRequest, 16, localAddressBS);
 
-          if (event == RawSocketEvent.closed) {
-            udpSocket.close();
+    Uint8List res = Uint8List(0);
+    try {
+      res = await httpCall(host, "r", getMessagesRequest);
+    } catch (err) {
+      //print("ex: $err");
+    }
+    if (res.length >= 8) {
+      lastReceivedMessageId = res.buffer.asUint64List(0)[0];
+      int offset = 8;
+      while (offset < res.length) {
+        if (offset + 128 < res.length) {
+          var tempBuf = res.sublist(offset);
+          int frameLen = tempBuf.buffer.asUint32List(0)[0];
+          if (offset + frameLen <= res.length) {
+            Uint8List frame = res.sublist(offset, offset + frameLen);
+            processFrame(null, host, frame);
+          } else {
+            break;
           }
-          if (event == RawSocketEvent.readClosed) {
-            udpSocket.close();
-          }
-        },
-        cancelOnError: true,
-        onDone: () {
-          udpSocket.close();
-        },
-        onError: (err) {
-          udpSocket.close();
-        });
-
-    await Future.delayed(const Duration(milliseconds: 3000));
-    udpSocket.close();
+          offset += frameLen;
+        } else {
+          break;
+        }
+      }
+    }
+    requestingFromInternet = false;
   }
 
-  Future<void> processFrame(UdpAddress sourceAddress, Uint8List frame) async {
-    //print("received: $sourceAddress ${frame.length} ${frame[0]}");
+  bool updatingNetwork = false;
+  Future<void> updateNetwork() async {
+    if (updatingNetwork) {
+      return;
+    }
+    updatingNetwork = true;
+    try {
+      network = await networkContainerLoadFromInternet();
+      if (network != null) {
+        /*print(
+            "networkContainerLoadFromInternet ok ${network!.name} source:${network!.debugSource}");*/
+      }
+    } catch (ex) {
+      print("networkContainerLoadFromInternet ex $ex");
+    }
+    updatingNetwork = false;
+  }
 
-    if (frame.length < 8) {
+  Future<Uint8List> httpCall(
+      String routerHost, String function, Uint8List frame) async {
+    var req = http.MultipartRequest(
+        'POST', Uri.parse("http://$routerHost/api/$function"));
+    req.fields['d'] = base64Encode(frame);
+
+    http.Response response = await http.Response.fromStream(
+        await req.send().timeout(const Duration(milliseconds: 10000)));
+
+    if (response.statusCode == 200) {
+      return base64Decode(response.body);
+    }
+    throw "Exception: ${response.statusCode}";
+  }
+
+  Future<void> processFrame(
+      UdpAddress? sourceAddress, String router, Uint8List frame) async {
+    // Min size of frame is 128 bytes
+    if (frame.length < 128) {
       return;
     }
 
     int frameType = frame[8];
-
     switch (frameType) {
       case 0x10:
         processFrame10(sourceAddress, frame);
         break;
       case 0x11:
-        processFrame11(sourceAddress, frame);
+        processFrame11(sourceAddress, router, frame);
         break;
       case 0x20:
         processFrame20(sourceAddress, frame);
@@ -148,115 +178,11 @@ class Peer {
     }
   }
 
-  // Ping
-  void processFrame00(UdpAddress sourceAddress, Uint8List frame) {
-    frame[0] = 0x01;
-    frame[1] = 0x00;
-    //socket.send(frame, sourceAddress.address, sourceAddress.port);
-    requestUDP(sourceAddress, [frame]);
-  }
-
-  void processFrame01(UdpAddress sourceAddress, Uint8List frame) {}
-
-// ----------------------------------------
-// Nonce
-// ----------------------------------------
-
-  void processFrame02(UdpAddress sourceAddress, Uint8List frame) {
-    // nothing to do
-  }
-  void processFrame03(UdpAddress sourceAddress, Uint8List frame) {
-    if (frame[1] != 0) {
-      return;
-    }
-    if (frame.length != 8 + 16) {
-      return;
-    }
-
-    Uint8List nonce = frame.sublist(8);
-
-    Uint8List data = Uint8List(0);
-    Uint8List request = Uint8List(8);
-    request[0] = 0x02;
-    request[1] = 0x00;
-    request[2] = 0x00;
-    request[3] = 0x00;
-    request[4] = 0x00;
-    request[5] = 0x00;
-    request[6] = 0x00;
-    request[7] = 0x00;
-    request.addAll(nonce);
-    request.addAll(Uint8List(8));
-
-    var signature = rsaSign(keyPair.privateKey, request.sublist(8, 32));
-    request.addAll(signature);
-
-    var publicKeyBS = encodePublicKeyToPKIX(keyPair.publicKey);
-    request.addAll(Uint8List(4));
-    request.buffer.asInt32List(288)[0] = publicKeyBS.length;
-    request.addAll(publicKeyBS);
-    request.addAll(data);
-
-    //socket.send(request, sourceAddress.address, sourceAddress.port);
-    requestUDP(sourceAddress, [request]);
-  }
-
-  void processFrame07(UdpAddress sourceAddress, Uint8List frame) {
-    List<int> addressBS = [];
-    int dataOffset = -1;
-    for (int i = 8; i < frame.length; i++) {
-      var ch = frame[i];
-      if (ch == 61) {
-        // '='
-        dataOffset = i + 1;
-        break;
-      } else {
-        addressBS.add(frame[i]);
-      }
-    }
-
-    var address = utf8.decode(addressBS);
-
-    print("Received data from XCHGR $address");
-    for (int i = dataOffset; i < frame.length; i += 32) {
-      var type0 = frame[i];
-      var type1 = frame[i + 1];
-      var ipAddrAsList = frame.sublist(i + 2, i + 2 + 16);
-      String ipAddr = frame.sublist(i + 2, i + 2 + 16).toString();
-      int port = frame.buffer.asUint16List(i + 18)[0];
-      print(" - $type0 $type1 $ipAddr $port");
-
-      String addrHex = "";
-
-      for (int q = 0; q < 16; q++) {
-        if ((q % 2) == 0 && q != 0) {
-          addrHex += ":";
-        }
-
-        var hh = ipAddrAsList[q].toRadixString(16);
-        if (hh.length < 2) {
-          hh = "0" + hh;
-        }
-
-        addrHex += hh;
-      }
-
-      InternetAddress addr = InternetAddress(addrHex);
-      //print("------------- HEX:" + addrHex + " - " + addr.toString());
-
-      UdpAddress udpAddress = UdpAddress(addr, port);
-
-      /*for (var remotePeer in remotePeers.values) {
-        remotePeer.setInternetConnectionPoint(address, udpAddress);
-      }*/
-    }
-  }
-
 // ----------------------------------------
 // Incoming Call - Server Role
 // ----------------------------------------
 
-  void processFrame10(UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame10(UdpAddress? sourceAddress, Uint8List frame) {
     Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
 
     List<String> transactionsToRemove = [];
@@ -315,7 +241,8 @@ class Peer {
     }
   }
 
-  void processFrame11(UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame11(
+      UdpAddress? sourceAddress, String router, Uint8List frame) {
     RemotePeer? remotePeer;
     String receivedFromConnectionPoint =
         RemotePeer.connectionPointString(sourceAddress);
@@ -325,19 +252,14 @@ class Peer {
         remotePeer = peer;
         break;
       }
-      /*String inPoint = peer.internetConnectionPointString();
-      if (inPoint == receivedFromConnectionPoint) {
-        remotePeer = peer;
-        break;
-      }*/
     }
     if (remotePeer != null) {
-      remotePeer.processFrame(sourceAddress, frame);
+      remotePeer.processFrame(sourceAddress, router, frame);
     }
   }
 
   // ARP LAN request
-  void processFrame20(UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame20(UdpAddress? sourceAddress, Uint8List frame) {
     String localAddress = addressForPublicKey(keyPair.publicKey);
     Uint8List nonce = frame.sublist(8, 8 + 16);
     Uint8List nonceHash = Uint8List.fromList(sha256.convert(nonce).bytes);
@@ -354,19 +276,18 @@ class Peer {
     response.addAll(nonce);
     response.addAll(signature);
     response.addAll(publicKeyBS);
-    requestUDP(sourceAddress, [response]);
-    //socket.send(response, sourceAddress.address, sourceAddress.port);
+    sendFrame(sourceAddress, [response], this);
   }
 
   // ARP LAN response
-  void processFrame21(UdpAddress sourceAddress, Uint8List frame) {
+  void processFrame21(UdpAddress? sourceAddress, Uint8List frame) {
     try {
       Uint8List receivedPublicKeyBS = frame.sublist(128 + 16 + 256);
       var receivedPublicKey = decodePublicKeyFromPKIX(receivedPublicKeyBS);
       String receivedAddress = addressForPublicKey(receivedPublicKey);
       for (var peer in remotePeers.values) {
         if (peer.remoteAddress == receivedAddress) {
-          peer.setLANConnectionPoint(
+          peer.setRemotePublicKey(
               sourceAddress,
               receivedPublicKey,
               frame.sublist(128, 128 + 16),
@@ -378,7 +299,13 @@ class Peer {
     }
   }
 
-  void setProcessor(XchgServerProcessor processor) {}
+  void checkNetwork() {
+    var diffSec = lastNetworkUpdateTime.difference(DateTime.now()).inSeconds;
+    if (network == null || diffSec.abs() > 10) {
+      updateNetwork();
+      lastNetworkUpdateTime = DateTime.now();
+    }
+  }
 
   Future<CallResult> call(String remoteAddress, String authData,
       String function, Uint8List data) async {
@@ -386,13 +313,15 @@ class Peer {
     CallResult? res;
     res = CallResult();
 
+    // Update network file
+    checkNetwork();
+
     try {
       // Waiting for socket
       if (remotePeers.containsKey(remoteAddress)) {
         remotePeer = remotePeers[remoteAddress];
       } else {
-        remotePeer =
-            RemotePeer(this, remoteAddress, authData, keyPair, network);
+        remotePeer = RemotePeer(this, remoteAddress, authData, keyPair);
         remotePeers[remoteAddress] = remotePeer;
       }
       res = await remotePeer!.call(function, data);
