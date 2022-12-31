@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:base32/base32.dart';
+import 'package:gazer_client/xchg/udp_address.dart';
 import 'package:gazer_client/xchg/utils.dart';
 
 class Transaction {
@@ -18,6 +19,10 @@ class Transaction {
   DateTime dtBegin = DateTime.now();
   Uint8List result = Uint8List(0);
 
+  // Runtime
+  UdpAddress? srcUdpAddr;
+  String srcRouterAddr = "";
+
   int receivedDataLen = 0;
 
   factory Transaction.fromBinary(Uint8List frame, int offset, int size) {
@@ -29,9 +34,9 @@ class Transaction {
     tr.offset = frame.buffer.asUint32List(32)[0];
     tr.totalSize = frame.buffer.asUint32List(36)[0];
 
-    tr.srcAddress =
+    tr.srcAddress = "#" +
         base32.encode(Uint8List.fromList(frame.sublist(40, 70))).toLowerCase();
-    tr.destAddress =
+    tr.destAddress = "#" +
         base32.encode(Uint8List.fromList(frame.sublist(70, 100))).toLowerCase();
 
     tr.data = frame.sublist(128, size);

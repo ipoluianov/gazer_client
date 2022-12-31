@@ -78,16 +78,14 @@ class RemotePeer {
     return connectionPointString(lanConnectionPoint1);
   }
 
-  void processFrame(UdpAddress? sourceAddress, String router, Uint8List frame) {
-    var frameType = frame[8];
-    if (frameType == 0x11) {
-      processFrame11(sourceAddress, router, frame);
+  void processFrame(Transaction transaction) {
+    if (transaction.frameType == 0x11) {
+      processFrame11(transaction);
     }
   }
 
-  void processFrame11(
-      UdpAddress? sourceAddress, String router, Uint8List frame) {
-    Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
+  void processFrame11(Transaction transaction) {
+    //Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
 
     if (outgoingTransactions.containsKey(transaction.transactionId)) {
       var t = outgoingTransactions[transaction.transactionId];
@@ -158,19 +156,14 @@ class RemotePeer {
 
     var frameBS = Uint8List.fromList(frame);
 
-    for (int i = 42000; i < 42002; i++) {
+    for (int i = Peer.udpStartPort; i < Peer.udpEndPort; i++) {
       sendFrame(UdpAddress(InternetAddress("127.0.0.1"), i), [frameBS], peer);
     }
   }
 
-  /*UdpAddress? getConnectionPoint() {
-    return lanConnectionPoint1;
-  }*/
-
   Future<CallResult> call(String function, Uint8List data) async {
     await checkInternetConnectionPoint();
 
-    //UdpAddress? connectionPoint = getConnectionPoint();
     if (lanConnectionPoint1 == null) {
       if (lanConnectionPoint1 == null) {
         checkLANConnectionPoint();
@@ -266,12 +259,8 @@ class RemotePeer {
         return "auth error-:" + authResult.error;
       }
 
-      //authResult.data[3] = 0x22;
-
       Uint8List authResultDecrypted =
           await rsaDecrypt(keyPair.privateKey, authResult.data);
-
-      //Uint8List authResultDecrypted = aesDecrypt(tempAESKey, authResult.data);
 
       if (authResultDecrypted.length != 8 + 32) {
         authProcessing = false;

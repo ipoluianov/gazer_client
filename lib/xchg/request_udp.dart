@@ -19,7 +19,7 @@ Future<void> sendFrame(
             .encode(Uint8List.fromList(frame.sublist(70, 70 + 30)))
             .toLowerCase();
         for (var addr in peer.network!.getNodesAddressesByAddress(destAddr)) {
-          httpCallWrite(addr, frame).catchError((ex) {
+          peer.httpCall(addr, "w", frame).catchError((ex) {
             print("WRITE err = $ex");
           });
           //break;
@@ -29,13 +29,15 @@ Future<void> sendFrame(
   }
 }
 
-Future<void> httpCallWrite(String routerHost, Uint8List frame) async {
-  var req =
-      http.MultipartRequest('POST', Uri.parse("http://$routerHost/api/w"));
-  req.fields['d'] = base64Encode(frame);
+/*Future<void> httpCallWrite(String routerHost, Uint8List frame) async {
+  var client = http.Client();
   try {
+    var req =
+        http.MultipartRequest('POST', Uri.parse("http://$routerHost/api/w"));
+    req.fields['d'] = base64Encode(frame);
+
     http.Response response = await http.Response.fromStream(
-        await req.send().timeout(const Duration(milliseconds: 1000)));
+        await client.send(req).timeout(const Duration(milliseconds: 1000)));
 
     if (response.statusCode == 200) {
       //print("WRITE OK");
@@ -43,7 +45,8 @@ Future<void> httpCallWrite(String routerHost, Uint8List frame) async {
   } catch (ex) {
     print("WRITE $ex");
   }
-}
+  client.close();
+}*/
 
 Future<void> requestUDP1(
     UdpAddress address, List<Uint8List> frames, Peer peer) async {

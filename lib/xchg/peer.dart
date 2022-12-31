@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
@@ -31,8 +32,8 @@ class Peer {
   XchgServerProcessor? processor;
 
   static int udpStartPort = 42000;
-  static int udpEndPort = 42002;
-  int currentUdpPort = 42000;
+  static int udpEndPort = 42031;
+
   bool currentUdpPortTrying = false;
   bool currentUdpPortValid = false;
 
@@ -96,7 +97,7 @@ class Peer {
     try {
       res = await httpCall(host, "r", getMessagesRequest);
     } catch (err) {
-      //print("ex: $err");
+      print("ex: $err");
     }
     if (res.length >= 8) {
       lastReceivedMessageId = res.buffer.asUint64List(0)[0];
@@ -138,19 +139,33 @@ class Peer {
     updatingNetwork = false;
   }
 
+  Map<String, http.Client> httpClients = {};
+
   Future<Uint8List> httpCall(
       String routerHost, String function, Uint8List frame) async {
-    var req = http.MultipartRequest(
-        'POST', Uri.parse("http://$routerHost/api/$function"));
-    req.fields['d'] = base64Encode(frame);
-
-    http.Response response = await http.Response.fromStream(
-        await req.send().timeout(const Duration(milliseconds: 10000)));
-
-    if (response.statusCode == 200) {
-      return base64Decode(response.body);
+    print("httpCall $routerHost $function");
+    http.Client? client;
+    if (httpClients.containsKey(routerHost)) {
+      client = httpClients[routerHost];
+    } else {
+      client = http.Client();
+      httpClients[routerHost] = client;
     }
-    throw "Exception: ${response.statusCode}";
+
+    if (client != null) {
+      try {
+        var req = http.MultipartRequest(
+            'POST', Uri.parse("http://$routerHost/api/$function"));
+        req.fields['d'] = base64Encode(frame);
+        http.Response response = await http.Response.fromStream(
+            await client.send(req).timeout(const Duration(milliseconds: 5000)));
+        if (response.statusCode == 200) {
+          return base64Decode(response.body);
+        }
+      } catch (ex) {
+      } finally {}
+    }
+    throw "Exception: status code";
   }
 
   Future<void> processFrame(
@@ -243,18 +258,18 @@ class Peer {
 
   void processFrame11(
       UdpAddress? sourceAddress, String router, Uint8List frame) {
+    Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
     RemotePeer? remotePeer;
-    String receivedFromConnectionPoint =
-        RemotePeer.connectionPointString(sourceAddress);
     for (RemotePeer peer in remotePeers.values) {
-      String lanPoint = peer.lanConnectionPointString();
-      if (lanPoint == receivedFromConnectionPoint) {
+      if (peer.remoteAddress == transaction.srcAddress) {
         remotePeer = peer;
         break;
       }
     }
     if (remotePeer != null) {
-      remotePeer.processFrame(sourceAddress, router, frame);
+      transaction.srcUdpAddr = sourceAddress;
+      transaction.srcRouterAddr = router;
+      remotePeer.processFrame(transaction);
     }
   }
 

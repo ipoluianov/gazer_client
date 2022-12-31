@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
 import 'package:base32/base32.dart';
 
 class XchgNetworkHost {
@@ -35,16 +32,6 @@ class XchgNetworkRange {
         'prefix': prefix,
         'hosts': hosts,
       };
-}
-
-Future<XchgNetwork?> loadNetworkFromInternet() async {
-  XchgNetwork? network;
-  var response = await http.get(Uri.parse('https://xchgx.net/network.json'));
-  if (response.statusCode == 200) {
-    //print(response.body);
-    network = XchgNetwork.fromJson(jsonDecode(response.body));
-  }
-  return network;
 }
 
 class XchgNetwork {
