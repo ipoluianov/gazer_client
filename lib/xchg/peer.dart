@@ -44,8 +44,10 @@ class Peer {
   Map<String, Transaction> incomingTransactions = {};
   Map<int, Session> sessionsById = {};
   late Timer _timer;
+  bool useLocalRouter = false;
 
-  Peer(AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>? privKey) {
+  Peer(AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>? privKey,
+      this.useLocalRouter) {
     print("PEER CREATED!");
 
     if (privKey == null) {
@@ -95,7 +97,7 @@ class Peer {
 
     Uint8List res = Uint8List(0);
     try {
-      res = await httpCall(host, "r", getMessagesRequest);
+      res = await httpCall(host, "r", getMessagesRequest, 20000);
     } catch (err) {
       print("ex: $err");
     }
@@ -126,6 +128,11 @@ class Peer {
     if (updatingNetwork) {
       return;
     }
+
+    if (useLocalRouter) {
+      network = XchgNetwork.localRouter();
+      return;
+    }
     updatingNetwork = true;
     try {
       network = await networkContainerLoadFromInternet();
@@ -141,13 +148,14 @@ class Peer {
 
   Map<String, http.Client> httpClients = {};
 
-  Future<Uint8List> httpCall(
-      String routerHost, String function, Uint8List frame) async {
-    print("httpCall $routerHost $function");
+  Future<Uint8List> httpCall(String routerHost, String function,
+      Uint8List frame, int timeoutMs) async {
+    //print("httpCall $routerHost $function");
     http.Client? client;
     if (httpClients.containsKey(routerHost)) {
       client = httpClients[routerHost];
     } else {
+      HttpClient.enableTimelineLogging = false;
       client = http.Client();
       httpClients[routerHost] = client;
     }
@@ -158,11 +166,13 @@ class Peer {
             'POST', Uri.parse("http://$routerHost/api/$function"));
         req.fields['d'] = base64Encode(frame);
         http.Response response = await http.Response.fromStream(
-            await client.send(req).timeout(const Duration(milliseconds: 5000)));
+            await client.send(req).timeout(Duration(milliseconds: timeoutMs)));
         if (response.statusCode == 200) {
-          return base64Decode(response.body);
+          var resStr = base64Decode(response.body);
+          return resStr;
         }
       } catch (ex) {
+        print("exception $function exception: $ex");
       } finally {}
     }
     throw "Exception: status code";

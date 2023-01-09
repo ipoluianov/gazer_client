@@ -112,6 +112,8 @@ class RemotePeer {
   }
 
   void send0x20(UdpAddress udpAddress) {
+    return;
+
     var nonce = nonces.next();
     var addressBS = utf8.encode(remoteAddress);
     var request = Uint8List(8 + 16 + addressBS.length);
