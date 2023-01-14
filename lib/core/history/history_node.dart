@@ -14,31 +14,29 @@ class HistoryNode {
 
   HistoryNode(this.connection);
 
-  List<DataItemHistoryChartItemValueResponse> getHistory(
-      String itemName, int minTime, int maxTime, int groupTimeRange) {
+  HistoryItem getHistoryItem(String itemName) {
     if (items.containsKey(itemName)) {
-      var res = items[itemName]!.getHistory(minTime, maxTime, groupTimeRange);
-      requests.addAll(res.requests);
-      return res.values;
+      HistoryItem? item = items[itemName];
+      if (item != null) {
+        return item;
+      }
     }
-
     HistoryItem item = HistoryItem(connection, itemName,
         DataItemInfo(0, itemName, "", "", 0, ""), DateTime.now());
     items[itemName] = item;
-    var res = items[itemName]!.getHistory(minTime, maxTime, groupTimeRange);
+    return item;
+  }
+
+  List<DataItemHistoryChartItemValueResponse> getHistory(
+      String itemName, int minTime, int maxTime, int groupTimeRange) {
+    var res =
+        getHistoryItem(itemName).getHistory(minTime, maxTime, groupTimeRange);
     requests.addAll(res.requests);
     return res.values;
   }
 
   DataItemInfo value(String itemName) {
-    if (items.containsKey(itemName)) {
-      items[itemName]!.lastAccessDateTime = DateTime.now();
-      return items[itemName]!.getValue();
-    }
-    HistoryItem item = HistoryItem(connection, itemName,
-        DataItemInfo(0, itemName, "", "", 0, ""), DateTime.now());
-    items[itemName] = item;
-    return items[itemName]!.getValue();
+    return getHistoryItem(itemName).getValue();
   }
 
   void clearItemCache(String itemName) {
@@ -47,11 +45,14 @@ class HistoryNode {
     }
   }
 
-  List<HistoryLoadingTask> getLoadingTasks(String itemName) {
-    if (items.containsKey(itemName)) {
-      return items[itemName]!.getLoadingTasks();
+  void cleanUp() {
+    for (var iKey in items.keys) {
+      items[iKey]!.cleanUp();
     }
-    return [];
+  }
+
+  List<HistoryLoadingTask> getLoadingTasks(String itemName) {
+    return getHistoryItem(itemName).getLoadingTasks();
   }
 
   void request() {
@@ -75,6 +76,7 @@ class HistoryNode {
 
     var currentRequests = requests;
 
+    //print("REQUEST ${DateTime.now()}");
     Repository()
         .client(connection)
         .dataItemHistoryChart(reqItems)
@@ -93,13 +95,14 @@ class HistoryNode {
             if (req.itemName == item.name &&
                 req.groupTimeRange == item.groupTimeRange) {
               req.range.insertValues(item);
+              print("insert ${item.dtBegin}");
               req.range.removeLoadingTask(req.minTime, req.maxTime);
               foundReq = true;
               break;
             }
           }
           if (!foundReq) {
-            print("history req not found ${item.name}");
+            //print("history req not found ${item.name}");
           }
         }
       }
@@ -112,11 +115,5 @@ class HistoryNode {
     });
 
     requests = [];
-  }
-
-  void cleanUp() {
-    for (var iKey in items.keys) {
-      items[iKey]!.clear();
-    }
   }
 }

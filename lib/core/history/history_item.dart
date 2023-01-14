@@ -47,9 +47,9 @@ class HistoryItem {
     return result;
   }
 
-  void clear() {
+  void cleanUp() {
     for (var rKey in ranges.keys) {
-      ranges[rKey]!.clear();
+      ranges[rKey]!.cleanUp();
     }
 
     checkCurrentValueTTL();

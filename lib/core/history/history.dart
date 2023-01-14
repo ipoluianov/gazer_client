@@ -3,6 +3,13 @@ import 'dart:async';
 import '../workspace/workspace.dart';
 import 'history_node.dart';
 
+/*
+- History
+  - HistoryNode
+    - HistoryItem
+      - HistoryItemTimeRange
+*/
+
 class History {
   Map<String, HistoryNode> nodes = {};
 
@@ -15,7 +22,7 @@ class History {
     });
 
     // Request Values & History
-    Timer.periodic(const Duration(milliseconds: 500), (timer) {
+    Timer.periodic(const Duration(milliseconds: 50), (timer) {
       for (var nodeKey in nodes.keys) {
         nodes[nodeKey]!.request();
       }

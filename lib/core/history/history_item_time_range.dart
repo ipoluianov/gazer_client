@@ -17,6 +17,8 @@ class HistoryItemTimeRange {
   List<DataItemHistoryChartItemValueResponse> values = [];
   int lastTaskTime = 0;
 
+  int pointsToLoadInRequest = 100;
+
   DateTime _dtLastGetHistory = DateTime.now();
   DateTime _dtLastClearProcedure = DateTime.now();
   bool needToFastLoad = false;
@@ -111,19 +113,19 @@ class HistoryItemTimeRange {
       }
 
       if (loadingTasks.isEmpty) {
+        //print("needToFastLoad = 0");
         needToFastLoad = false;
-        int diff = needToLoadItem.maxTime - needToLoadItem.minTime;
-        int expectedCount = (diff / groupTimeRange).round();
-        int needExpectedCount = 4000;
-        var mTime = needToLoadItem.minTime;
 
+        var mTime = needToLoadItem.minTime;
         var beginTime = mTime;
-        var endTime = mTime + needExpectedCount * groupTimeRange;
+        var endTime = mTime + pointsToLoadInRequest * groupTimeRange;
         if (endTime > needToLoadItem.maxTime) {
           endTime = needToLoadItem.maxTime;
         } else {
+          //print("needToFastLoad = 1");
           needToFastLoad = true;
         }
+
         if (endTime > beginTime) {
           HistoryLoadingTask task = HistoryLoadingTask(beginTime, endTime);
           loadingTasks.add(task);
@@ -141,11 +143,12 @@ class HistoryItemTimeRange {
         (element.minTime == minTime && element.maxTime == maxTime));
   }
 
-  void loadData(int minTime, int maxTime, int values) {
+  void loadData1(int minTime, int maxTime, int values) {
     //print("history - loadData grTimeRange: $groupTimeRange");
     List<DataItemHistoryChartItemRequest> reqItems = [];
     reqItems.add(DataItemHistoryChartItemRequest(
         itemName, minTime, maxTime, groupTimeRange, ""));
+    print("loading ${reqItems[0].dtBegin}");
     Repository()
         .client(connection)
         .dataItemHistoryChart(reqItems)
@@ -183,7 +186,7 @@ class HistoryItemTimeRange {
     return result;
   }
 
-  void clear() {
+  void cleanUp() {
     var now = DateTime.now();
     if (now.difference(_dtLastClearProcedure).inMilliseconds < 5000) {
       return;

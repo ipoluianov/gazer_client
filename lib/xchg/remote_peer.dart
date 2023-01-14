@@ -413,7 +413,7 @@ class RemotePeer {
         }
 
         lastSuccessTransactionTransport_ = tr.transportType;
-        print("transport: " + lastSuccessTransactionTransport_);
+        //print("transport: " + lastSuccessTransactionTransport_);
 
         CallResult result = CallResult();
         result.data = tr.result;
