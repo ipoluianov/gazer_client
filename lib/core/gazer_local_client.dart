@@ -52,8 +52,6 @@ import 'package:gazer_client/core/protocol/user/user_set_password.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:http/http.dart' as http;
 
-import '../xchg/utils.dart';
-
 typedef FromJsonFunc = dynamic Function(Map<String, dynamic> json);
 
 class GazerLocalClient {
@@ -616,7 +614,7 @@ class GazerLocalClient {
 
     // Gazer request body
     var reqString = jsonEncode(request);
-    CallResult res = await Repository().peer.call(
+    var res = await Repository().peer.call(
         address, session, function, Uint8List.fromList(utf8.encode(reqString)));
 
     if (!res.isError()) {
@@ -632,139 +630,15 @@ class GazerLocalClient {
     }
   }
 
-  /*Future<TResp> fetchLocal<TReq, TResp>(String function, TReq request, FromJsonFunc fromJson) async {
-    var fullAddress = '';
-
-    fullAddress += 'http://' + address;
-    if (!address.contains(':')) {
-      fullAddress += ":8084";
-    }
-    fullAddress += "/api/request";
-
-    bool usingZ = true;
-
-    var req = http.MultipartRequest('POST', Uri.parse(fullAddress));
-    req.fields['fn'] = function;
-    if (usingZ) {
-      req.fields['rt'] = "z";
-      req.fields['rjz'] = pack(jsonEncode(request));
-    } else {
-      req.fields['rj'] = jsonEncode(request);
-    }
-    req.fields['s'] = session;
-    http.Response response;
-    try {
-      response = await http.Response.fromStream(await req.send().timeout(const Duration(milliseconds: 5000)));
-    } on TimeoutException catch (_) {
-      throw GazerClientException("timeout");
-    }
-
-    if (response.statusCode == 200) {
-      //print(response.body);
-
-      if (usingZ) {
-        return fromJson(jsonDecode(unpack(response.body)));
-      } else {
-        return fromJson(jsonDecode(response.body));
-      }
-    } else {
-      lastError = response.statusCode.toString();
-      throw GazerClientException(response.body);
-    }
-  }*/
-
-  Future<GazerCloudWhereNodeResponse> fetchCloudRepeater() async {
-    print("CLOUD RESP fetchCloudRepeater");
-    var fullAddress = 'https://home.gazer.cloud/api/request';
-    var req = http.MultipartRequest('POST', Uri.parse(fullAddress));
-    req.fields['fn'] = "s-where-node";
-    req.fields['rj'] = '{"node_id":"$address"}';
-    var response = await http.Response.fromStream(await req.send());
-    if (response.statusCode == 200) {
-      print("CLOUD RESP: ${response.body}");
-      return GazerCloudWhereNodeResponse.fromJson(jsonDecode(response.body));
-    } else {
-      repeater = "";
-      print("CLOUD RESP ERROR1: ${response.body}");
-      lastError = response.statusCode.toString();
-      throw GazerClientException(response.body);
-    }
-  }
-
-  /*Future<TResp> fetchCloud<TReq, TResp>(String function, TReq request, FromJsonFunc fromJson) async {
-    if (repeater.isEmpty && !function.startsWith("s-") && function != "session_open") {
-      try {
-        var value = await fetchCloudRepeater();
-        repeater = value.host;
-        print("CURRENT REPEATER for $address is $repeater (OK)");
-      } catch (err) {
-        repeater = "";
-      }
-    }
-    //print("FETCH: $function");
-
-    return fetchCloudMain(function, request, fromJson);
-  }*/
-
-  /*Future<TResp> fetchCloudMain<TReq, TResp>(String function, TReq request, FromJsonFunc fromJson) async {
-    bool isServiceFunction = false;
-
-    if (repeater.isEmpty && !function.startsWith("s-") && function != "session_open") {
-      print("no-repeater exception");
-      throw GazerClientException("no repeater");
-    }
-
-    if (function.startsWith("s-") || function == "session_open") {
-      isServiceFunction = true;
-    }
-
-    var fullAddress = 'https://$repeater/api/request';
-    if (repeater == "") {
-      fullAddress = 'https://home.gazer.cloud/api/request';
-    }
-
-    bool usingZ = true;
-    if (isServiceFunction) {
-      usingZ = false;
-    }
-
-    var req = http.MultipartRequest('POST', Uri.parse(fullAddress));
-    req.fields['fn'] = function;
-    if (usingZ) {
-      req.fields['rt'] = "z";
-      req.fields['rjz'] = pack(jsonEncode(request));
-    } else {
-      req.fields['rj'] = jsonEncode(request);
-    }
-    req.fields['s'] = session;
-    req.fields['n'] = address;
-    try {
-      var response = await http.Response.fromStream(await req.send());
-      if (response.statusCode == 200) {
-        //print("cloudResp: ${response.body}");
-        if (usingZ) {
-          return fromJson(jsonDecode(unpack(response.body)));
-        } else {
-          return fromJson(jsonDecode(response.body));
-        }
-      } else {
-        repeater = "";
-        print("CLOUD RESP ERROR2: ${response.body}");
-        lastError = response.statusCode.toString();
-        throw GazerClientException(response.body);
-      }
-    } catch (err) {
-      repeater = "";
-      print("CLOUD RESP ERROR3:");
-      throw GazerClientException(err.toString());
-    }
-  }*/
-
   String displayName() {
     if (transport == "https/cloud") {
       return "Cloud Node " + address;
     }
     return address;
+  }
+
+  String linkInformation() {
+    return Repository().peer.remotePeerTransport(address);
   }
 }
 

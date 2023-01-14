@@ -22,6 +22,7 @@ class Transaction {
   // Runtime
   UdpAddress? srcUdpAddr;
   String srcRouterAddr = "";
+  String transportType = "";
 
   int receivedDataLen = 0;
 

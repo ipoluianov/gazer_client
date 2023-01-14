@@ -19,7 +19,7 @@ class History {
       clear();
     });
     _timerRequester =
-        Timer.periodic(const Duration(milliseconds: 250), (timer) {
+        Timer.periodic(const Duration(milliseconds: 500), (timer) {
       request();
     });
   }

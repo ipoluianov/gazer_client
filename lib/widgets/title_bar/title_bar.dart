@@ -11,7 +11,8 @@ class TitleBar extends StatefulWidget implements PreferredSizeWidget {
   final Connection connection;
   final String title;
   final List<Widget>? actions;
-  const TitleBar(this.connection, this.title, {Key? key, this.actions}) : super(key: key);
+  const TitleBar(this.connection, this.title, {Key? key, this.actions})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -52,6 +53,7 @@ class TitleBarSt extends State<TitleBar> {
   }
 
   String addressLine() {
+    return Repository().client(widget.connection).linkInformation();
     if (widget.connection.transport == "https/cloud") {
       return "Node " + widget.connection.address + " (via Cloud)";
     }
@@ -102,7 +104,9 @@ class TitleBarSt extends State<TitleBar> {
                               alignment: Alignment.bottomLeft,
                               child: Text(
                                 nodeName() + " - " + widget.title,
-                                style: TextStyle(color: DesignColors.fore(), overflow: TextOverflow.ellipsis),
+                                style: TextStyle(
+                                    color: DesignColors.fore(),
+                                    overflow: TextOverflow.ellipsis),
                                 maxLines: 1,
                               ),
                             ),
@@ -114,7 +118,9 @@ class TitleBarSt extends State<TitleBar> {
                               alignment: Alignment.topLeft,
                               child: Text(
                                 addressLine(),
-                                style: TextStyle(color: DesignColors.fore1(), overflow: TextOverflow.ellipsis),
+                                style: TextStyle(
+                                    color: DesignColors.fore1(),
+                                    overflow: TextOverflow.ellipsis),
                                 maxLines: 1,
                               ),
                             ),

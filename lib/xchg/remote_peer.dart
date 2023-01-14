@@ -89,6 +89,9 @@ class RemotePeer {
 
     if (outgoingTransactions.containsKey(transaction.transactionId)) {
       var t = outgoingTransactions[transaction.transactionId];
+      if (t != null) {
+        t.transportType = transaction.transportType;
+      }
       if (transaction.error == "") {
         if (t!.result.length != transaction.totalSize) {
           t.result = Uint8List(transaction.totalSize);
@@ -141,7 +144,14 @@ class RemotePeer {
     sendFrame(null, [frameBS], peer);
   }
 
+  String lastSuccessTransactionTransport_ = "";
+
+  String lastSuccessTransactionTransport() {
+    return lastSuccessTransactionTransport_;
+  }
+
   Future<void> checkLANConnectionPoint() async {
+    print("checkLANConnectionPoint");
     var nonce = nonces.next();
     var addressBS = utf8.encode(remoteAddress);
     var data = Uint8List(16 + addressBS.length);
@@ -151,11 +161,7 @@ class RemotePeer {
     Transaction tr = Transaction(
         0x20, localAddress(), remoteAddress, 0, 0, 0, data.length, data);
 
-    //socket.broadcastEnabled = true;
-    //socket.send(request, InternetAddress("255.255.255.255"), 42000);
-
     var frame = tr.serialize();
-
     var frameBS = Uint8List.fromList(frame);
 
     for (int i = Peer.udpStartPort; i < Peer.udpEndPort; i++) {
@@ -399,12 +405,15 @@ class RemotePeer {
     }
     sendFrame(remoteConnectionPoint, frames, peer);
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 500; i++) {
       if (tr.complete) {
         outgoingTransactions.remove(localTransactionId);
         if (tr.error.isNotEmpty) {
           return CallResult.createError(tr.error);
         }
+
+        lastSuccessTransactionTransport_ = tr.transportType;
+        print("transport: " + lastSuccessTransactionTransport_);
 
         CallResult result = CallResult();
         result.data = tr.result;

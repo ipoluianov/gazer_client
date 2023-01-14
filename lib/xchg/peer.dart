@@ -178,6 +178,21 @@ class Peer {
     throw "Exception: status code";
   }
 
+  String remotePeerTransport(String address) {
+    RemotePeer? remotePeer;
+    for (RemotePeer peer in remotePeers.values) {
+      if (peer.remoteAddress == address) {
+        remotePeer = peer;
+        break;
+      }
+    }
+
+    if (remotePeer != null) {
+      return remotePeer.lastSuccessTransactionTransport();
+    }
+    return "peer not found";
+  }
+
   Future<void> processFrame(
       UdpAddress? sourceAddress, String router, Uint8List frame) async {
     // Min size of frame is 128 bytes
@@ -269,6 +284,14 @@ class Peer {
   void processFrame11(
       UdpAddress? sourceAddress, String router, Uint8List frame) {
     Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
+
+    if (sourceAddress != null) {
+      transaction.transportType =
+          "via UDP ${sourceAddress.address.address}:${sourceAddress.port}";
+    } else {
+      transaction.transportType = "HTTP $router";
+    }
+
     RemotePeer? remotePeer;
     for (RemotePeer peer in remotePeers.values) {
       if (peer.remoteAddress == transaction.srcAddress) {

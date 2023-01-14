@@ -22,7 +22,7 @@ class Repository {
   NavIndex navIndex = NavIndex.units;
   //XchgConnection xchg = XchgConnection("gruvl3znuewl3gslgkz6aaebya4j5hvd2lcgu3i4lvj263ze", "pass");
 
-  Peer peer = Peer(null, true);
+  Peer peer = Peer(null, false);
 
   GazerLocalClient client(Connection conn) {
     String clientKey =

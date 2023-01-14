@@ -1,17 +1,15 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:gazer_client/xchg/peer.dart';
 import 'package:gazer_client/xchg/udp_address.dart';
 
-import 'package:http/http.dart' as http;
 import 'package:base32/base32.dart';
 
 Future<void> sendFrame(
     UdpAddress? address, List<Uint8List> frames, Peer peer) async {
   if (address != null) {
-    //requestUDP1(address, frames, peer);
+    requestUDP1(address, frames, peer);
   } else {
     if (peer.network != null) {
       for (var frame in frames) {
@@ -19,34 +17,17 @@ Future<void> sendFrame(
             .encode(Uint8List.fromList(frame.sublist(70, 70 + 30)))
             .toLowerCase();
         for (var addr in peer.network!.getNodesAddressesByAddress(destAddr)) {
-          peer.httpCall(addr, "w", frame, 1000).catchError((ex) {
-            print("WRITE err = $ex");
-          });
+          try {
+            peer.httpCall(addr, "w", frame, 1000).catchError((ex) {
+              print("WRITE err = $ex");
+            });
+          } catch (ex) {}
           //break;
         }
       }
     }
   }
 }
-
-/*Future<void> httpCallWrite(String routerHost, Uint8List frame) async {
-  var client = http.Client();
-  try {
-    var req =
-        http.MultipartRequest('POST', Uri.parse("http://$routerHost/api/w"));
-    req.fields['d'] = base64Encode(frame);
-
-    http.Response response = await http.Response.fromStream(
-        await client.send(req).timeout(const Duration(milliseconds: 1000)));
-
-    if (response.statusCode == 200) {
-      //print("WRITE OK");
-    }
-  } catch (ex) {
-    print("WRITE $ex");
-  }
-  client.close();
-}*/
 
 Future<void> requestUDP1(
     UdpAddress address, List<Uint8List> frames, Peer peer) async {

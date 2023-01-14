@@ -16,6 +16,8 @@ import 'package:gazer_client/widgets/time_filter/time_filter.dart';
 import 'package:gazer_client/widgets/title_widget/title_widget.dart';
 import 'package:intl/intl.dart' as international;
 
+import '../../../widgets/title_bar/title_bar.dart';
+
 class DataItemHistoryTableForm extends StatefulWidget {
   final DataItemHistoryTableFormArgument arg;
   const DataItemHistoryTableForm(this.arg, {Key? key}) : super(key: key);
@@ -27,9 +29,11 @@ class DataItemHistoryTableForm extends StatefulWidget {
 }
 
 class DataItemHistoryTableFormSt extends State<DataItemHistoryTableForm> {
-  international.DateFormat timeFormat = international.DateFormat("yyyy-MM-dd HH:mm:ss");
+  international.DateFormat timeFormat =
+      international.DateFormat("yyyy-MM-dd HH:mm:ss");
   TextEditingController textEditingControllerFilename = TextEditingController();
-  TextEditingController textEditingControllerSeparator = TextEditingController();
+  TextEditingController textEditingControllerSeparator =
+      TextEditingController();
   String filename = "";
   String separator = ";";
   String exportStatus = "";
@@ -64,7 +68,7 @@ class DataItemHistoryTableFormSt extends State<DataItemHistoryTableForm> {
       buffer.write(line);
       linesCount++;
       if ((linesCount % 1000) == 0) {
-          print(linesCount);
+        print(linesCount);
       }
     }
     print("stop get csv");
@@ -87,12 +91,15 @@ class DataItemHistoryTableFormSt extends State<DataItemHistoryTableForm> {
     items = [];
 
     try {
-      for (var dt1 = dtBegin; dt1.isBefore(dtEnd); dt1 = dt1.add(const Duration(hours: 1))) {
+      for (var dt1 = dtBegin;
+          dt1.isBefore(dtEnd);
+          dt1 = dt1.add(const Duration(hours: 1))) {
         exportStatus = "loading data ... " + timeFormat.format(dt1);
 
         var resp = await Repository()
             .client(widget.arg.connection)
-            .dataItemHistory(widget.arg.itemName, dt1.microsecondsSinceEpoch, dt1.add(const Duration(hours: 1)).microsecondsSinceEpoch);
+            .dataItemHistory(widget.arg.itemName, dt1.microsecondsSinceEpoch,
+                dt1.add(const Duration(hours: 1)).microsecondsSinceEpoch);
         items.addAll(resp.result.items);
       }
       setState(() {
@@ -167,7 +174,10 @@ class DataItemHistoryTableFormSt extends State<DataItemHistoryTableForm> {
                     padding: const EdgeInsets.all(6),
                     child: ElevatedButton(
                       onPressed: () {
-                        FilePicker.platform.saveFile(dialogTitle: "Save to CSV", type: FileType.custom, allowedExtensions: ["csv"]).then(
+                        FilePicker.platform.saveFile(
+                            dialogTitle: "Save to CSV",
+                            type: FileType.custom,
+                            allowedExtensions: ["csv"]).then(
                           (value) {
                             if (value != null) {
                               if (!value.endsWith(".csv")) {
@@ -217,6 +227,10 @@ class DataItemHistoryTableFormSt extends State<DataItemHistoryTableForm> {
     );
   }
 
+  String getCurrentTitleKey() {
+    return "data_item_history_table_form";
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -227,10 +241,14 @@ class DataItemHistoryTableFormSt extends State<DataItemHistoryTableForm> {
 
         return Scaffold(
           appBar: AppBar(
-            title: TitleWidget(widget.arg.connection, "Export to CSV"),
-            actions: [
-              buildHomeButton(context),
-            ],
+            title: TitleBar(
+              widget.arg.connection,
+              "Export table",
+              key: Key(getCurrentTitleKey()),
+              actions: [
+                buildHomeButton(context),
+              ],
+            ),
           ),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
