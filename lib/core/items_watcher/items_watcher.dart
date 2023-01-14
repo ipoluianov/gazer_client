@@ -19,7 +19,7 @@ class ItemsWatcher {
 
   DataItemInfo value(Connection conn, String itemName) {
     //return DataItemInfo(0, itemName, "val", 0, "uom");
-    return Repository().history.value(conn, itemName);
+    return Repository().history.getNode(conn).value(itemName);
 
     if (nodes.containsKey(conn.id)) {
       return nodes[conn.id]!.value(itemName);
@@ -55,7 +55,8 @@ class ItemsWatcherNode {
     var dt = DateTime.now();
     List<String> itemsToRemove = [];
     for (var itemName in items.keys) {
-      if (items[itemName]!.lastAccessDateTime.microsecondsSinceEpoch < dt.add(const Duration(seconds: -10)).microsecondsSinceEpoch) {
+      if (items[itemName]!.lastAccessDateTime.microsecondsSinceEpoch <
+          dt.add(const Duration(seconds: -10)).microsecondsSinceEpoch) {
         itemsToRemove.add(itemName);
       }
     }
@@ -83,4 +84,3 @@ class ItemsWatcherNode {
     }
   }
 }
-

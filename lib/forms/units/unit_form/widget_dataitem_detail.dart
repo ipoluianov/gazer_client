@@ -204,7 +204,10 @@ class WidgetDataItemDetailState extends State<WidgetDataItemDetail> {
             .client(widget.connection)
             .dataItemRemove(itemsToRemove)
             .then((value) {
-          Repository().history.clearItem(widget.connection, widget.item.name);
+          Repository()
+              .history
+              .getNode(widget.connection)
+              .clearItemCache(widget.item.name);
           Navigator.of(context).pop();
         });
       },

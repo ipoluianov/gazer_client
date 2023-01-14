@@ -20,7 +20,9 @@ class TimeChart extends StatefulWidget {
   final String itemName;
   final TimeChartSettings _settings;
   final Function onChanged;
-  const TimeChart(this.conn, this.itemName, this._settings, this.onChanged, {Key? key}) : super(key: key);
+  const TimeChart(this.conn, this.itemName, this._settings, this.onChanged,
+      {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -35,7 +37,8 @@ class TimeRange {
 }
 
 class TimeChartState extends State<TimeChart> with TickerProviderStateMixin {
-  late Timer _timerUpdateTimeRange = Timer.periodic(const Duration(milliseconds: 500), (timer) {});
+  late Timer _timerUpdateTimeRange =
+      Timer.periodic(const Duration(milliseconds: 500), (timer) {});
 
   @override
   void initState() {
@@ -50,7 +53,8 @@ class TimeChartState extends State<TimeChart> with TickerProviderStateMixin {
 
   void setUpdateTimePeriodMs(int durationMs) {
     _timerUpdateTimeRange.cancel();
-    _timerUpdateTimeRange = Timer.periodic(Duration(milliseconds: durationMs), (t) {
+    _timerUpdateTimeRange =
+        Timer.periodic(Duration(milliseconds: durationMs), (t) {
       updateTimes();
     });
   }
@@ -152,25 +156,40 @@ class TimeChartState extends State<TimeChart> with TickerProviderStateMixin {
         return;
       }
 
-      double r = widget._settings.horScale.displayMax - widget._settings.horScale.displayMin;
+      double r = widget._settings.horScale.displayMax -
+          widget._settings.horScale.displayMin;
       int timePerPixel = (r / w).round();
 
       //print("getHistory - ${timePerPixel} - ${r} / ${w}");
 
-      for (int areaIndex = 0; areaIndex < widget._settings.areas.length; areaIndex++) {
+      for (int areaIndex = 0;
+          areaIndex < widget._settings.areas.length;
+          areaIndex++) {
         var area = widget._settings.areas[areaIndex];
-        for (int seriesIndex = 0; seriesIndex < area.series.length; seriesIndex++) {
+        for (int seriesIndex = 0;
+            seriesIndex < area.series.length;
+            seriesIndex++) {
           var series = area.series[seriesIndex];
-          var data = Repository().history.getHistory(
-              widget.conn, series.itemName(), widget._settings.horScale.displayMin.round(), widget._settings.horScale.displayMax.round(), timePerPixel);
+          var data = Repository().history.getNode(widget.conn).getHistory(
+              series.itemName(),
+              widget._settings.horScale.displayMin.round(),
+              widget._settings.horScale.displayMax.round(),
+              timePerPixel);
 
           if (data.isNotEmpty) {
             series.itemHistory = data;
           }
 
-          series.displayName = Repository().history.value(widget.conn, series.itemName()).displayName;
+          series.displayName = Repository()
+              .history
+              .getNode(widget.conn)
+              .value(series.itemName())
+              .displayName;
 
-          series.loadingTasks = Repository().history.getLoadingTasks(widget.conn, series.itemName());
+          series.loadingTasks = Repository()
+              .history
+              .getNode(widget.conn)
+              .getLoadingTasks(series.itemName());
 
           /*if (series.itemName == value.name) {
             series.dataByGroup[value.groupTimeRange] = TimeChartHistoryForGroup(value.groupTimeRange);
@@ -224,7 +243,10 @@ class TimeChartState extends State<TimeChart> with TickerProviderStateMixin {
             child: Center(
               child: Text(
                 displayPeriodName(timeString),
-                style: TextStyle(fontSize: isCurrent ? 16 : 14, fontWeight: isCurrent ? FontWeight.normal : FontWeight.normal),
+                style: TextStyle(
+                    fontSize: isCurrent ? 16 : 14,
+                    fontWeight:
+                        isCurrent ? FontWeight.normal : FontWeight.normal),
               ),
             ),
           ),
@@ -477,7 +499,8 @@ DragTarget<DataItemsObject>(
                         lastRenderBox_ = rObject;
                       }
                       return CustomPaint(
-                        painter: TimeChartPainter(widget._settings, (int groupTimeRange, int dtBegin, int dtEnd) {
+                        painter: TimeChartPainter(widget._settings,
+                            (int groupTimeRange, int dtBegin, int dtEnd) {
                           //currentGroupTimeRange = groupTimeRange;
                         }),
                         child: Container(),

@@ -57,7 +57,10 @@ class MapItemUnitTable01 extends MapItem {
     }
     dataItemsLoaded = true;
     dataItemsLoading = true;
-    Repository().client(connection).unitItemsValues(getDataSource()).then((value) {
+    Repository()
+        .client(connection)
+        .unitItemsValues(getDataSource())
+        .then((value) {
       for (var di in value.items) {
         if (di.name.contains("/.service")) {
           continue;
@@ -80,11 +83,12 @@ class MapItemUnitTable01 extends MapItem {
     drawPre(canvas, size);
 
     canvas.save();
-    canvas.clipRect(Rect.fromLTWH(getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h") * aniCounter));
+    canvas.clipRect(Rect.fromLTWH(getDoubleZ("x"), getDoubleZ("y"),
+        getDoubleZ("w"), getDoubleZ("h") * aniCounter));
 
     Map<String, DataItemInfo> values = {};
     for (var itemName in dataItems) {
-      var val = Repository().history.value(connection, itemName);
+      var val = Repository().history.getNode(connection).value(itemName);
       values[itemName] = val;
 
       if (unitDisplayName.isEmpty) {
@@ -106,8 +110,16 @@ class MapItemUnitTable01 extends MapItem {
     double yOffset = padding;
     Size textSize = const Size(0, 0);
 
-    textSize = drawText(canvas, getDoubleZ("x") + padding, getDoubleZ("y") + yOffset, getDoubleZ("w") - padding * 2, getDoubleZ("h"), unitDisplayName,
-        fontSizeScaled * 2, getColorWithThresholds("name_color"), TextAlign.left);
+    textSize = drawText(
+        canvas,
+        getDoubleZ("x") + padding,
+        getDoubleZ("y") + yOffset,
+        getDoubleZ("w") - padding * 2,
+        getDoubleZ("h"),
+        unitDisplayName,
+        fontSizeScaled * 2,
+        getColorWithThresholds("name_color"),
+        TextAlign.left);
     yOffset += textSize.height;
 
     var lineHeight = z(2);
@@ -115,10 +127,13 @@ class MapItemUnitTable01 extends MapItem {
     yOffset += lineHeight;
     yOffset += lineHeight;
 
-    canvas.drawLine(Offset(getDoubleZ("x") + padding, getDoubleZ("y") + yOffset), Offset(getDoubleZ("x") + getDoubleZ("w") - padding, getDoubleZ("y") + yOffset), Paint()
-        ..strokeWidth = lineHeight
-        ..color = getColorWithThresholds("name_color")
-    );
+    canvas.drawLine(
+        Offset(getDoubleZ("x") + padding, getDoubleZ("y") + yOffset),
+        Offset(getDoubleZ("x") + getDoubleZ("w") - padding,
+            getDoubleZ("y") + yOffset),
+        Paint()
+          ..strokeWidth = lineHeight
+          ..color = getColorWithThresholds("name_color"));
 
     yOffset += lineHeight;
     yOffset += lineHeight;
@@ -134,15 +149,40 @@ class MapItemUnitTable01 extends MapItem {
             itemName = value.displayName.substring(indexOfSlash + 1);
           }
 
-          textSize = measureText(canvas, getDoubleZ("x") + padding, getDoubleZ("y") + yOffset, getDoubleZ("w") - padding * 2, getDoubleZ("h"), itemName,
-              fontSize, getColorWithThresholds("name_color"), TextAlign.left);
+          textSize = measureText(
+              canvas,
+              getDoubleZ("x") + padding,
+              getDoubleZ("y") + yOffset,
+              getDoubleZ("w") - padding * 2,
+              getDoubleZ("h"),
+              itemName,
+              fontSize,
+              getColorWithThresholds("name_color"),
+              TextAlign.left);
 
-          drawText(canvas, getDoubleZ("x") + padding, getDoubleZ("y") + yOffset, getDoubleZ("w") - padding * 2, getDoubleZ("h"), itemName,
-              fontSizeScaled, getColorWithThresholds("name_color"), TextAlign.left);
+          drawText(
+              canvas,
+              getDoubleZ("x") + padding,
+              getDoubleZ("y") + yOffset,
+              getDoubleZ("w") - padding * 2,
+              getDoubleZ("h"),
+              itemName,
+              fontSizeScaled,
+              getColorWithThresholds("name_color"),
+              TextAlign.left);
 
-
-          var uomSize = drawValueAndUOM(canvas, getDoubleZ("x") + padding, getDoubleZ("y") + yOffset, getDoubleZ("w") - padding * 2, getDoubleZ("h"), value.value, value.uom,
-              fontSizeScaled, getColorWithThresholds("text_color"), getColorWithThresholds("uom_color"), TextAlign.right);
+          var uomSize = drawValueAndUOM(
+              canvas,
+              getDoubleZ("x") + padding,
+              getDoubleZ("y") + yOffset,
+              getDoubleZ("w") - padding * 2,
+              getDoubleZ("h"),
+              value.value,
+              value.uom,
+              fontSizeScaled,
+              getColorWithThresholds("text_color"),
+              getColorWithThresholds("uom_color"),
+              TextAlign.right);
 
           var valLineOffsetY = z(textSize.height) / 2;
           /*canvas.drawLine(Offset(getDoubleZ("x") + padding * 2 + textSize.width, getDoubleZ("y") + yOffset + valLineOffsetY), Offset(getDoubleZ("x") + getDoubleZ("w") - padding * 2 - uomSize.width, getDoubleZ("y") + yOffset + valLineOffsetY), Paint()
@@ -150,10 +190,14 @@ class MapItemUnitTable01 extends MapItem {
             ..color = getColorWithThresholds("name_color")
           );*/
           valLineOffsetY = z(textSize.height);
-          canvas.drawLine(Offset(getDoubleZ("x") + padding , getDoubleZ("y") + yOffset + valLineOffsetY), Offset(getDoubleZ("x") + getDoubleZ("w") - padding, getDoubleZ("y") + yOffset + valLineOffsetY), Paint()
-            ..strokeWidth = z(0.3)
-            ..color = getColorWithThresholds("name_color")
-          );
+          canvas.drawLine(
+              Offset(getDoubleZ("x") + padding,
+                  getDoubleZ("y") + yOffset + valLineOffsetY),
+              Offset(getDoubleZ("x") + getDoubleZ("w") - padding,
+                  getDoubleZ("y") + yOffset + valLineOffsetY),
+              Paint()
+                ..strokeWidth = z(0.3)
+                ..color = getColorWithThresholds("name_color"));
         }
       }
 
@@ -165,7 +209,17 @@ class MapItemUnitTable01 extends MapItem {
     drawPost(canvas, size);
   }
 
-  Size drawValueAndUOM(Canvas canvas, double x, double y, double width, double height, String value, String uom, double size, Color colorValue, Color colorUOM,
+  Size drawValueAndUOM(
+      Canvas canvas,
+      double x,
+      double y,
+      double width,
+      double height,
+      String value,
+      String uom,
+      double size,
+      Color colorValue,
+      Color colorUOM,
       TextAlign align) {
     var textSpan = TextSpan(children: [
       TextSpan(
@@ -185,7 +239,8 @@ class MapItemUnitTable01 extends MapItem {
         ),
       ),
     ]);
-    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
+    final textPainter = TextPainter(
+        text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
     textPainter.layout(
       minWidth: width,
       maxWidth: width,
@@ -194,7 +249,8 @@ class MapItemUnitTable01 extends MapItem {
     return Size(textPainter.maxIntrinsicWidth, textPainter.height);
   }
 
-  Size drawText(Canvas canvas, double x, double y, double width, double height, String text, double size, Color color, TextAlign align) {
+  Size drawText(Canvas canvas, double x, double y, double width, double height,
+      String text, double size, Color color, TextAlign align) {
     canvas.save();
 
     //Size res = const Size(0, 0);
@@ -206,7 +262,8 @@ class MapItemUnitTable01 extends MapItem {
         height: 1.2,
       ),
     );
-    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
+    final textPainter = TextPainter(
+        text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
     textPainter.layout(
       minWidth: width,
       maxWidth: width,
@@ -217,7 +274,8 @@ class MapItemUnitTable01 extends MapItem {
     return Size(textPainter.maxIntrinsicWidth, textPainter.height);
   }
 
-  Size measureText(Canvas canvas, double x, double y, double width, double height, String text, double size, Color color, TextAlign align) {
+  Size measureText(Canvas canvas, double x, double y, double width,
+      double height, String text, double size, Color color, TextAlign align) {
     var textSpan = TextSpan(
       text: text,
       style: TextStyle(
@@ -226,7 +284,11 @@ class MapItemUnitTable01 extends MapItem {
         height: 1.2,
       ),
     );
-    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: align, maxLines: 1);
+    final textPainter = TextPainter(
+        text: textSpan,
+        textDirection: TextDirection.ltr,
+        textAlign: align,
+        maxLines: 1);
     textPainter.layout(
       minWidth: width,
       maxWidth: width,
@@ -253,9 +315,12 @@ class MapItemUnitTable01 extends MapItem {
     List<MapItemPropGroup> groups = [];
     {
       List<MapItemPropItem> props = [];
-      props.add(MapItemPropItem("", "name_color", "Item Name Color", "color", "FF00BCD4"));
-      props.add(MapItemPropItem("", "text_color", "Text Color", "color", "FF19EE46"));
-      props.add(MapItemPropItem("", "uom_color", "UOM Color", "color", "FF009688"));
+      props.add(MapItemPropItem(
+          "", "name_color", "Item Name Color", "color", "FF00BCD4"));
+      props.add(
+          MapItemPropItem("", "text_color", "Text Color", "color", "FF19EE46"));
+      props.add(
+          MapItemPropItem("", "uom_color", "UOM Color", "color", "FF009688"));
       props.add(MapItemPropItem("", "font_size", "Font Size", "double", "12"));
       groups.add(MapItemPropGroup("Text", true, props));
     }
@@ -265,9 +330,12 @@ class MapItemUnitTable01 extends MapItem {
   @override
   List<MapItemPropItem> propThresholdOfItem() {
     List<MapItemPropItem> props = [];
-    props.add(MapItemPropItem("", "name_color", "Item Name Color", "color", "FF00BCD4"));
-    props.add(MapItemPropItem("", "text_color", "Text Color", "color", "FF19EE46"));
-    props.add(MapItemPropItem("", "uom_color", "UOM Color", "color", "FF009688"));
+    props.add(MapItemPropItem(
+        "", "name_color", "Item Name Color", "color", "FF00BCD4"));
+    props.add(
+        MapItemPropItem("", "text_color", "Text Color", "color", "FF19EE46"));
+    props.add(
+        MapItemPropItem("", "uom_color", "UOM Color", "color", "FF009688"));
     props.add(MapItemPropItem("", "font_size", "Font Size", "double", "12"));
     return props;
   }

@@ -24,9 +24,12 @@ class MapItemChart extends MapItem {
   late String lastDataSource = "";
 
   MapItemChart(Connection connection) : super(connection) {
-
     settings = TimeChartSettings(connection, []);
-    settings.areas.add(TimeChartSettingsArea(connection, <TimeChartSettingsSeries>[TimeChartSettingsSeries(connection, get("data_source"), [], Colors.blueAccent)]));
+    settings.areas.add(TimeChartSettingsArea(
+        connection, <TimeChartSettingsSeries>[
+      TimeChartSettingsSeries(
+          connection, get("data_source"), [], Colors.blueAccent)
+    ]));
   }
 
   late TimeChartSettings settings;
@@ -49,17 +52,27 @@ class MapItemChart extends MapItem {
 
       for (int areaIndex = 0; areaIndex < settings.areas.length; areaIndex++) {
         var area = settings.areas[areaIndex];
-        for (int seriesIndex = 0; seriesIndex < area.series.length; seriesIndex++) {
+        for (int seriesIndex = 0;
+            seriesIndex < area.series.length;
+            seriesIndex++) {
           var series = area.series[seriesIndex];
           if (series.itemName() != "") {
-            var data = Repository()
-                .history
-                .getHistory(connection, series.itemName(), settings.horScale.displayMin.round(), settings.horScale.displayMax.round(), timePerPixel);
+            var data = Repository().history.getNode(connection).getHistory(
+                series.itemName(),
+                settings.horScale.displayMin.round(),
+                settings.horScale.displayMax.round(),
+                timePerPixel);
 
             series.itemHistory = data;
-            series.displayName = Repository().history.value(connection, series.itemName()).displayName;
+            series.displayName = Repository()
+                .history
+                .getNode(connection)
+                .value(series.itemName())
+                .displayName;
             series.loadingTasks = Repository()
-                .history.getLoadingTasks(connection, series.itemName());
+                .history
+                .getNode(connection)
+                .getLoadingTasks(series.itemName());
           }
         }
       }
@@ -81,7 +94,10 @@ class MapItemChart extends MapItem {
       lastDataSource = ds;
       settings = TimeChartSettings(connection, []);
       if (ds.isNotEmpty && !ds.startsWith("~")) {
-        settings.areas.add(TimeChartSettingsArea(connection, <TimeChartSettingsSeries>[TimeChartSettingsSeries(connection, lastDataSource, [], chartColor)]));
+        settings.areas.add(TimeChartSettingsArea(
+            connection, <TimeChartSettingsSeries>[
+          TimeChartSettingsSeries(connection, lastDataSource, [], chartColor)
+        ]));
       }
     }
 
@@ -124,14 +140,15 @@ class MapItemChart extends MapItem {
 
   @override
   void drawDemo(Canvas canvas, Size size) {
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.teal
-      ..strokeWidth = 2
-    );
+    canvas.drawRect(
+        Rect.fromLTWH(0, 0, size.width, size.height),
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..color = Colors.teal
+          ..strokeWidth = 2);
 
     List<Offset> points = [
-      Offset(0.3 * size.width / 4, size.height- (size.height / 8)),
+      Offset(0.3 * size.width / 4, size.height - (size.height / 8)),
       Offset(1.3 * size.width / 4, size.height - (size.height / 2)),
       Offset(2.3 * size.width / 4, size.height - (size.height / 3)),
       Offset(3.3 * size.width / 4, size.height - (size.height / 1.5)),
@@ -140,10 +157,12 @@ class MapItemChart extends MapItem {
     Path path = Path();
     path.addPolygon(points, false);
 
-    canvas.drawPath(path, Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.teal.withOpacity(0.5)
-      ..strokeWidth = 5);
+    canvas.drawPath(
+        path,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..color = Colors.teal.withOpacity(0.5)
+          ..strokeWidth = 5);
   }
 
   @override
@@ -156,7 +175,8 @@ class MapItemChart extends MapItem {
     }
   }
 
-  void drawText(Canvas canvas, double x, double y, double width, double height, String text, double size, Color color, TextAlign align) {
+  void drawText(Canvas canvas, double x, double y, double width, double height,
+      String text, double size, Color color, TextAlign align) {
     var textSpan = TextSpan(
       text: text,
       style: TextStyle(
@@ -164,12 +184,14 @@ class MapItemChart extends MapItem {
         fontSize: size,
       ),
     );
-    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
+    final textPainter = TextPainter(
+        text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
     textPainter.layout(
       minWidth: width,
       maxWidth: width,
     );
-    textPainter.paint(canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
+    textPainter.paint(
+        canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
   }
 
   @override
@@ -178,8 +200,10 @@ class MapItemChart extends MapItem {
     {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem("", "period", "Period, sec", "double", "300"));
-      props.add(MapItemPropItem("", "chart_color", "Chart Color", "color", "FF0EC35E"));
-      props.add(MapItemPropItem("", "show_time_scale", "Show Time Scale", "bool", "0"));
+      props.add(MapItemPropItem(
+          "", "chart_color", "Chart Color", "color", "FF0EC35E"));
+      props.add(MapItemPropItem(
+          "", "show_time_scale", "Show Time Scale", "bool", "0"));
       groups.add(MapItemPropGroup("Text", true, props));
     }
     return groups;
@@ -189,9 +213,10 @@ class MapItemChart extends MapItem {
   List<MapItemPropItem> propThresholdOfItem() {
     List<MapItemPropItem> props = [];
     props.add(MapItemPropItem("", "period", "Period, sec", "double", "300"));
-    props.add(MapItemPropItem("", "chart_color", "Chart Color", "color", "FF0EC35E"));
-    props.add(MapItemPropItem("", "show_time_scale", "Show Time Scale", "bool", "0"));
+    props.add(
+        MapItemPropItem("", "chart_color", "Chart Color", "color", "FF0EC35E"));
+    props.add(
+        MapItemPropItem("", "show_time_scale", "Show Time Scale", "bool", "0"));
     return props;
   }
-
 }
