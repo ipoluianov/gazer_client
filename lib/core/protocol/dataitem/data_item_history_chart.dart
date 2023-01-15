@@ -13,7 +13,8 @@ class DataItemHistoryChartItemRequest {
   int groupTimeRange;
   String outFormat;
 
-  DataItemHistoryChartItemRequest(this.name, this.dtBegin, this.dtEnd, this.groupTimeRange, this.outFormat);
+  DataItemHistoryChartItemRequest(
+      this.name, this.dtBegin, this.dtEnd, this.groupTimeRange, this.outFormat);
   Map<String, dynamic> toJson() => {
         'name': name,
         'dt_begin': dtBegin,
@@ -52,10 +53,23 @@ class DataItemHistoryChartItemValueResponse {
   bool hasBad;
   String uom;
 
-  DataItemHistoryChartItemValueResponse(this.datetimeFirst, this.datetimeLast, this.firstValue, this.lastValue, this.minValue, this.maxValue, this.avgValue,
-      this.sumValue, this.countOfValues, this.qualities, this.hasGood, this.hasBad, this.uom);
+  DataItemHistoryChartItemValueResponse(
+      this.datetimeFirst,
+      this.datetimeLast,
+      this.firstValue,
+      this.lastValue,
+      this.minValue,
+      this.maxValue,
+      this.avgValue,
+      this.sumValue,
+      this.countOfValues,
+      this.qualities,
+      this.hasGood,
+      this.hasBad,
+      this.uom);
 
-  factory DataItemHistoryChartItemValueResponse.fromJson(Map<String, dynamic> json) {
+  factory DataItemHistoryChartItemValueResponse.fromJson(
+      Map<String, dynamic> json) {
     return DataItemHistoryChartItemValueResponse(
       (double.tryParse("${json['tf']}") ?? 0).toInt(),
       (double.tryParse("${json['tl']}") ?? 0).toInt(),
@@ -83,7 +97,8 @@ class DataItemHistoryChartItemResponse {
 
   List<DataItemHistoryChartItemValueResponse> items;
 
-  DataItemHistoryChartItemResponse(this.name, this.dtBegin, this.dtEnd, this.groupTimeRange, this.items, this.currentValue);
+  DataItemHistoryChartItemResponse(this.name, this.dtBegin, this.dtEnd,
+      this.groupTimeRange, this.items, this.currentValue);
 
   factory DataItemHistoryChartItemResponse.fromJson(Map<String, dynamic> json) {
     return DataItemHistoryChartItemResponse(
@@ -92,7 +107,8 @@ class DataItemHistoryChartItemResponse {
         json['dt_end'],
         json['group_time_range'],
         List<DataItemHistoryChartItemValueResponse>.from(
-          json['items'].map((model) => DataItemHistoryChartItemValueResponse.fromJson(model)),
+          json['items'].map(
+              (model) => DataItemHistoryChartItemValueResponse.fromJson(model)),
         ),
         DataItemInfo.fromJson(json['value']));
   }
@@ -109,7 +125,8 @@ class DataItemHistoryChartResponse {
     }
     return DataItemHistoryChartResponse(
       List<DataItemHistoryChartItemResponse>.from(
-        json['items'].map((model) => DataItemHistoryChartItemResponse.fromJson(model)),
+        json['items']
+            .map((model) => DataItemHistoryChartItemResponse.fromJson(model)),
       ),
     );
   }

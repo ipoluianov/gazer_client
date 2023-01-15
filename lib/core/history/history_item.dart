@@ -1,7 +1,7 @@
+import '../protocol/dataitem/data_item_history_chart.dart';
 import '../protocol/dataitem/data_item_list.dart';
 import '../workspace/workspace.dart';
 import 'history_item_time_range.dart';
-import 'history_item_time_range_get_history_result.dart';
 import 'history_loading_task.dart';
 
 class HistoryItem {
@@ -14,7 +14,7 @@ class HistoryItem {
   DataItemInfo? _value;
   DateTime lastAccessDateTime;
 
-  HistoryItemTimeRangeGetHistoryResult getHistory(
+  List<DataItemHistoryChartItemValueResponse> getHistory(
       int minTime, int maxTime, int groupTimeRange) {
     if (ranges.containsKey(groupTimeRange)) {
       var res = ranges[groupTimeRange]!.getHistory(minTime, maxTime);
@@ -29,6 +29,7 @@ class HistoryItem {
   }
 
   DataItemInfo getValue() {
+    lastAccessDateTime = DateTime.now();
     if (_value == null) {
       return DataItemInfo(0, itemName, "", "", 0, "");
     }
@@ -42,7 +43,7 @@ class HistoryItem {
   List<HistoryLoadingTask> getLoadingTasks() {
     List<HistoryLoadingTask> result = [];
     for (var rKey in ranges.keys) {
-      result.addAll(ranges[rKey]!.loadingTasks);
+      result.addAll(ranges[rKey]!.rangesInProgress());
     }
     return result;
   }
@@ -51,7 +52,6 @@ class HistoryItem {
     for (var rKey in ranges.keys) {
       ranges[rKey]!.cleanUp();
     }
-
     checkCurrentValueTTL();
   }
 

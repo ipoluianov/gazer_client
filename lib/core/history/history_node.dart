@@ -1,5 +1,3 @@
-import 'package:gazer_client/core/history/request_to_node.dart';
-
 import '../protocol/dataitem/data_item_history_chart.dart';
 import '../protocol/dataitem/data_item_list.dart';
 import '../repository.dart';
@@ -10,7 +8,6 @@ import 'history_loading_task.dart';
 class HistoryNode {
   final Connection connection;
   Map<String, HistoryItem> items = {};
-  List<RequestToNode> requests = [];
 
   HistoryNode(this.connection);
 
@@ -31,8 +28,7 @@ class HistoryNode {
       String itemName, int minTime, int maxTime, int groupTimeRange) {
     var res =
         getHistoryItem(itemName).getHistory(minTime, maxTime, groupTimeRange);
-    requests.addAll(res.requests);
-    return res.values;
+    return res;
   }
 
   DataItemInfo value(String itemName) {
@@ -56,64 +52,31 @@ class HistoryNode {
   }
 
   void request() {
-    List<DataItemHistoryChartItemRequest> reqItems = [];
-
-    for (var req in requests) {
-      reqItems.add(DataItemHistoryChartItemRequest(
-          req.itemName, req.minTime, req.maxTime, req.groupTimeRange, ""));
-    }
+    List<String> itemNames = [];
 
     for (var item in items.values) {
       if (item.checkCurrentValueTTL()) {
-        reqItems
-            .add(DataItemHistoryChartItemRequest(item.itemName, 0, 0, 0, ""));
+        itemNames.add(item.itemName);
       }
     }
 
-    if (reqItems.isEmpty) {
+    if (itemNames.isEmpty) {
       return;
     }
 
-    var currentRequests = requests;
-
-    //print("REQUEST ${DateTime.now()}");
-    Repository()
-        .client(connection)
-        .dataItemHistoryChart(reqItems)
-        .then((value) {
-      List<DataItemHistoryChartItemResponse> receivedItems = value.items;
-      for (var item in receivedItems) {
+    Repository().client(connection).dataItemList(itemNames).then((value) {
+      DataItemListResponse resp = value;
+      for (var item in resp.items) {
         //print("received ${item.name}");
         // Set current value
         if (items.containsKey(item.name)) {
-          items[item.name]!.setValue(item.currentValue);
-        }
-        // Insert values to Range
-        if (item.groupTimeRange > 0) {
-          bool foundReq = false;
-          for (var req in currentRequests) {
-            if (req.itemName == item.name &&
-                req.groupTimeRange == item.groupTimeRange) {
-              req.range.insertValues(item);
-              print("insert ${item.dtBegin}");
-              req.range.removeLoadingTask(req.minTime, req.maxTime);
-              foundReq = true;
-              break;
-            }
-          }
-          if (!foundReq) {
-            //print("history req not found ${item.name}");
-          }
+          items[item.name]!.setValue(item);
         }
       }
     }).catchError((e) {
       print("ERROR LOAD DATA $e");
-      //range.removeLoadingTask(minTime, maxTime);
-      for (var req in currentRequests) {
-        req.range.removeLoadingTask(req.minTime, req.maxTime);
-      }
     });
 
-    requests = [];
+    //requests = [];
   }
 }

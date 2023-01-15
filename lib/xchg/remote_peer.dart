@@ -151,6 +151,7 @@ class RemotePeer {
   }
 
   Future<void> checkLANConnectionPoint() async {
+    return;
     print("checkLANConnectionPoint");
     var nonce = nonces.next();
     var addressBS = utf8.encode(remoteAddress);

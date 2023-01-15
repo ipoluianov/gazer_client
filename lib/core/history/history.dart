@@ -22,7 +22,7 @@ class History {
     });
 
     // Request Values & History
-    Timer.periodic(const Duration(milliseconds: 50), (timer) {
+    Timer.periodic(const Duration(milliseconds: 500), (timer) {
       for (var nodeKey in nodes.keys) {
         nodes[nodeKey]!.request();
       }
