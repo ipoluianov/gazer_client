@@ -28,6 +28,8 @@ class UsersFormSt extends State<UsersForm> {
   String errorMessage = "";
   List<String> userList = [];
 
+  ScrollController scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -63,7 +65,9 @@ class UsersFormSt extends State<UsersForm> {
     return Expanded(
       child: Scrollbar(
         thumbVisibility: true,
+        controller: scrollController,
         child: SingleChildScrollView(
+          controller: scrollController,
           child: Container(
             padding: const EdgeInsets.all(6),
             child: Wrap(
