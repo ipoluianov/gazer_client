@@ -34,6 +34,8 @@ class MapItemDecorationAddFormSt extends State<MapItemDecorationAddForm> {
   bool loaded = true;
   List<MapItemDecorationType> items = [];
 
+  ScrollController scrollController = ScrollController();
+
   void load() {
     items = [];
     var internalMapItemTypes = MapItemDecoration.types();
@@ -48,8 +50,10 @@ class MapItemDecorationAddFormSt extends State<MapItemDecorationAddForm> {
     }
     return Expanded(
       child: Scrollbar(
+        controller: scrollController,
         thumbVisibility: true,
         child: SingleChildScrollView(
+          controller: scrollController,
           child: Container(
             padding: EdgeInsets.all(6),
             child: Wrap(

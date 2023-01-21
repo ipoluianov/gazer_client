@@ -9,7 +9,7 @@ class DesignColors {
   static Color _fore1 = const Color(0xB000BCFF);
   static Color _fore2 = const Color(0x9000BCFF);
 
-  static Color _back = const Color(0xFF262626);
+  static Color _back = const Color(0xFF1E1E1E);
   static Color _back1 = const Color(0x1000BCFF);
   static Color _back2 = const Color(0x3000BCFF);
 

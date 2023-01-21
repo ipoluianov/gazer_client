@@ -28,7 +28,8 @@ class NodeWidgetSt extends State<NodeWidget> {
   void initState() {
     super.initState();
     setState(() {
-      nodeName = widget.conn.address;
+      //nodeName = widget.conn.address;
+      nodeName = "...";
     });
     Repository().client(widget.conn).infoReceived =
         false; // Reset info in connection
@@ -58,12 +59,15 @@ class NodeWidgetSt extends State<NodeWidget> {
           nodeName = value.nodeName;
           status = value.version;
           errorExists = false;
+          if (nodeName.isEmpty) {
+            nodeName = "[noname]";
+          }
         });
       }
     }).catchError((err) {
       if (mounted) {
         setState(() {
-          nodeName = widget.conn.address;
+          nodeName = "error";
           status = err.toString();
           errorExists = true;
         });
@@ -147,16 +151,16 @@ class NodeWidgetSt extends State<NodeWidget> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "nodeName",
-                              //nodeName,
+                              //"nodeName",
+                              nodeName,
                               style: const TextStyle(fontSize: 14),
                               overflow: TextOverflow.fade,
                             ),
                             Text(
-                              "---",
+                              widget.conn.address,
                               //widget.conn.transport + " : " + widget.conn.address,
                               style: const TextStyle(
-                                  fontSize: 14, color: Colors.white24),
+                                  fontSize: 12, color: Colors.white24),
                               overflow: TextOverflow.fade,
                             ),
                           ],
