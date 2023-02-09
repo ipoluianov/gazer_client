@@ -78,4 +78,97 @@ class Program {
       addLine(currentLine);
     }
   }
+
+  List<dynamic> runFn(String functionName, List<dynamic> args) {
+    List<dynamic> result = [];
+    if (functions.containsKey(functionName)) {
+      currentLine = functions[functionName]!;
+      List<String> argsValues = [];
+      for (var v in args) {
+        if (v is String) {
+          argsValues.add("\"" + v.toString() + "\"");
+        } else {
+          argsValues.add(v.toString());
+        }
+      }
+      List<String> callBody = [];
+      callBody.add(functionName);
+      callBody.addAll(argsValues);
+      fnCall([], callBody);
+      runInternal();
+      return context.lastCallResult;
+    }
+    return result;
+  }
+
+  void run() {
+    currentLine = 0;
+    runInternal();
+  }
+
+  void runInternal() {
+    while (currentLine >= 0 && currentLine < lines.length) {
+      execLine();
+    }
+  }
+
+  void execLine() {
+    if (lines[currentLine].lexems.isEmpty) {
+      currentLine++;
+      return;
+    }
+    var l0 = lines[currentLine].lexems[0];
+    debug(["execLine", currentLine, lines[currentLine].lexems]);
+    if (l0 == "return") {
+      fnReturn();
+      return;
+    }
+    if (l0 == "fn") {
+      fnFn();
+      return;
+    }
+    if (l0 == "if") {
+      fnIf();
+      return;
+    }
+    if (l0 == "while") {
+      fnWhile();
+      return;
+    }
+    if (l0 == "break") {
+      fnBreak();
+      return;
+    }
+    if (l0 == "}") {
+      fnEnd();
+      return;
+    }
+    if (l0 == "dump") {
+      fnDump();
+      return;
+    }
+
+    fnSet();
+  }
+
+  void fnCall(List<String> resulrPlaces, List<String> funcCallBody) {
+    var functionName = funcCallBody[0];
+    bool internalExists = functions.containsKey(functionName);
+    bool externalExists = parentFunctions.containsKey(functionName);
+
+    if (!internalExists && !externalExists) {
+      throw "unknown function " + functionName;
+    }
+
+    if (internalExists) {
+      var functionLineIndex = functions[functionName]!;
+      var ls = lines[functionLineIndex].lexems;
+      var functionLineParameters = ls.sublist(2, ls.length - 1);
+      var parameters = parseParameters(funcCallBody.sublist(1));
+      var ctx = Context(currentLine + 1);
+      ctx.functionName = functionName;
+    } else {
+      if (externalExists) {}
+    }
+  }
 }
