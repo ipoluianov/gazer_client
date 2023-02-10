@@ -12,21 +12,45 @@ import 'map_items/map_item_map.dart';
 import 'map_items/map_item_switch.dart';
 import 'map_items/map_item_text.dart';
 import 'map_items/map_item_text_02.dart';
+import 'map_items/maps_item_runlang.dart';
 
 class MapItemsLibrary {
   static final MapItemsLibrary _singleton = MapItemsLibrary._internal();
 
   MapItemsLibrary._internal() {
-    registerItem(MapItemText.sType, MapItemText.sName, (c) { return MapItemText(c); });
-    registerItem(MapItemText02.sType, MapItemText02.sName, (c) { return MapItemText02(c); });
-    registerItem(MapItemGaugeRound.sType, MapItemGaugeRound.sName, (c) { return MapItemGaugeRound(c); });
-    registerItem(MapItemChart.sType, MapItemChart.sName, (c) { return MapItemChart(c); });
-    registerItem(MapItemMap.sType, MapItemMap.sName, (c) { return MapItemMap(c); });
-    registerItem(MapItemItem.sType, MapItemItem.sName, (c) { return MapItemItem(c); });
-    registerItem(MapItemErrorIndicator.sType, MapItemErrorIndicator.sName, (c) { return MapItemErrorIndicator(c); });
-    registerItem(MapItemSwitch.sType, MapItemSwitch.sName, (c) { return MapItemSwitch(c); });
-    registerItem(MapItemButton.sType, MapItemButton.sName, (c) { return MapItemButton(c); });
-    registerItem(MapItemUnitTable01.sType, MapItemUnitTable01.sName, (c) { return MapItemUnitTable01(c); });
+    registerItem(MapItemText.sType, MapItemText.sName, (c) {
+      return MapItemText(c);
+    });
+    registerItem(MapItemText02.sType, MapItemText02.sName, (c) {
+      return MapItemText02(c);
+    });
+    registerItem(MapItemGaugeRound.sType, MapItemGaugeRound.sName, (c) {
+      return MapItemGaugeRound(c);
+    });
+    registerItem(MapItemChart.sType, MapItemChart.sName, (c) {
+      return MapItemChart(c);
+    });
+    registerItem(MapItemMap.sType, MapItemMap.sName, (c) {
+      return MapItemMap(c);
+    });
+    registerItem(MapItemItem.sType, MapItemItem.sName, (c) {
+      return MapItemItem(c);
+    });
+    registerItem(MapItemErrorIndicator.sType, MapItemErrorIndicator.sName, (c) {
+      return MapItemErrorIndicator(c);
+    });
+    registerItem(MapItemSwitch.sType, MapItemSwitch.sName, (c) {
+      return MapItemSwitch(c);
+    });
+    registerItem(MapItemButton.sType, MapItemButton.sName, (c) {
+      return MapItemButton(c);
+    });
+    registerItem(MapItemUnitTable01.sType, MapItemUnitTable01.sName, (c) {
+      return MapItemUnitTable01(c);
+    });
+    registerItem(MapItemRunlang.sType, MapItemRunlang.sName, (c) {
+      return MapItemRunlang(c);
+    });
   }
 
   factory MapItemsLibrary() {
@@ -35,7 +59,8 @@ class MapItemsLibrary {
 
   Map<String, MapItemsLibraryItem> itemTypes = {};
 
-  void registerItem(String type, String name, MapItem Function(Connection) constructor) {
+  void registerItem(
+      String type, String name, MapItem Function(Connection) constructor) {
     itemTypes[type] = MapItemsLibraryItem(type, name, constructor);
   }
 
