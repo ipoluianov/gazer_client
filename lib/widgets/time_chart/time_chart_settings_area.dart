@@ -1,9 +1,5 @@
-import 'dart:math';
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/design.dart';
-import 'package:gazer_client/core/tools/hex_colors.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/chart_groups/chart_group_form/chart_group_data_items.dart';
 import 'package:gazer_client/forms/maps/map_form/map_item.dart';
