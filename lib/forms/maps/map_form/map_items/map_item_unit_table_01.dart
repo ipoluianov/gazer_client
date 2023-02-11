@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gazer_client/core/protocol/dataitem/data_item_list.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_rect_01.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_set.dart';
 
 import '../map_item.dart';
 
@@ -25,12 +23,6 @@ class MapItemUnitTable01 extends MapItem {
 
   @override
   void setDefaultsForItem() {
-    postDecorations = MapItemDecorationList([]);
-    {
-      var decoration = MapItemDecorationRect01();
-      decoration.initDefaultProperties();
-      postDecorations.items.add(decoration);
-    }
     setDouble("w", 200);
     setDouble("h", 200);
   }

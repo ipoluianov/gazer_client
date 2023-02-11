@@ -8,8 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_rect_01.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_set.dart';
 
 import '../map_item.dart';
 
@@ -29,20 +27,12 @@ class MapItemText extends MapItem {
   bool isReplacer = false;
   String replaceType = "";
 
-
   MapItemText(Connection connection) : super(connection) {
     setDouble("font_size", 20);
   }
 
-
   @override
   void setDefaultsForItem() {
-    postDecorations = MapItemDecorationList([]);
-    {
-      var decoration = MapItemDecorationRect01();
-      decoration.initDefaultProperties();
-      postDecorations.items.add(decoration);
-    }
     setDouble("w", 100);
     setDouble("h", 40);
   }
@@ -74,10 +64,12 @@ class MapItemText extends MapItem {
     lastValue = targetValue;
 
     if (isReplacer) {
-      canvas.drawRect(Rect.fromLTWH(getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), z(60)), Paint()
-        ..color = Colors.black54
-        ..style = PaintingStyle.fill
-      );
+      canvas.drawRect(
+          Rect.fromLTWH(
+              getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), z(60)),
+          Paint()
+            ..color = Colors.black54
+            ..style = PaintingStyle.fill);
       drawText(
           canvas,
           getDoubleZ("x"),
@@ -91,11 +83,20 @@ class MapItemText extends MapItem {
     }
 
     drawText(
-        canvas, getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h"), text, lastValue, getColorWithThresholds("text_color"), TextAlign.center);
+        canvas,
+        getDoubleZ("x"),
+        getDoubleZ("y"),
+        getDoubleZ("w"),
+        getDoubleZ("h"),
+        text,
+        lastValue,
+        getColorWithThresholds("text_color"),
+        TextAlign.center);
     drawPost(canvas, size);
   }
 
-  void drawText(Canvas canvas, double x, double y, double width, double height, String text, double size, Color color, TextAlign align) {
+  void drawText(Canvas canvas, double x, double y, double width, double height,
+      String text, double size, Color color, TextAlign align) {
     canvas.save();
     var textSpan = TextSpan(
       text: text,
@@ -104,12 +105,14 @@ class MapItemText extends MapItem {
         fontSize: size,
       ),
     );
-    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
+    final textPainter = TextPainter(
+        text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
     textPainter.layout(
       minWidth: width,
       maxWidth: width,
     );
-    textPainter.paint(canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
+    textPainter.paint(
+        canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
     //textPainter.paint(canvas, Offset(x, y));
     canvas.restore();
   }
@@ -121,7 +124,8 @@ class MapItemText extends MapItem {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem("", "text", "Text", "text", "Text"));
 
-      props.add(MapItemPropItem("", "text_color", "Text Color", "color", "FF00EFFF"));
+      props.add(
+          MapItemPropItem("", "text_color", "Text Color", "color", "FF00EFFF"));
       props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
       props.add(MapItemPropItem("", "prefix", "Prefix", "text", ""));
       props.add(MapItemPropItem("", "suffix", "Suffix", "text", ""));
@@ -133,7 +137,8 @@ class MapItemText extends MapItem {
   @override
   List<MapItemPropItem> propThresholdOfItem() {
     List<MapItemPropItem> props = [];
-    props.add(MapItemPropItem("", "text_color", "Text Color", "color", "FF00EFFF"));
+    props.add(
+        MapItemPropItem("", "text_color", "Text Color", "color", "FF00EFFF"));
     props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
     props.add(MapItemPropItem("", "prefix", "Prefix", "text", ""));
     props.add(MapItemPropItem("", "suffix", "Suffix", "text", ""));

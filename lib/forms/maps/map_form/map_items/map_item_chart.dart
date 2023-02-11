@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:gazer_client/core/protocol/dataitem/data_item_history_chart.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_rect_01.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_set.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_settings.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_settings_area.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_settings_series.dart';
@@ -39,8 +37,6 @@ class MapItemChart extends MapItem {
 
   @override
   void tick() {
-    super.tick();
-
     tickCounter++;
 
     if (tickCounter > 20) {
@@ -166,14 +162,7 @@ class MapItemChart extends MapItem {
   }
 
   @override
-  void setDefaultsForItem() {
-    postDecorations = MapItemDecorationList([]);
-    {
-      var decoration = MapItemDecorationRect01();
-      decoration.initDefaultProperties();
-      postDecorations.items.add(decoration);
-    }
-  }
+  void setDefaultsForItem() {}
 
   void drawText(Canvas canvas, double x, double y, double width, double height,
       String text, double size, Color color, TextAlign align) {

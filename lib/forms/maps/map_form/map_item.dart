@@ -11,8 +11,6 @@ import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
 import 'package:gazer_client/core/tools/hex_colors.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/chart_groups/chart_group_form/chart_group_data_items.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_set.dart';
 import 'package:gazer_client/widgets/confirmation_dialog/confirmation_dialog.dart';
 
 import 'map_item_library.dart';
@@ -54,24 +52,24 @@ abstract class MapItem extends IPropContainer {
   }
 
   void tickItem() {
-    for (var d in postDecorations.items) {
-      d.tickDecoration();
-    }
     tick();
   }
 
   void tick() {}
 
   Rect rect() {
-    return Rect.fromLTWH(getDouble("x"), getDouble("y"), getDouble("w"), getDouble("h"));
+    return Rect.fromLTWH(
+        getDouble("x"), getDouble("y"), getDouble("w"), getDouble("h"));
   }
 
   Rect rectZ() {
-    return Rect.fromLTWH(getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h"));
+    return Rect.fromLTWH(
+        getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h"));
   }
 
   Rect rectZWidthOffset(Offset offset) {
-    return Rect.fromLTWH(getDoubleZ("x") + offset.dx, getDoubleZ("y") + offset.dy, getDoubleZ("w"), getDoubleZ("h"));
+    return Rect.fromLTWH(getDoubleZ("x") + offset.dx,
+        getDoubleZ("y") + offset.dy, getDoubleZ("w"), getDoubleZ("h"));
   }
 
   bool needToZoom() {
@@ -95,48 +93,35 @@ abstract class MapItem extends IPropContainer {
 
   void drawDemo(Canvas canvas, Size size) {
     setDefaultsForItem();
-    for (var d in postDecorations.items) {
-      d.showProgress = 1;
-      d.drawDecoratorPre(canvas, backgroundRect(), this, 1);
-    }
     drawItem(canvas, size, "", []);
-    for (var d in postDecorations.items) {
-      d.showProgress = 1;
-      d.drawDecoratorPost(canvas, backgroundRect(), this, 1);
-    }
   }
 
-  void drawItem(Canvas canvas, Size size, String dataSource, List<String> parentMaps) {
+  void drawItem(
+      Canvas canvas, Size size, String dataSource, List<String> parentMaps) {
     lastParentDataSource = dataSource;
 
     var zoomForDecorators = calcPrefScale();
 
     bool allDecorationsReady = true;
 
-    for (var d in postDecorations.items) {
-      d.drawDecoratorPre(canvas, backgroundRect(), this, zoomForDecorators);
-    }
-
     if (allDecorationsReady) {
       canvas.save();
 
       var borderCornerRadius = getDoubleZ("border_corner_radius");
       if (borderCornerRadius > 0) {
-        var rRect = RRect.fromRectAndRadius(backgroundRect(), Radius.circular(borderCornerRadius));
+        var rRect = RRect.fromRectAndRadius(
+            backgroundRect(), Radius.circular(borderCornerRadius));
         canvas.clipRRect(rRect);
       } else {
         if (type() == "map") {
-          var rRect = RRect.fromRectAndRadius(backgroundRect(), const Radius.circular(0));
+          var rRect = RRect.fromRectAndRadius(
+              backgroundRect(), const Radius.circular(0));
           canvas.clipRRect(rRect);
         }
       }
 
       draw(canvas, size, parentMaps);
       canvas.restore();
-    }
-
-    for (var d in postDecorations.items) {
-      d.drawDecoratorPost(canvas, backgroundRect(), this, zoomForDecorators);
     }
   }
 
@@ -145,7 +130,8 @@ abstract class MapItem extends IPropContainer {
   }
 
   void drawPost(Canvas canvas, Size size, {RRect? rRect}) {
-    rRect ??= RRect.fromRectAndRadius(backgroundRect(), Radius.circular(getDoubleZWithThresholds("border_corner_radius")));
+    rRect ??= RRect.fromRectAndRadius(backgroundRect(),
+        Radius.circular(getDoubleZWithThresholds("border_corner_radius")));
 
     drawBorders(canvas, size, rRect);
   }
@@ -193,14 +179,16 @@ abstract class MapItem extends IPropContainer {
 
       // draw selection
       canvas.drawRect(
-          Offset(getDoubleZ("x"), getDoubleZ("y")) & Size(getDoubleZ("w"), getDoubleZ("h")),
+          Offset(getDoubleZ("x"), getDoubleZ("y")) &
+              Size(getDoubleZ("w"), getDoubleZ("h")),
           Paint()
             ..style = PaintingStyle.stroke
             ..color = Colors.purpleAccent.withOpacity(0.2)
             ..strokeWidth = 9);
 
       canvas.drawRect(
-          Offset(getDoubleZ("x"), getDoubleZ("y")) & Size(getDoubleZ("w"), getDoubleZ("h")),
+          Offset(getDoubleZ("x"), getDoubleZ("y")) &
+              Size(getDoubleZ("w"), getDoubleZ("h")),
           Paint()
             ..style = PaintingStyle.stroke
             ..color = Colors.purpleAccent
@@ -211,7 +199,8 @@ abstract class MapItem extends IPropContainer {
   void drawEditingBorders(Canvas canvas, Size size) {
     // draw selection
     canvas.drawRect(
-        Offset(getDoubleZ("x"), getDoubleZ("y")) & Size(getDoubleZ("w"), getDoubleZ("h")),
+        Offset(getDoubleZ("x"), getDoubleZ("y")) &
+            Size(getDoubleZ("w"), getDoubleZ("h")),
         Paint()
           ..style = PaintingStyle.stroke
           ..color = Colors.red.withOpacity(0.1)
@@ -227,15 +216,6 @@ abstract class MapItem extends IPropContainer {
 
   Future<dart_ui.Image> _loadImage(Uint8List backImageBytes) async {
     return await decodeImageFromList(backImageBytes);
-  }
-
-  //MapItemDecorationList preDecorations = MapItemDecorationList([]);
-  MapItemDecorationList postDecorations = MapItemDecorationList([]);
-  String lastPostDecorationsSettings = "";
-
-  @override
-  MapItemDecorationList getDecorations() {
-    return postDecorations;
   }
 
   void drawBack(Canvas canvas, Size size, {RRect? rRect}) {
@@ -276,14 +256,19 @@ abstract class MapItem extends IPropContainer {
     if (backImage != null) {
       var backRect = backgroundRect();
 
-      var calcRes =
-          calcPreferredScale(Size(backRect.width / zoom, backRect.height / zoom), Size(backImage!.width.toDouble(), backImage!.height.toDouble()), scaleFit);
+      var calcRes = calcPreferredScale(
+          Size(backRect.width / zoom, backRect.height / zoom),
+          Size(backImage!.width.toDouble(), backImage!.height.toDouble()),
+          scaleFit);
       var scaleFactorX = calcRes.scaleX * zoom;
       var scaleFactorY = calcRes.scaleY * zoom;
-      var imgOffsetX = (getDoubleZ("x") + calcRes.offset.dx * zoom) / scaleFactorX;
-      var imgOffsetY = (getDoubleZ("y") + calcRes.offset.dy * zoom) / scaleFactorY;
+      var imgOffsetX =
+          (getDoubleZ("x") + calcRes.offset.dx * zoom) / scaleFactorX;
+      var imgOffsetY =
+          (getDoubleZ("y") + calcRes.offset.dy * zoom) / scaleFactorY;
       canvas.save();
-      canvas.clipRect(dart_ui.Rect.fromLTWH(getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h")));
+      canvas.clipRect(dart_ui.Rect.fromLTWH(
+          getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h")));
       canvas.scale(scaleFactorX, scaleFactorY);
       canvas.drawImage(backImage!, Offset(imgOffsetX, imgOffsetY), Paint());
       canvas.restore();
@@ -304,11 +289,11 @@ abstract class MapItem extends IPropContainer {
     setDefaultsForItem();
   }
 
-  void setDefaultsForItem() {
-  }
+  void setDefaultsForItem() {}
 
   Rect backgroundRect() {
-    return Offset(getDoubleZ("x"), getDoubleZ("y")) & Size(getDoubleZ("w"), getDoubleZ("h"));
+    return Offset(getDoubleZ("x"), getDoubleZ("y")) &
+        Size(getDoubleZ("w"), getDoubleZ("h"));
   }
 
   void drawBorders(Canvas canvas, Size size, RRect? rRect) {
@@ -317,7 +302,9 @@ abstract class MapItem extends IPropContainer {
       var borderWidth = getDoubleWithThresholds("border_width");
       var borderCornerRadius = getDoubleWithThresholds("border_corner_radius");
       if (borderCornerRadius > 0) {
-        rRect = RRect.fromRectAndRadius(Rect.fromLTWH(rRect.left, rRect.top, rRect.width, rRect.height), Radius.circular(rRect.blRadiusX));
+        rRect = RRect.fromRectAndRadius(
+            Rect.fromLTWH(rRect.left, rRect.top, rRect.width, rRect.height),
+            Radius.circular(rRect.blRadiusX));
       }
       if (borderWidth > 0) {
         canvas.drawRRect(
@@ -461,28 +448,15 @@ abstract class MapItem extends IPropContainer {
     MapItem item = MapItemsLibrary().makeItemByType(json['type'], connection);
     //print("3333 ${item.type()}");
 
-
     for (var key in json.keys) {
       if (key != "decorations" && key != "children" && json[key] is String) {
         item.set(key, json[key]);
       }
     }
 
-
     var children = json['children'];
     for (var ch in children) {
       item.items.add(MapItem.fromJson(ch, connection));
-    }
-
-
-    var postDecorationsJson = json['decorations'];
-    for (var ch in postDecorationsJson) {
-      String? decorationType = ch['type'];
-      if (decorationType != null) {
-        var decor = MapItemDecoration.makeByType(decorationType);
-        decor.loadFromJson(ch);
-        item.postDecorations.items.add(decor);
-      }
     }
 
     return item;
@@ -527,15 +501,6 @@ abstract class MapItem extends IPropContainer {
       }
     }
     result["children"] = children;
-
-    List<Map<String, dynamic>> postDec = [];
-    if (isRoot || type() != "map") {
-      for (var ch in postDecorations.items) {
-        var chRes = ch.toJson();
-        postDec.add(chRes);
-      }
-    }
-    result["decorations"] = postDec;
 
     return result;
   }
@@ -620,15 +585,21 @@ abstract class MapItem extends IPropContainer {
       var onClickWriteDataItem = get("action_on_click_write_data_item");
       var onClickWriteValue = get("action_on_click_write_value");
       var onClickWriteConfirmation = getBool("action_on_click_confirmation");
-      var onClickWriteConfirmationText = get("action_on_click_confirmation_text");
+      var onClickWriteConfirmationText =
+          get("action_on_click_confirmation_text");
 
       if (onClickWriteDataItem.isNotEmpty) {
         if (onClickWriteConfirmation) {
-          showConfirmationDialog(context, "Confirmation", onClickWriteConfirmationText, () {
-            Repository().client(connection).dataItemWrite(onClickWriteDataItem, onClickWriteValue);
+          showConfirmationDialog(
+              context, "Confirmation", onClickWriteConfirmationText, () {
+            Repository()
+                .client(connection)
+                .dataItemWrite(onClickWriteDataItem, onClickWriteValue);
           });
         } else {
-          Repository().client(connection).dataItemWrite(onClickWriteDataItem, onClickWriteValue);
+          Repository()
+              .client(connection)
+              .dataItemWrite(onClickWriteDataItem, onClickWriteValue);
         }
       }
     }
@@ -640,13 +611,9 @@ abstract class MapItem extends IPropContainer {
     onTapUpForItem();
   }
 
-    void onTapDownForItem() {
+  void onTapDownForItem() {}
 
-  }
-
-  void onTapUpForItem() {
-
-  }
+  void onTapUpForItem() {}
   void initDefaultProperties() {
     for (var itemPropPage in propList()) {
       for (var itemPropGroup in itemPropPage.groups) {
@@ -664,19 +631,25 @@ abstract class MapItem extends IPropContainer {
     props.add(MapItemPropItem("", "w", "Width", "double", "200"));
     props.add(MapItemPropItem("", "h", "Height", "double", "200"));
     props.add(MapItemPropItem("", "resource_id", "Resource", "text", ""));
-    props.add(MapItemPropItem("", "s1_resource_id", "Mini Resource", "text", ""));
-    props.add(MapItemPropItem("", "s1_width", "Mini Resource Width", "double", "200"));
-    props.add(MapItemPropItem("", "data_source", "Data Source Item", "data_source", ""));
+    props.add(
+        MapItemPropItem("", "s1_resource_id", "Mini Resource", "text", ""));
+    props.add(MapItemPropItem(
+        "", "s1_width", "Mini Resource Width", "double", "200"));
+    props.add(MapItemPropItem(
+        "", "data_source", "Data Source Item", "data_source", ""));
     return props;
   }
 
   @override
   List<MapItemPropPage> propList() {
     //List<MapItemPropPage> pages = [];
-    MapItemPropPage pageMain = MapItemPropPage("Main", const Icon(Icons.domain), []);
-    MapItemPropPage pageDecorations = MapItemPropPage("Decor", const Icon(Icons.format_paint), []);
+    MapItemPropPage pageMain =
+        MapItemPropPage("Main", const Icon(Icons.domain), []);
+    MapItemPropPage pageDecorations =
+        MapItemPropPage("Decor", const Icon(Icons.format_paint), []);
 
-    MapItemPropPage pageDataItems = MapItemPropPage("Data Items", const Icon(Icons.data_usage), []);
+    MapItemPropPage pageDataItems =
+        MapItemPropPage("Data Items", const Icon(Icons.data_usage), []);
     pageDataItems.widget = ChartGroupDataItems(connection);
 
     pageMain.groups.addAll(propGroupsOfItem());
@@ -691,34 +664,48 @@ abstract class MapItem extends IPropContainer {
           props.add(MapItemPropItem("", "back_img", "Background Image", "image", ""));
           props.add(MapItemPropItem("", "back_img_scale_fit", "Background Image Scale Fit", "scale_fit", "contain"));
           props.add(MapItemPropItem("", "border_corner_radius", "Border Corner Radius", "double", "0"));*/
-          pageDecorations.groups.add(MapItemPropGroup("Decorations", false, [MapItemPropItem("", "decorations", "Decorations", "decorations", "")]));
+          pageDecorations.groups.add(MapItemPropGroup("Decorations", false, [
+            MapItemPropItem("", "decorations", "Decorations", "decorations", "")
+          ]));
         } else {
           props.addAll(propListForInnerMap());
         }
         pageMain.groups.add(MapItemPropGroup("Geometry", true, props));
       }
     } else {
-      pageDecorations.groups.add(MapItemPropGroup("Decorations", false, [MapItemPropItem("", "decorations", "Decorations", "decorations", "")]));
+      pageDecorations.groups.add(MapItemPropGroup("Decorations", false, [
+        MapItemPropItem("", "decorations", "Decorations", "decorations", "")
+      ]));
       {
         List<MapItemPropItem> props = [];
-        props.add(MapItemPropItem("", "data_source", "Data Source Item", "data_source", ""));
+        props.add(MapItemPropItem(
+            "", "data_source", "Data Source Item", "data_source", ""));
         pageMain.groups.add(MapItemPropGroup("Data Source", true, props));
       }
       {
         List<MapItemPropItem> props = [];
-        props.add(MapItemPropItem("", "action_on_click_write_data_item", "On-Click Write Data Item", "data_source", ""));
-        props.add(MapItemPropItem("", "action_on_click_write_value", "On-Click Write Value", "text", ""));
-        props.add(MapItemPropItem("", "action_on_click_confirmation", "On-Click Write Confirmation", "bool", ""));
-        props.add(MapItemPropItem("", "action_on_click_confirmation_text", "On-Click Write Confirmation Text", "text", ""));
+        props.add(MapItemPropItem("", "action_on_click_write_data_item",
+            "On-Click Write Data Item", "data_source", ""));
+        props.add(MapItemPropItem("", "action_on_click_write_value",
+            "On-Click Write Value", "text", ""));
+        props.add(MapItemPropItem("", "action_on_click_confirmation",
+            "On-Click Write Confirmation", "bool", ""));
+        props.add(MapItemPropItem("", "action_on_click_confirmation_text",
+            "On-Click Write Confirmation Text", "text", ""));
         pageMain.groups.add(MapItemPropGroup("Actions", true, props));
       }
       {
         List<MapItemPropItem> props = [];
-        props.add(MapItemPropItem("", "threshold_up_error", "Up Error", "threshold", ""));
-        props.add(MapItemPropItem("", "threshold_up_warning", "Up Warning", "threshold", ""));
-        props.add(MapItemPropItem("", "threshold_down_warning", "Down Warning", "threshold", ""));
-        props.add(MapItemPropItem("", "threshold_down_error", "Down Error", "threshold", ""));
-        props.add(MapItemPropItem("", "threshold_uom_1", "UOM", "threshold", ""));
+        props.add(MapItemPropItem(
+            "", "threshold_up_error", "Up Error", "threshold", ""));
+        props.add(MapItemPropItem(
+            "", "threshold_up_warning", "Up Warning", "threshold", ""));
+        props.add(MapItemPropItem(
+            "", "threshold_down_warning", "Down Warning", "threshold", ""));
+        props.add(MapItemPropItem(
+            "", "threshold_down_error", "Down Error", "threshold", ""));
+        props.add(
+            MapItemPropItem("", "threshold_uom_1", "UOM", "threshold", ""));
         pageMain.groups.add(MapItemPropGroup("Thresholds", false, props));
       }
       {
@@ -738,12 +725,16 @@ abstract class MapItem extends IPropContainer {
     List<MapItemPropItem> props = [];
     props.addAll(propThresholdOfItem());
     //props.add(MapItemPropItem("", "auto_zoom", "Auto Zoom", "bool", "0"));
-    props.add(MapItemPropItem("", "back_color", "Background Color", "color", "000000"));
+    props.add(MapItemPropItem(
+        "", "back_color", "Background Color", "color", "000000"));
     props.add(MapItemPropItem("", "back_img", "Background Image", "image", ""));
-    props.add(MapItemPropItem("", "back_img_scale_fit", "Background Image Scale Fit", "scale_fit", "contain"));
+    props.add(MapItemPropItem("", "back_img_scale_fit",
+        "Background Image Scale Fit", "scale_fit", "contain"));
     props.add(MapItemPropItem("", "border_color", "Border Color", "color", ""));
-    props.add(MapItemPropItem("", "border_width", "Border Width", "double", "0"));
-    props.add(MapItemPropItem("", "border_corner_radius", "Border Corner Radius", "double", "0"));
+    props.add(
+        MapItemPropItem("", "border_width", "Border Width", "double", "0"));
+    props.add(MapItemPropItem(
+        "", "border_corner_radius", "Border Corner Radius", "double", "0"));
     return props;
   }
 
@@ -757,8 +748,13 @@ abstract class MapItem extends IPropContainer {
     List<ActionPoint> result = [];
     double actionPointSize = 30;
     actionPointSize = actionPointSize / zoom;
-    result.add(ActionPoint("size_br",
-        Rect.fromLTWH(getDouble("x") + getDouble("w") - actionPointSize, getDouble("y") + getDouble("h") - actionPointSize, actionPointSize, actionPointSize)));
+    result.add(ActionPoint(
+        "size_br",
+        Rect.fromLTWH(
+            getDouble("x") + getDouble("w") - actionPointSize,
+            getDouble("y") + getDouble("h") - actionPointSize,
+            actionPointSize,
+            actionPointSize)));
     return result;
   }
 
@@ -768,7 +764,10 @@ abstract class MapItem extends IPropContainer {
     result.add(ActionPoint(
         "size_br",
         Rect.fromLTWH(
-            getDoubleZ("x") + getDoubleZ("w") - actionPointSize, getDoubleZ("y") + getDoubleZ("h") - actionPointSize, actionPointSize, actionPointSize)));
+            getDoubleZ("x") + getDoubleZ("w") - actionPointSize,
+            getDoubleZ("y") + getDoubleZ("h") - actionPointSize,
+            actionPointSize,
+            actionPointSize)));
     return result;
   }
 
@@ -785,7 +784,9 @@ abstract class MapItem extends IPropContainer {
       drawItem(canvas, size, "", []);
     }
     dart_ui.Picture pic = rec.endRecording();
-    dart_ui.Image img = await pic.toImage(getDouble("w").toInt() + (margin * 2).toInt(), getDouble("h").toInt() + (margin * 2).toInt());
+    dart_ui.Image img = await pic.toImage(
+        getDouble("w").toInt() + (margin * 2).toInt(),
+        getDouble("h").toInt() + (margin * 2).toInt());
     ByteData? byteData = await img.toByteData(format: ImageByteFormat.png);
     if (byteData != null) {
       pngBytes = byteData.buffer.asUint8List();
@@ -833,7 +834,8 @@ class MapItemPropItem {
   String type;
   String groupName;
   String defaultValue;
-  MapItemPropItem(this.groupName, this.name, this.displayName, this.type, this.defaultValue);
+  MapItemPropItem(this.groupName, this.name, this.displayName, this.type,
+      this.defaultValue);
 }
 
 abstract class IPropContainer {
@@ -844,7 +846,6 @@ abstract class IPropContainer {
   List<MapItemPropPage> propList();
   void setDouble(String name, double value);
   List<MapItemPropItem> propThreshold();
-  MapItemDecorationList getDecorations();
 }
 
 enum ThresholdType { none, downError, downWarning, upWarning, upError, uom1 }

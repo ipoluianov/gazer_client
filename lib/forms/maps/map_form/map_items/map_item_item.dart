@@ -5,8 +5,6 @@ import 'dart:ui' as dart_ui;
 
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_rect_01.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_set.dart';
 
 import '../map_item.dart';
 
@@ -23,21 +21,19 @@ class MapItemItem extends MapItem {
   }
 
   @override
-  void setDefaultsForItem() {
-    postDecorations = MapItemDecorationList([]);
-  }
+  void setDefaultsForItem() {}
 
   @override
-  void draw(Canvas canvas, Size size, List<String> parentMaps) {
-  }
+  void draw(Canvas canvas, Size size, List<String> parentMaps) {}
 
   @override
   void drawDemo(dart_ui.Canvas canvas, dart_ui.Size size) {
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.purple.withOpacity(0.5)
-      ..strokeWidth = 2
-    );
+    canvas.drawRect(
+        Rect.fromLTWH(0, 0, size.width, size.height),
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..color = Colors.purple.withOpacity(0.5)
+          ..strokeWidth = 2);
   }
 
   @override
@@ -53,10 +49,8 @@ class MapItemItem extends MapItem {
   }
 
   @override
-  void tick() {
-  }
+  void tick() {}
 
   @override
-  void resetToEndOfAnimation() {
-  }
+  void resetToEndOfAnimation() {}
 }

@@ -4,9 +4,6 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_circles_01.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_rect_01.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_set.dart';
 
 import '../map_item.dart';
 
@@ -31,7 +28,10 @@ class MapItemGaugeRound extends MapItem {
 
   @override
   void draw(Canvas canvas, Size size, List<String> parentMaps) {
-    var rRect = RRect.fromRectAndRadius(Rect.fromLTWH(getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h")), Radius.circular(getDoubleZ("w")));
+    var rRect = RRect.fromRectAndRadius(
+        Rect.fromLTWH(
+            getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h")),
+        Radius.circular(getDoubleZ("w")));
     drawPre(canvas, size, rRect: rRect);
     Color color = getColorWithThresholds("text_color");
 
@@ -51,40 +51,72 @@ class MapItemGaugeRound extends MapItem {
     double progressWidth = getDoubleWithThresholds("progress_width");
     Color progressColor = getColorWithThresholds("progress_color");
 
-
     if (backColor.alpha > 0) {
-      canvas.drawArc(Offset(getDoubleZ("x"), getDoubleZ("y")) & Size(getDoubleZ("w"), getDoubleZ("h")), 0, pi*2, false, Paint()
-        ..style = PaintingStyle.fill
-        ..color = backColor
-        ..strokeWidth = z(1));
+      canvas.drawArc(
+          Offset(getDoubleZ("x"), getDoubleZ("y")) &
+              Size(getDoubleZ("w"), getDoubleZ("h")),
+          0,
+          pi * 2,
+          false,
+          Paint()
+            ..style = PaintingStyle.fill
+            ..color = backColor
+            ..strokeWidth = z(1));
     }
 
     drawPre(canvas, size);
 
-
-    canvas.drawArc(Offset(getDoubleZ("x"), getDoubleZ("y")) & Size(getDoubleZ("w"), getDoubleZ("h")), 0, pi*2, false, Paint()
-      ..style = PaintingStyle.stroke
-      ..color = borderColor
-      ..strokeWidth = z(borderWidth));
+    canvas.drawArc(
+        Offset(getDoubleZ("x"), getDoubleZ("y")) &
+            Size(getDoubleZ("w"), getDoubleZ("h")),
+        0,
+        pi * 2,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..color = borderColor
+          ..strokeWidth = z(borderWidth));
     if (borderWidth > 0.9) {
-      canvas.drawArc(Offset(getDoubleZ("x"), getDoubleZ("y")) & Size(getDoubleZ("w"), getDoubleZ("h")), 0, pi * 2, false, Paint()
-        ..style = PaintingStyle.stroke
-        ..color = borderColor.withOpacity(0.3)
-        ..strokeWidth = z(borderWidth) + 2);
+      canvas.drawArc(
+          Offset(getDoubleZ("x"), getDoubleZ("y")) &
+              Size(getDoubleZ("w"), getDoubleZ("h")),
+          0,
+          pi * 2,
+          false,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..color = borderColor.withOpacity(0.3)
+            ..strokeWidth = z(borderWidth) + 2);
     }
 
     var progressWidthZ = z(progressWidth);
     var progressPadding = progressWidthZ;
 
-    canvas.drawArc(Offset(getDoubleZ("x") + progressPadding, getDoubleZ("y") + progressPadding) & Size(getDoubleZ("w") - progressPadding * 2, getDoubleZ("h") - progressPadding * 2), -pi/2, lastValue * pi * 2, false, Paint()
-      ..style = PaintingStyle.stroke
-      ..color = progressColor
-      ..strokeWidth = progressWidthZ);
+    canvas.drawArc(
+        Offset(getDoubleZ("x") + progressPadding,
+                getDoubleZ("y") + progressPadding) &
+            Size(getDoubleZ("w") - progressPadding * 2,
+                getDoubleZ("h") - progressPadding * 2),
+        -pi / 2,
+        lastValue * pi * 2,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..color = progressColor
+          ..strokeWidth = progressWidthZ);
 
-    canvas.drawArc(Offset(getDoubleZ("x") + progressPadding, getDoubleZ("y") + progressPadding) & Size(getDoubleZ("w") - progressPadding * 2, getDoubleZ("h") - progressPadding * 2), -pi/2, pi * 2, false, Paint()
-      ..style = PaintingStyle.stroke
-      ..color = progressColor.withOpacity(0.5)
-      ..strokeWidth = progressWidthZ / 4);
+    canvas.drawArc(
+        Offset(getDoubleZ("x") + progressPadding,
+                getDoubleZ("y") + progressPadding) &
+            Size(getDoubleZ("w") - progressPadding * 2,
+                getDoubleZ("h") - progressPadding * 2),
+        -pi / 2,
+        pi * 2,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..color = progressColor.withOpacity(0.5)
+          ..strokeWidth = progressWidthZ / 4);
 
     /*canvas.drawArc(Offset(getDoubleZ("x") + getDoubleZ("w") / 8, getDoubleZ("y") + getDoubleZ("h") / 8) & Size(getDoubleZ("w") - getDoubleZ("w") / 4, getDoubleZ("h") - getDoubleZ("h") / 4), aniCounter1, 3, false, Paint()
       ..style = PaintingStyle.stroke
@@ -107,7 +139,16 @@ class MapItemGaugeRound extends MapItem {
     String text = prefix + currentText + suffix;
     text = text.replaceAll("[nl]", "\n");
 
-    drawText(canvas, getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h"), text, getDoubleZWithThresholds("font_size"), color, TextAlign.center);
+    drawText(
+        canvas,
+        getDoubleZ("x"),
+        getDoubleZ("y"),
+        getDoubleZ("w"),
+        getDoubleZ("h"),
+        text,
+        getDoubleZWithThresholds("font_size"),
+        color,
+        TextAlign.center);
 
     drawPost(canvas, size);
   }
@@ -115,10 +156,6 @@ class MapItemGaugeRound extends MapItem {
   @override
   void drawDemo(Canvas canvas, Size size) {
     setDefaultsForItem();
-    for (var d in postDecorations.items) {
-      d.showProgress = 1;
-      d.drawDecoratorPre(canvas, backgroundRect(), this, 1);
-    }
     drawItem(canvas, size, "", []);
   }
 
@@ -128,12 +165,12 @@ class MapItemGaugeRound extends MapItem {
     lastValue += diff / 8;
 
     aniCounter1 += 0.01;
-    if (aniCounter1 > 2*pi) {
+    if (aniCounter1 > 2 * pi) {
       aniCounter1 = 0;
     }
 
     aniCounter2 += 0.03;
-    if (aniCounter2 > 2*pi) {
+    if (aniCounter2 > 2 * pi) {
       aniCounter2 = 0;
     }
 
@@ -176,19 +213,12 @@ class MapItemGaugeRound extends MapItem {
 
   @override
   void setDefaultsForItem() {
-    postDecorations = MapItemDecorationList([]);
-    {
-      var decoration = MapItemDecorationCircles01();
-      decoration.initDefaultProperties();
-      postDecorations.items.add(decoration);
-    }
     setDouble("w", 100);
     setDouble("h", 100);
   }
 
-
-  void drawText(Canvas canvas, double x, double y, double width, double height, String text, double size, Color color, TextAlign align) {
-
+  void drawText(Canvas canvas, double x, double y, double width, double height,
+      String text, double size, Color color, TextAlign align) {
     var textSpan = TextSpan(
       text: text,
       style: TextStyle(
@@ -196,12 +226,14 @@ class MapItemGaugeRound extends MapItem {
         fontSize: size,
       ),
     );
-    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
+    final textPainter = TextPainter(
+        text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
     textPainter.layout(
       minWidth: width,
       maxWidth: width,
     );
-    textPainter.paint(canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
+    textPainter.paint(
+        canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
   }
 
   @override
@@ -213,12 +245,15 @@ class MapItemGaugeRound extends MapItem {
       props.add(MapItemPropItem("", "min", "Minimum Value", "double", "0"));
       props.add(MapItemPropItem("", "max", "Maximum Value", "double", "100"));
 
-      props.add(MapItemPropItem("", "text_color", "Text Color", "color", "FFFFFF"));
+      props.add(
+          MapItemPropItem("", "text_color", "Text Color", "color", "FFFFFF"));
       props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
       props.add(MapItemPropItem("", "prefix", "Prefix", "text", ""));
       props.add(MapItemPropItem("", "suffix", "Suffix", "text", ""));
-      props.add(MapItemPropItem("", "progress_width", "ProgressWidth", "double", "5"));
-      props.add(MapItemPropItem("", "progress_color", "ProgressColor", "color", "0088FF"));
+      props.add(MapItemPropItem(
+          "", "progress_width", "ProgressWidth", "double", "5"));
+      props.add(MapItemPropItem(
+          "", "progress_color", "ProgressColor", "color", "0088FF"));
 
       groups.add(MapItemPropGroup("Gauge", true, props));
     }
@@ -228,13 +263,15 @@ class MapItemGaugeRound extends MapItem {
   @override
   List<MapItemPropItem> propThresholdOfItem() {
     List<MapItemPropItem> props = [];
-    props.add(MapItemPropItem("", "text_color", "Text Color", "color", "FFFFFF"));
+    props.add(
+        MapItemPropItem("", "text_color", "Text Color", "color", "FFFFFF"));
     props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
     props.add(MapItemPropItem("", "prefix", "Prefix", "text", ""));
     props.add(MapItemPropItem("", "suffix", "Suffix", "text", ""));
-    props.add(MapItemPropItem("", "progress_width", "ProgressWidth", "double", "5"));
-    props.add(MapItemPropItem("", "progress_color", "ProgressColor", "color", "0088FF"));
+    props.add(
+        MapItemPropItem("", "progress_width", "ProgressWidth", "double", "5"));
+    props.add(MapItemPropItem(
+        "", "progress_color", "ProgressColor", "color", "0088FF"));
     return props;
   }
-
 }

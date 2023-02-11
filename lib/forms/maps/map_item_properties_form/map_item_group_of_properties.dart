@@ -8,7 +8,6 @@ import 'package:expandable/expandable.dart';
 
 import 'map_item_prop_actions.dart';
 import 'map_item_prop_color.dart';
-import 'map_item_prop_decorations.dart';
 import 'map_item_prop_double.dart';
 import 'map_item_prop_image.dart';
 import 'map_item_prop_scale_fit.dart';
@@ -18,7 +17,8 @@ class MapItemGroupOfProperties extends StatefulWidget {
   final IPropContainer item;
   final MapItemPropGroup propGroup;
 
-  const MapItemGroupOfProperties(this.item, this.propGroup, {Key? key}) : super(key: key);
+  const MapItemGroupOfProperties(this.item, this.propGroup, {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -38,7 +38,8 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
     }
   }
 
-  static Widget buildPropItem(IPropContainer item, MapItemPropItem propItem, Key key) {
+  static Widget buildPropItem(
+      IPropContainer item, MapItemPropItem propItem, Key key) {
     Widget propWidget = Text("unknown property type", key: key);
 
     bool isDecorations = false;
@@ -73,10 +74,6 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
     }
     if (propItem.type == "orientation") {
       propWidget = MapItemPropOrientation(item, propItem, key: key);
-    }
-    if (propItem.type == "decorations") {
-      propWidget = MapItemPropDecorations(item, propItem, key: key);
-      isDecorations = true;
     }
     if (propItem.type == "actions") {
       propWidget = MapItemPropActions(item, propItem, key: key);
@@ -119,7 +116,10 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: widget.propGroup.props.map<Widget>((propItem) {
-            return Container(padding: const EdgeInsets.only(left: 0, right: 0, bottom: 0), child: buildPropItem(widget.item, propItem, Key(propItem.name)));
+            return Container(
+                padding: const EdgeInsets.only(left: 0, right: 0, bottom: 0),
+                child:
+                    buildPropItem(widget.item, propItem, Key(propItem.name)));
           }).toList(),
         ),
       );
@@ -151,17 +151,20 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.6),
-                    border: const Border(bottom: BorderSide(color: Colors.blue, width: 1))
-                  ),
+                      color: Colors.black.withOpacity(0.6),
+                      border: const Border(
+                          bottom: BorderSide(color: Colors.blue, width: 1))),
                   padding: const EdgeInsets.all(6),
-                  constraints: const BoxConstraints(minWidth: 100, maxWidth: 266),
+                  constraints:
+                      const BoxConstraints(minWidth: 100, maxWidth: 266),
                   child: Row(
                     children: [
                       Expanded(
                         child: Text(widget.propGroup.name),
                       ),
-                      expanded ? const Icon(Icons.keyboard_arrow_up_outlined) : const Icon(Icons.keyboard_arrow_down_outlined),
+                      expanded
+                          ? const Icon(Icons.keyboard_arrow_up_outlined)
+                          : const Icon(Icons.keyboard_arrow_down_outlined),
                     ],
                   ),
                 ),

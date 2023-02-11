@@ -8,8 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_rect_01.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_set.dart';
 
 import '../../../../runlang/program.dart';
 import '../map_item.dart';
@@ -69,12 +67,6 @@ fn draw(vv) {
 
   @override
   void setDefaultsForItem() {
-    postDecorations = MapItemDecorationList([]);
-    {
-      var decoration = MapItemDecorationRect01();
-      decoration.initDefaultProperties();
-      postDecorations.items.add(decoration);
-    }
     setDouble("w", 100);
     setDouble("h", 40);
   }

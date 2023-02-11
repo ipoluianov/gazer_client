@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:gazer_client/core/tools/hex_colors.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/maps/map_form/map_item.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_set.dart';
 
 class TimeChartPropContainer extends IPropContainer {
   late Map<String, String> props;
@@ -27,7 +26,6 @@ class TimeChartPropContainer extends IPropContainer {
     _id = dt.toString() + intRandom.toString();
   }
 
-
   @override
   void set(String name, String value) {
     props[name] = value;
@@ -47,11 +45,6 @@ class TimeChartPropContainer extends IPropContainer {
   @override
   Connection getConnection() {
     return connection;
-  }
-
-  @override
-  MapItemDecorationList getDecorations() {
-    return MapItemDecorationList([]);
   }
 
   @override

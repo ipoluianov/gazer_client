@@ -23,9 +23,7 @@ import '../../forms/utilities/lookup_form/lookup_form.dart';
 import '../../forms/utilities/resources/resource_item_add_form/resource_item_add_form.dart';
 import '../../forms/maps/map_form/map_form.dart';
 import '../../forms/maps/map_form/map_item.dart';
-import '../../forms/maps/map_form/map_item_decorations/map_item_decoration.dart';
 import '../../forms/maps/map_item_add_form/map_item_add_form.dart';
-import '../../forms/maps/map_item_decoration_add_form/map_item_decoration_add_form.dart';
 import '../../forms/maps/map_item_properties_form/map_item_properties_form.dart';
 import '../../forms/utilities/resources/resource_change_form/resource_change_form.dart';
 import '../../forms/mores/more_form/more_form.dart';
@@ -34,16 +32,25 @@ import '../../forms/units/node_form/node_form.dart';
 
 class RouteGenerator {
   static void processRouteArguments(RouteSettings settings) {
-    if (settings.name == "/" || settings.name == "/node" || settings.name == "/chart_groups" || settings.name == "/chart_group" || settings.name == "/maps" || settings.name == "/more" || settings.name == "/map"  || settings.name == "/users") {
+    if (settings.name == "/" ||
+        settings.name == "/node" ||
+        settings.name == "/chart_groups" ||
+        settings.name == "/chart_group" ||
+        settings.name == "/maps" ||
+        settings.name == "/more" ||
+        settings.name == "/map" ||
+        settings.name == "/users") {
       Repository().lastPath = settings.name!;
     }
 
     if (settings.arguments is NodeFormArgument) {
-      Repository().lastSelectedConnection = (settings.arguments as NodeFormArgument).connection;
+      Repository().lastSelectedConnection =
+          (settings.arguments as NodeFormArgument).connection;
     }
 
     if (settings.arguments is UnitFormArgument) {
-      Repository().lastSelectedConnection = (settings.arguments as UnitFormArgument).connection;
+      Repository().lastSelectedConnection =
+          (settings.arguments as UnitFormArgument).connection;
     }
   }
 
@@ -65,7 +72,8 @@ class RouteGenerator {
       case '/':
         Repository().navIndex = NavIndex.units;
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return const MainForm();
           },
           transitionsBuilder: transBuilder,
@@ -75,7 +83,8 @@ class RouteGenerator {
       case '/node':
         Repository().navIndex = NavIndex.units;
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return NodeForm(
               arg: settings.arguments as NodeFormArgument,
             );
@@ -87,7 +96,8 @@ class RouteGenerator {
       case '/chart_groups':
         Repository().navIndex = NavIndex.charts;
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return ResourcesForm(
               settings.arguments as ResourcesFormArgument,
             );
@@ -99,7 +109,8 @@ class RouteGenerator {
       case '/chart_group':
         Repository().navIndex = NavIndex.charts;
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return ChartGroupForm(
               settings.arguments as ChartGroupFormArgument,
             );
@@ -111,7 +122,8 @@ class RouteGenerator {
       case '/more':
         Repository().navIndex = NavIndex.more;
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return MoreForm(
               settings.arguments as MoreFormArgument,
             );
@@ -123,7 +135,8 @@ class RouteGenerator {
       case '/about':
         Repository().navIndex = NavIndex.more;
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return AboutForm(
               settings.arguments as AboutFormArgument,
             );
@@ -134,7 +147,8 @@ class RouteGenerator {
         );
       case '/users':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return UsersForm(
               settings.arguments as UsersFormArgument,
             );
@@ -145,7 +159,8 @@ class RouteGenerator {
         );
       case '/user_add':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return UserAddForm(
               settings.arguments as UserAddFormArgument,
             );
@@ -156,7 +171,8 @@ class RouteGenerator {
         );
       case '/user_set_password':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return UserSetPasswordForm(
               settings.arguments as UserSetPasswordFormArgument,
             );
@@ -167,7 +183,8 @@ class RouteGenerator {
         );
       case '/user_edit':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return UserEditForm(
               settings.arguments as UserEditFormArgument,
             );
@@ -178,7 +195,8 @@ class RouteGenerator {
         );
       case '/user':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return UserForm(
               settings.arguments as UserFormArgument,
             );
@@ -190,7 +208,8 @@ class RouteGenerator {
       case '/maps':
         Repository().navIndex = NavIndex.maps;
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return ResourcesForm(
               settings.arguments as ResourcesFormArgument,
             );
@@ -201,7 +220,8 @@ class RouteGenerator {
         );
       case '/select_resource':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return ResourcesForm(
               settings.arguments as ResourcesFormArgument,
             );
@@ -212,7 +232,8 @@ class RouteGenerator {
         );
       case '/map':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return MapForm(
               settings.arguments as MapFormArgument,
             );
@@ -223,7 +244,8 @@ class RouteGenerator {
         );
       case '/resource_add':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return ResourceItemAddForm(
               settings.arguments as ResourceItemAddFormArgument,
             );
@@ -234,7 +256,8 @@ class RouteGenerator {
         );
       case '/resource_rename':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return ResourceChangeForm(
               settings.arguments as ResourceChangeFormArgument,
             );
@@ -245,7 +268,8 @@ class RouteGenerator {
         );
       case '/map_item_properties':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return MapItemPropertiesForm(
               settings.arguments as MapItemPropertiesFormArgument,
             );
@@ -256,7 +280,8 @@ class RouteGenerator {
         );
       case '/map_item_add':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return MapItemAddForm(
               settings.arguments as MapItemAddFormArgument,
             );
@@ -265,20 +290,10 @@ class RouteGenerator {
           transitionDuration: transDuration(),
           reverseTransitionDuration: transDuration(),
         );
-      case '/map_item_decoration_add':
-        return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
-            return MapItemDecorationAddForm(
-              settings.arguments as MapItemDecorationAddFormArgument,
-            );
-          },
-          transitionsBuilder: transBuilder,
-          transitionDuration: transDuration(),
-          reverseTransitionDuration: transDuration(),
-        );
       case '/lookup':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return LookupForm(
               settings.arguments as LookupFormArgument,
             );
@@ -289,7 +304,8 @@ class RouteGenerator {
         );
       case '/remote_access':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return RemoteAccessForm(
               settings.arguments as RemoteAccessFormArgument,
             );
@@ -300,7 +316,8 @@ class RouteGenerator {
         );
       case '/unit':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return UnitForm(
               arg: settings.arguments as UnitFormArgument,
             );
@@ -311,7 +328,8 @@ class RouteGenerator {
         );
       case '/unit_add':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return UnitAddForm(
               arg: settings.arguments as UnitAddFormArgument,
             );
@@ -322,7 +340,8 @@ class RouteGenerator {
         );
       case '/unit_edit':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return UnitEditForm(
               arg: settings.arguments as UnitEditFormArgument,
             );
@@ -333,7 +352,8 @@ class RouteGenerator {
         );
       case '/node_add':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return NodeAddForm(
               arg: settings.arguments as NodeAddFormArgument,
             );
@@ -344,7 +364,8 @@ class RouteGenerator {
         );
       case '/data_item_properties':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return WidgetDataItemProperties(
               settings.arguments as DataItemPropertiesFormArgument,
             );
@@ -355,7 +376,8 @@ class RouteGenerator {
         );
       case '/data_item_history_table':
         return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
             return DataItemHistoryTableForm(
               settings.arguments as DataItemHistoryTableFormArgument,
             );
@@ -414,7 +436,8 @@ class MapsFormArgument {
   bool filterByFolder;
   String folderId;
   String folderName;
-  MapsFormArgument(this.connection, this.filterByFolder, this.folderId, this.folderName);
+  MapsFormArgument(
+      this.connection, this.filterByFolder, this.folderId, this.folderName);
 }
 
 class ResourcesFormArgument {
@@ -428,7 +451,17 @@ class ResourcesFormArgument {
   String folderId;
   String folderName;
   Function(BuildContext context, ResListItemItemResponse res) onClick;
-  ResourcesFormArgument(this.connection, this.type, this.typeName, this.typeNamePlural, this.iconData, this.viewAsFolders, this.filterByFolder, this.folderId, this.folderName, this.onClick);
+  ResourcesFormArgument(
+      this.connection,
+      this.type,
+      this.typeName,
+      this.typeNamePlural,
+      this.iconData,
+      this.viewAsFolders,
+      this.filterByFolder,
+      this.folderId,
+      this.folderName,
+      this.onClick);
 }
 
 class MapFormArgument {
@@ -443,7 +476,8 @@ class ResourceItemAddFormArgument {
   String folder;
   String typeName;
   String typeNamePlural;
-  ResourceItemAddFormArgument(this.connection, this.type, this.folder, this.typeName, this.typeNamePlural);
+  ResourceItemAddFormArgument(this.connection, this.type, this.folder,
+      this.typeName, this.typeNamePlural);
 }
 
 class ResourceChangeFormArgument {
@@ -453,7 +487,8 @@ class ResourceChangeFormArgument {
   String type;
   String typeName;
   String typeNamePlural;
-  ResourceChangeFormArgument(this.connection, this.id, this.resInfo, this.type, this.typeName, this.typeNamePlural);
+  ResourceChangeFormArgument(this.connection, this.id, this.resInfo, this.type,
+      this.typeName, this.typeNamePlural);
 }
 
 class MapItemPropertiesFormArgument {
@@ -471,12 +506,6 @@ class MapItemAddFormArgument {
 class MapItemDecorationAddFormArgument {
   Connection connection;
   MapItemDecorationAddFormArgument(this.connection);
-}
-
-class MapItemDecorationEditFormArgument {
-  Connection connection;
-  MapItemDecoration item;
-  MapItemDecorationEditFormArgument(this.connection, this.item);
 }
 
 class UsersFormArgument {

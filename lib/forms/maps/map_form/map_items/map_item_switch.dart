@@ -3,8 +3,6 @@ import 'dart:ui' as dart_ui;
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_rect_01.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_set.dart';
 
 import '../map_item.dart';
 
@@ -32,7 +30,9 @@ class MapItemSwitch extends MapItem {
     checking = true;
     checkingDT = DateTime.now();
     realValue = !realValue;
-    Repository().client(connection).dataItemWrite(getDataSource(), realValue ? "1" : "0");
+    Repository()
+        .client(connection)
+        .dataItemWrite(getDataSource(), realValue ? "1" : "0");
   }
 
   @override
@@ -42,7 +42,6 @@ class MapItemSwitch extends MapItem {
 
   @override
   void setDefaultsForItem() {
-    postDecorations = MapItemDecorationList([]);
     setDouble("w", 100);
     setDouble("h", 30);
   }
@@ -63,17 +62,29 @@ class MapItemSwitch extends MapItem {
     double paddingLeftRight = minSize / 2;
     double paddingInner = (minSize - paddingLeftRight) / 2;
 
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h")), Radius.circular(corner)),
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(
+            Rect.fromLTWH(getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"),
+                getDoubleZ("h")),
+            Radius.circular(corner)),
         Paint()..color = borderColor);
 
-    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(getDoubleZ("x") + paddingInner, getDoubleZ("y") + paddingInner, getDoubleZ("w") - paddingInner * 2, getDoubleZ("h") - paddingInner * 2), Radius.circular(corner)),
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(
+            Rect.fromLTWH(
+                getDoubleZ("x") + paddingInner,
+                getDoubleZ("y") + paddingInner,
+                getDoubleZ("w") - paddingInner * 2,
+                getDoubleZ("h") - paddingInner * 2),
+            Radius.circular(corner)),
         Paint()..color = realValue ? centerOnColor : centerOffColor);
 
     double pos1 = getDoubleZ("x") + paddingLeftRight;
     double pos2 = getDoubleZ("x") + getDoubleZ("w") - paddingLeftRight;
     double eWidth = pos2 - pos1;
 
-    Offset c = Offset(pos1 + (eWidth * currentValue), getDoubleZ("y") + getDoubleZ("h") / 2);
+    Offset c = Offset(
+        pos1 + (eWidth * currentValue), getDoubleZ("y") + getDoubleZ("h") / 2);
     canvas.drawCircle(c, minSize / 3, Paint()..color = topColor);
   }
 
@@ -89,10 +100,14 @@ class MapItemSwitch extends MapItem {
     List<MapItemPropGroup> groups = [];
     {
       List<MapItemPropItem> props = [];
-      props.add(MapItemPropItem("", "border_color", "Border Color", "color", "FF00EFFF"));
-      props.add(MapItemPropItem("", "center_color_on", "Center Color (OFF)", "color", "80555555"));
-      props.add(MapItemPropItem("", "center_color_off", "Center Color (ON)", "color", "E0555555"));
-      props.add(MapItemPropItem("", "top_color", "Top Color", "color", "FFFFFFFF"));
+      props.add(MapItemPropItem(
+          "", "border_color", "Border Color", "color", "FF00EFFF"));
+      props.add(MapItemPropItem(
+          "", "center_color_on", "Center Color (OFF)", "color", "80555555"));
+      props.add(MapItemPropItem(
+          "", "center_color_off", "Center Color (ON)", "color", "E0555555"));
+      props.add(
+          MapItemPropItem("", "top_color", "Top Color", "color", "FFFFFFFF"));
 
       groups.add(MapItemPropGroup("Colors", true, props));
     }
@@ -102,10 +117,14 @@ class MapItemSwitch extends MapItem {
   @override
   List<MapItemPropItem> propThresholdOfItem() {
     List<MapItemPropItem> props = [];
-    props.add(MapItemPropItem("", "border_color", "Border Color", "color", "FF00EFFF"));
-    props.add(MapItemPropItem("", "center_color_on", "Center Color (OFF)", "color", "80555555"));
-    props.add(MapItemPropItem("", "center_color_off", "Center Color (ON)", "color", "E0555555"));
-    props.add(MapItemPropItem("", "top_color", "Top Color", "color", "FFFFFFFF"));
+    props.add(MapItemPropItem(
+        "", "border_color", "Border Color", "color", "FF00EFFF"));
+    props.add(MapItemPropItem(
+        "", "center_color_on", "Center Color (OFF)", "color", "80555555"));
+    props.add(MapItemPropItem(
+        "", "center_color_off", "Center Color (ON)", "color", "E0555555"));
+    props.add(
+        MapItemPropItem("", "top_color", "Top Color", "color", "FFFFFFFF"));
     return props;
   }
 
@@ -118,7 +137,8 @@ class MapItemSwitch extends MapItem {
       realValue = (dsValue.value == "1");
     }
 
-    if (checking && DateTime.now().difference(checkingDT).inMilliseconds > 2000) {
+    if (checking &&
+        DateTime.now().difference(checkingDT).inMilliseconds > 2000) {
       checking = false;
     }
 

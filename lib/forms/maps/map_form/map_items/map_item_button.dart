@@ -7,8 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_rect_01.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_set.dart';
 
 import '../map_item.dart';
 
@@ -20,7 +18,6 @@ class MapItemButton extends MapItem {
     return sType;
   }
 
-
   MapItemButton(Connection connection) : super(connection) {
     setDouble("font_size", 20);
   }
@@ -29,15 +26,14 @@ class MapItemButton extends MapItem {
 
   @override
   void setDefaultsForItem() {
-    postDecorations = MapItemDecorationList([]);
-
     setDouble("w", 50);
     setDouble("h", 50);
   }
 
   @override
   void draw(Canvas canvas, Size size, List<String> parentMaps) {
-    Offset center = Offset(getDoubleZ("x") + getDoubleZ("w") / 2, getDoubleZ("y") + getDoubleZ("h") / 2);
+    Offset center = Offset(getDoubleZ("x") + getDoubleZ("w") / 2,
+        getDoubleZ("y") + getDoubleZ("h") / 2);
     double buttonSize = getDoubleZ("w");
     if (getDoubleZ("h") < buttonSize) {
       buttonSize = getDoubleZ("h");
@@ -48,10 +44,13 @@ class MapItemButton extends MapItem {
     var buttonColor = getColorWithThresholds("color");
     var buttonColorPressed = getColorWithThresholds("color_pressed");
 
-    canvas.drawCircle(center, buttonSize / 2, Paint()
-      ..style = PaintingStyle.fill
-      ..color = buttonColor
-      ..strokeWidth = 2);
+    canvas.drawCircle(
+        center,
+        buttonSize / 2,
+        Paint()
+          ..style = PaintingStyle.fill
+          ..color = buttonColor
+          ..strokeWidth = 2);
 
     {
       double pr1 = 0;
@@ -63,16 +62,21 @@ class MapItemButton extends MapItem {
         pr2 = (currentValue - 0.5) / 0.5;
       }
       pr2 = 1 - pr2;
-      canvas.drawCircle(center, pr1 * buttonSize / 2, Paint()
-        ..style = PaintingStyle.fill
-        ..color = Colors.black54
-        ..strokeWidth = 2);
-      canvas.drawCircle(center, pr2 * buttonSize / 2, Paint()
-        ..style = PaintingStyle.fill
-        ..color = Colors.black26
-        ..strokeWidth = 2);
+      canvas.drawCircle(
+          center,
+          pr1 * buttonSize / 2,
+          Paint()
+            ..style = PaintingStyle.fill
+            ..color = Colors.black54
+            ..strokeWidth = 2);
+      canvas.drawCircle(
+          center,
+          pr2 * buttonSize / 2,
+          Paint()
+            ..style = PaintingStyle.fill
+            ..color = Colors.black26
+            ..strokeWidth = 2);
     }
-
   }
 
   @override
@@ -88,10 +92,6 @@ class MapItemButton extends MapItem {
   @override
   void drawDemo(dart_ui.Canvas canvas, dart_ui.Size size) {
     setDefaultsForItem();
-    for (var d in postDecorations.items) {
-      d.showProgress = 1;
-      d.drawDecoratorPre(canvas, backgroundRect(), this, 1);
-    }
     drawItem(canvas, size, "", []);
   }
 
@@ -100,7 +100,8 @@ class MapItemButton extends MapItem {
     List<MapItemPropGroup> groups = [];
     {
       List<MapItemPropItem> props = [];
-      props.add(MapItemPropItem("", "color", "Text Color", "color", "FF00EFFF"));
+      props
+          .add(MapItemPropItem("", "color", "Text Color", "color", "FF00EFFF"));
       groups.add(MapItemPropGroup("Text", true, props));
     }
     return groups;
@@ -112,7 +113,6 @@ class MapItemButton extends MapItem {
     props.add(MapItemPropItem("", "color", "Text Color", "color", "FF00EFFF"));
     return props;
   }
-
 
   @override
   void tick() {
@@ -135,6 +135,5 @@ class MapItemButton extends MapItem {
   }
 
   @override
-  void resetToEndOfAnimation() {
-  }
+  void resetToEndOfAnimation() {}
 }

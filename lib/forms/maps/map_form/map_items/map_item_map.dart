@@ -7,11 +7,8 @@ import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
 import 'package:gazer_client/core/tools/hex_colors.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_rect_01.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_decorations/map_item_decoration_set.dart';
 
 import '../map_item.dart';
-import '../map_item_decorations/map_item_decoration.dart';
 
 class MapItemMap extends MapItem {
   static const String sType = "map";
@@ -48,13 +45,6 @@ class MapItemMap extends MapItem {
   @override
   void setDefaultsForItem() {
     print("setDefaultsForItem");
-    postDecorations = MapItemDecorationList([]);
-    {
-      var decoration = MapItemDecorationRect01();
-      decoration.initDefaultProperties();
-      postDecorations.items.add(decoration);
-    }
-
     if (isRoot) {
       setDouble("w", 960);
       setDouble("h", 540);
@@ -98,11 +88,13 @@ class MapItemMap extends MapItem {
     try {
       for (int offset = 0; offset < 100 * 1000000; offset += step) {
         //print("loading res offset $offset");
-        var value = await Repository().client(connection).fetch<ResGetRequest, ResGetResponse>(
-          'resource_get',
-          ResGetRequest(resourceId, offset, step),
+        var value = await Repository()
+            .client(connection)
+            .fetch<ResGetRequest, ResGetResponse>(
+              'resource_get',
+              ResGetRequest(resourceId, offset, step),
               (Map<String, dynamic> json) => ResGetResponse.fromJson(json),
-        );
+            );
         if (value.content.isEmpty) {
           break;
         }
@@ -179,26 +171,30 @@ class MapItemMap extends MapItem {
       return zoom;
     }
 
-    lastBackgroundRect = Offset(getDoubleZ("x"), getDoubleZ("y")) & Size(getDoubleZ("w"), getDoubleZ("h"));
-    CalcPreferredScaleResult calcRes = calcPreferredScale(Size(getDouble("w"), getDouble("h")), loadedMapOriginalSize, CalcPreferredScaleType.contain);
+    lastBackgroundRect = Offset(getDoubleZ("x"), getDoubleZ("y")) &
+        Size(getDoubleZ("w"), getDoubleZ("h"));
+    CalcPreferredScaleResult calcRes = calcPreferredScale(
+        Size(getDouble("w"), getDouble("h")),
+        loadedMapOriginalSize,
+        CalcPreferredScaleType.contain);
     targetZoom1 = zoom * calcRes.scaleX;
     localZoom = calcRes.scaleX;
 
     if (loaded) {
-      lastBackgroundRect =
-      Offset(getDoubleZ("x"), getDoubleZ("y")) & Size(loadedMapOriginalSize.width * targetZoom1, loadedMapOriginalSize.height * targetZoom1);
+      lastBackgroundRect = Offset(getDoubleZ("x"), getDoubleZ("y")) &
+          Size(loadedMapOriginalSize.width * targetZoom1,
+              loadedMapOriginalSize.height * targetZoom1);
     }
     return targetZoom1;
   }
 
   @override
   void draw(Canvas canvas, Size size, List<String> parentMaps) {
-
     var parentMapsLocal = List<String>.from(parentMaps);
     parentMapsLocal.add(lastLoadedResource);
 
     //if (isRoot) {
-      load(Set<String>.from(parentMaps), getDoubleZ("w"));
+    load(Set<String>.from(parentMaps), getDoubleZ("w"));
     //}
     canvas.save();
 
@@ -218,7 +214,8 @@ class MapItemMap extends MapItem {
 
     if (loading) {
       canvas.drawRect(
-          Rect.fromLTWH(getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h")),
+          Rect.fromLTWH(getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"),
+              getDoubleZ("h")),
           Paint()
             ..color = colorFromHex("30247176")
             ..style = PaintingStyle.fill);
@@ -229,21 +226,30 @@ class MapItemMap extends MapItem {
       var prWidth = getDoubleZ("w") - prMargin * 2;
 
       canvas.drawRect(
-          Rect.fromLTWH(getDoubleZ("x") + prMargin - 2, getDoubleZ("y") + getDoubleZ("h") / 2 - 10 - 2, prWidth+ 4, 20 + 4),
+          Rect.fromLTWH(
+              getDoubleZ("x") + prMargin - 2,
+              getDoubleZ("y") + getDoubleZ("h") / 2 - 10 - 2,
+              prWidth + 4,
+              20 + 4),
           Paint()
             ..color = colorFromHex("247176")
             ..strokeWidth = 1
             ..style = PaintingStyle.stroke);
 
       canvas.drawRect(
-          Rect.fromLTWH(getDoubleZ("x") + prMargin, getDoubleZ("y") + getDoubleZ("h") / 2 - 10, prWidth * loadingProgress, 20),
+          Rect.fromLTWH(
+              getDoubleZ("x") + prMargin,
+              getDoubleZ("y") + getDoubleZ("h") / 2 - 10,
+              prWidth * loadingProgress,
+              20),
           Paint()
             ..color = colorFromHex("247176")
             ..style = PaintingStyle.fill);
     } else {
       if (loadingError.isNotEmpty) {
         canvas.drawRect(
-            Rect.fromLTWH(getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h")),
+            Rect.fromLTWH(getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"),
+                getDoubleZ("h")),
             Paint()
               ..color = Colors.red
               ..style = PaintingStyle.fill);
@@ -269,8 +275,6 @@ class MapItemMap extends MapItem {
       }
     }
 
-
-
     drawPost(canvas, size);
     canvas.restore();
   }
@@ -280,7 +284,8 @@ class MapItemMap extends MapItem {
   @override
   Rect backgroundRect() {
     if (isRoot) {
-      return Offset(getDoubleZ("x"), getDoubleZ("y")) & Size(getDoubleZ("w"), getDoubleZ("h"));
+      return Offset(getDoubleZ("x"), getDoubleZ("y")) &
+          Size(getDoubleZ("w"), getDoubleZ("h"));
     }
     calcPrefScale();
     return lastBackgroundRect;
@@ -288,7 +293,8 @@ class MapItemMap extends MapItem {
 
   void clearProperties() {
     var itemsDoNotRemove = propListForInnerMap();
-    var itemsDoNotRemoveSet = Set<String>.from(itemsDoNotRemove.map((e1) => e1.name).toList());
+    var itemsDoNotRemoveSet =
+        Set<String>.from(itemsDoNotRemove.map((e1) => e1.name).toList());
     List<String> itemsToRemove = [];
     for (var itemPropKey in props.keys) {
       if (!itemsDoNotRemoveSet.contains(itemPropKey)) {
@@ -330,7 +336,9 @@ class MapItemMap extends MapItem {
 
     //print("load inner map");
     for (var key in json.keys) {
-      if (key != "children" && json[key] is String && !doNotLoadFromSource.contains(key)) {
+      if (key != "children" &&
+          json[key] is String &&
+          !doNotLoadFromSource.contains(key)) {
         set(key, json[key]);
         //print("Load map prop ${key} ${json[key]}");
       }
@@ -340,16 +348,7 @@ class MapItemMap extends MapItem {
       items.add(MapItem.fromJson(ch, connection));
     }
 
-    postDecorations.items = [];
-    var postDecorationsJson = json['decorations'];
-    for (var ch in postDecorationsJson) {
-      var decor = MapItemDecoration.makeByType(ch['type']);
-      decor.loadFromJson(ch);
-      postDecorations.items.add(decor);
-    }
-
     print("load inner map ${get("data_source")}");
-
   }
 
   void loadPropertiesRoot(Map<String, dynamic> json) {
@@ -363,18 +362,10 @@ class MapItemMap extends MapItem {
     for (var ch in children) {
       items.add(MapItem.fromJson(ch, connection));
     }
-
-    postDecorations.items = [];
-    var postDecorationsJson = json['decorations'];
-    for (var ch in postDecorationsJson) {
-      var decor = MapItemDecoration.makeByType(ch['type']);
-      decor.loadFromJson(ch);
-      postDecorations.items.add(decor);
-    }
-
   }
 
-  void drawText(Canvas canvas, double x, double y, double width, double height, String text, double size, Color color, TextAlign align) {
+  void drawText(Canvas canvas, double x, double y, double width, double height,
+      String text, double size, Color color, TextAlign align) {
     var textSpan = TextSpan(
       text: text,
       style: TextStyle(
@@ -382,19 +373,22 @@ class MapItemMap extends MapItem {
         fontSize: size,
       ),
     );
-    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
+    final textPainter = TextPainter(
+        text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
     textPainter.layout(
       minWidth: width,
       maxWidth: width,
     );
-    textPainter.paint(canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
+    textPainter.paint(
+        canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
   }
 
   @override
   MapItem? itemUnderPoint(Offset offsetOnMap, bool fromTop, bool recourse) {
     if (!isRoot) {
       if (localZoom > 0) {
-        offsetOnMap = Offset(offsetOnMap.dx / localZoom, offsetOnMap.dy / localZoom);
+        offsetOnMap =
+            Offset(offsetOnMap.dx / localZoom, offsetOnMap.dy / localZoom);
       }
     }
 
@@ -408,7 +402,8 @@ class MapItemMap extends MapItem {
         Rect r = Rect.fromLTWH(itemX, itemY, itemW, itemH);
         if (r.contains(offsetOnMap)) {
           if (recourse) {
-            var inItemResult = item.itemUnderPoint(offsetOnMap.translate(-itemX, -itemY), fromTop, recourse);
+            var inItemResult = item.itemUnderPoint(
+                offsetOnMap.translate(-itemX, -itemY), fromTop, recourse);
             if (inItemResult != null) {
               return inItemResult;
             }
@@ -427,7 +422,8 @@ class MapItemMap extends MapItem {
         Rect r = Rect.fromLTWH(itemX, itemY, itemW, itemH);
         if (r.contains(offsetOnMap)) {
           if (recourse) {
-            var inItemResult = item.itemUnderPoint(offsetOnMap.translate(itemX, itemY), fromTop, recourse);
+            var inItemResult = item.itemUnderPoint(
+                offsetOnMap.translate(itemX, itemY), fromTop, recourse);
             if (inItemResult != null) {
               return inItemResult;
             }
@@ -440,7 +436,4 @@ class MapItemMap extends MapItem {
     }
     return null;
   }
-
-
-
 }
