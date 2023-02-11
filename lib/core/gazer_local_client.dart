@@ -17,7 +17,7 @@ import 'package:gazer_client/core/protocol/dataitem/data_item_remove.dart';
 import 'package:gazer_client/core/protocol/dataitem/data_item_write.dart';
 import 'package:gazer_client/core/protocol/resource/resource_add.dart';
 import 'package:gazer_client/core/protocol/resource/resource_get.dart';
-import 'package:gazer_client/core/protocol/resource/resource_get_thumbnail.dart';
+import 'package:gazer_client/core/protocol/resource/resource_get_by_path.dart';
 import 'package:gazer_client/core/protocol/resource/resource_list.dart';
 import 'package:gazer_client/core/protocol/resource/resource_remove.dart';
 import 'package:gazer_client/core/protocol/resource/resource_rename.dart';
@@ -547,11 +547,12 @@ class GazerLocalClient {
     );
   }
 
-  Future<ResGetThumbnailResponse> resGetThumbnail(String id) async {
-    return fetch<ResGetThumbnailRequest, ResGetThumbnailResponse>(
-      'resource_get_thumbnail',
-      ResGetThumbnailRequest(id),
-      (Map<String, dynamic> json) => ResGetThumbnailResponse.fromJson(json),
+  Future<ResGetByPathResponse> resGetByPath(
+      String path, int offset, int size) async {
+    return fetch<ResGetByPathRequest, ResGetByPathResponse>(
+      'resource_get_by_path',
+      ResGetByPathRequest(path, offset, size),
+      (Map<String, dynamic> json) => ResGetByPathResponse.fromJson(json),
     );
   }
 
