@@ -1,5 +1,18 @@
 import 'package:gazer_client/runlang/utils.dart';
 
+List<dynamic> libAbs(List<dynamic> args) {
+  List<dynamic> result = [];
+  if (args.length != 1) {
+    throw "wrong arguments";
+  }
+
+  if (args[0] is double) {
+    result.add(args[0].abs());
+    return result;
+  }
+  throw "wrong type (add)";
+}
+
 List<dynamic> libAdd(List<dynamic> args) {
   List<dynamic> result = [];
   if (args.length != 2) {
@@ -15,7 +28,7 @@ List<dynamic> libAdd(List<dynamic> args) {
     result.add(args[0] + args[1]);
     return result;
   }
-  throw "wrong type";
+  throw "wrong type (add)";
 }
 
 List<dynamic> libSub(List<dynamic> args) {
@@ -33,7 +46,7 @@ List<dynamic> libSub(List<dynamic> args) {
     result.add(args[0] - args[1]);
     return result;
   }
-  throw "wrong type";
+  throw "wrong type sub";
 }
 
 List<dynamic> libMul(List<dynamic> args) {
@@ -51,7 +64,7 @@ List<dynamic> libMul(List<dynamic> args) {
     result.add(args[0] * args[1]);
     return result;
   }
-  throw "wrong type";
+  throw "wrong type mul";
 }
 
 List<dynamic> libDiv(List<dynamic> args) {
@@ -69,7 +82,7 @@ List<dynamic> libDiv(List<dynamic> args) {
     result.add(args[0] / args[1]);
     return result;
   }
-  throw "wrong type";
+  throw "wrong type div";
 }
 
 List<dynamic> libPrint(List<dynamic> args) {
@@ -100,12 +113,12 @@ List<dynamic> libDouble(List<dynamic> args) {
   }
 
   dynamic c = double.parse(args[0].toString());
-  if (c is int) {
+  if (c is double) {
     result.add(c);
     return result;
   }
 
-  throw "cannot convert";
+  throw "cannot convert to double";
 }
 
 List<dynamic> libString(List<dynamic> args) {

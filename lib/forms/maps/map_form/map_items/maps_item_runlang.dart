@@ -60,7 +60,7 @@ fn draw(vv) {
         getDoubleZ("h"),
         args[0].toString(),
         24,
-        getColorWithThresholds("text_color"),
+        getColor("text_color"),
         TextAlign.center);
     return [];
   }
@@ -84,7 +84,7 @@ fn draw(vv) {
           getDoubleZ("h"),
           ex.toString(),
           24,
-          getColorWithThresholds("text_color"),
+          getColor("text_color"),
           TextAlign.center);
     }
   }
@@ -126,17 +126,6 @@ fn draw(vv) {
       groups.add(MapItemPropGroup("Text", true, props));
     }
     return groups;
-  }
-
-  @override
-  List<MapItemPropItem> propThresholdOfItem() {
-    List<MapItemPropItem> props = [];
-    props.add(
-        MapItemPropItem("", "text_color", "Text Color", "color", "FF00EFFF"));
-    props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
-    props.add(MapItemPropItem("", "prefix", "Prefix", "text", ""));
-    props.add(MapItemPropItem("", "suffix", "Suffix", "text", ""));
-    return props;
   }
 
   @override

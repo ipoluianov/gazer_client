@@ -41,8 +41,8 @@ class MapItemButton extends MapItem {
 
     buttonSize -= buttonSize / 10;
 
-    var buttonColor = getColorWithThresholds("color");
-    var buttonColorPressed = getColorWithThresholds("color_pressed");
+    var buttonColor = getColor("color");
+    var buttonColorPressed = getColor("color_pressed");
 
     canvas.drawCircle(
         center,
@@ -105,13 +105,6 @@ class MapItemButton extends MapItem {
       groups.add(MapItemPropGroup("Text", true, props));
     }
     return groups;
-  }
-
-  @override
-  List<MapItemPropItem> propThresholdOfItem() {
-    List<MapItemPropItem> props = [];
-    props.add(MapItemPropItem("", "color", "Text Color", "color", "FF00EFFF"));
-    return props;
   }
 
   @override

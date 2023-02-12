@@ -7,7 +7,9 @@ import 'line.dart';
 typedef FunctionUniFunc = List<dynamic> Function(List<dynamic>);
 
 class Program {
+  String currentCode = "";
   int currentLine = 0;
+  Map<String, dynamic> global = {};
   List<Line> lines = [];
   Context context = Context(0);
   Map<String, int> functions = {};
@@ -28,6 +30,8 @@ class Program {
     parentFunctions["run.string"] = libString;
     parentFunctions["run.int64"] = libInt64;
     parentFunctions["run.double"] = libDouble;
+
+    parentFunctions["run.abs"] = libAbs;
   }
 
   void addFunction(String name, FunctionUniFunc f) {
@@ -43,6 +47,7 @@ class Program {
     String currentLexem = "";
     for (int i = 0; i < line.length; i++) {
       if (line[i] == " " ||
+          line[i] == "\t" ||
           line[i] == "(" ||
           line[i] == ")" ||
           line[i] == ",") {
@@ -65,7 +70,20 @@ class Program {
     }
   }
 
-  void compile(String code) {
+  void clear() {
+    lines = [];
+    context = Context(-1);
+    stack = [];
+    currentLine = 0;
+    functions = {};
+  }
+
+  bool compile(String code) {
+    if (code == currentCode) {
+      return false;
+    }
+    clear();
+    currentCode = code;
     String currentLine = "";
     for (int i = 0; i < code.length; i++) {
       var ch = code[i];
@@ -80,6 +98,7 @@ class Program {
       addLine(currentLine);
       currentLine = "";
     }
+    return true;
   }
 
   List<dynamic> runFn(String functionName, List<dynamic> args) {
@@ -423,10 +442,20 @@ class Program {
   }
 
   void set(String name, dynamic value) {
+    if (name.startsWith("#")) {
+      global[name] = value;
+    }
     context.set(name, value);
   }
 
   dynamic get(String name) {
+    if (name.startsWith("#")) {
+      if (global.containsKey(name)) {
+        return global[name];
+      }
+      return null;
+    }
+
     return context.get(name);
   }
 }

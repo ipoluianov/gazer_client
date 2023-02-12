@@ -1,0 +1,57 @@
+fn init() {
+	regProp("dataitem", "DataItem", "data_source", "")
+	regProp("colorBorder", "BorderColor", "color", "#777777")
+	regProp("colorMain", "MainColor", "color", "#777777")
+	regProp("min", "Min", "double", "0.0")
+	regProp("max", "Max", "double", "100.0")
+	regProp("borderWidth", "BorderWidth", "double", "1.0")
+	regProp("fontSize", "FontSize", "double", "14.0")
+	
+	#targetPos = 0.0
+	#currentPos = 0.0
+}
+
+fn draw() {
+	dsPropValue = getProp("dataitem")
+	itemVal = itemValue(dsPropValue)
+	itemValDouble = run.double(itemVal)
+	min = getPropDouble("min")
+	max = getPropDouble("max")
+	w = getPropDoubleZ("w")
+	h = getPropDoubleZ("h")
+	pos = itemValDouble - min
+	diff = max - min
+	pos = pos / diff
+	if (pos > 1.0) {
+		pos = 1.0
+	}
+	if (pos < 0.0) {
+		pos = 0.0
+	}
+	posString = run.string(pos)
+	#targetPos = pos
+	
+	tcDiff = #targetPos - #currentPos
+	tcDiff = run.abs(tcDiff)
+	step = #targetPos - #currentPos
+	step = step / 3.0
+	#currentPos = #currentPos + step
+	
+	colorBorder = getProp("colorBorder")
+	colorMain = getProp("colorMain")
+	borderWidth = getPropDoubleZ("borderWidth")
+	
+	padding = borderWidth
+	paddingDouble = padding * 2.0
+	rw = w - paddingDouble
+	rh = h - paddingDouble
+
+	prw = rw * #currentPos
+	
+	fontSize = getPropDoubleZ("fontSize")
+	
+	fillRect(padding, padding, prw, rh, colorMain, 2.0)
+	drawRect(0.0, 0.0, w, h, colorBorder, borderWidth)
+	drawText(itemVal, fontSize, colorBorder)
+}
+

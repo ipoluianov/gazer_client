@@ -49,7 +49,7 @@ class MapItemText02 extends MapItem {
       uom = value.uom;
     }
 
-    targetValue = getDoubleZWithThresholds("font_size");
+    targetValue = getDoubleZ("font_size");
 
     if (isDemo) {
       itemName = "Name";
@@ -67,7 +67,7 @@ class MapItemText02 extends MapItem {
         getDoubleZ("h"),
         itemName,
         lastValue,
-        getColorWithThresholds("name_color"),
+        getColor("name_color"),
         TextAlign.left);
 
     drawValueAndUOM(
@@ -79,8 +79,8 @@ class MapItemText02 extends MapItem {
         text,
         uom,
         lastValue,
-        getColorWithThresholds("text_color"),
-        getColorWithThresholds("uom_color"),
+        getColor("text_color"),
+        getColor("uom_color"),
         TextAlign.right);
     drawPost(canvas, size);
   }
@@ -170,19 +170,6 @@ class MapItemText02 extends MapItem {
       groups.add(MapItemPropGroup("Text", true, props));
     }
     return groups;
-  }
-
-  @override
-  List<MapItemPropItem> propThresholdOfItem() {
-    List<MapItemPropItem> props = [];
-    props.add(MapItemPropItem(
-        "", "name_color", "Item Name Color", "color", "FF00BCD4"));
-    props.add(
-        MapItemPropItem("", "text_color", "Text Color", "color", "FF19EE46"));
-    props.add(
-        MapItemPropItem("", "uom_color", "UOM Color", "color", "FF009688"));
-    props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
-    return props;
   }
 
   @override

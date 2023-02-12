@@ -3,13 +3,13 @@ import 'package:gazer_client/forms/maps/map_form/map_item.dart';
 import 'package:gazer_client/forms/maps/map_item_properties_form/map_item_prop_bool.dart';
 import 'package:gazer_client/forms/maps/map_item_properties_form/map_item_prop_data_source.dart';
 import 'package:gazer_client/forms/maps/map_item_properties_form/map_item_prop_orientation.dart';
-import 'package:gazer_client/forms/maps/map_item_properties_form/map_item_prop_threshold.dart';
 import 'package:expandable/expandable.dart';
 
 import 'map_item_prop_actions.dart';
 import 'map_item_prop_color.dart';
 import 'map_item_prop_double.dart';
 import 'map_item_prop_image.dart';
+import 'map_item_prop_multiline.dart';
 import 'map_item_prop_scale_fit.dart';
 import 'map_item_prop_text.dart';
 
@@ -42,8 +42,6 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
       IPropContainer item, MapItemPropItem propItem, Key key) {
     Widget propWidget = Text("unknown property type", key: key);
 
-    bool isDecorations = false;
-
     if (propItem.type == "double") {
       propWidget = MapItemPropDouble(
         item,
@@ -54,11 +52,11 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
     if (propItem.type == "text") {
       propWidget = MapItemPropText(item, propItem, key: key);
     }
+    if (propItem.type == "multiline") {
+      propWidget = MapItemPropMultiline(item, propItem, key: key);
+    }
     if (propItem.type == "data_source") {
       propWidget = MapItemPropDataSource(item, propItem, key: key);
-    }
-    if (propItem.type == "threshold") {
-      propWidget = MapItemPropThreshold(item, propItem, key: key);
     }
     if (propItem.type == "color") {
       propWidget = MapItemPropColor(item, propItem, key: key);
@@ -79,10 +77,6 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
       propWidget = MapItemPropActions(item, propItem, key: key);
     }
 
-    /*if (isDecorations) {
-      return propWidget;
-    }*/
-
     return Container(
       constraints: const BoxConstraints(minWidth: 100, maxWidth: 265),
       color: Colors.blueAccent.withOpacity(0.1),
@@ -91,16 +85,14 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          (!isDecorations)
-              ? Text(
-                  propItem.displayName,
-                  style: const TextStyle(
-                    fontSize: 12,
-                  ),
-                )
-              : Container(),
+          Text(
+            propItem.displayName,
+            style: const TextStyle(
+              fontSize: 12,
+            ),
+          ),
           Padding(
-            padding: EdgeInsets.only(top: (isDecorations ? 0 : 3)),
+            padding: const EdgeInsets.only(top: (3)),
             child: propWidget,
           ),
         ],
@@ -151,7 +143,7 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
+                      color: Colors.blue.withOpacity(0.5),
                       border: const Border(
                           bottom: BorderSide(color: Colors.blue, width: 1))),
                   padding: const EdgeInsets.all(6),

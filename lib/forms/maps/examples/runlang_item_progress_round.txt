@@ -1,0 +1,92 @@
+fn init() {
+	regProp("dataitem", "DataItem", "data_source", "")
+	regProp("colorBorder", "BorderColor", "color", "#777777")
+	regProp("colorMain", "MainColor", "color", "#777777")
+	regProp("min", "Min", "double", "0.0")
+	regProp("max", "Max", "double", "100.0")
+	regProp("borderWidth", "BorderWidth", "double", "1.0")
+	regProp("mainWidth", "MainWidth", "double", "10.0")
+	regProp("fontSize", "FontSize", "double", "14.0")
+	
+	#targetPos = 0.0
+	#currentPos = 0.0
+	
+	#aniPos1 = 0.0
+	#aniPos2 = 0.0
+}
+
+fn draw() {
+	dsPropValue = getProp("dataitem")
+	itemVal = itemValue(dsPropValue)
+	itemValDouble = run.double(itemVal)
+	min = getPropDouble("min")
+	max = getPropDouble("max")
+	w = getPropDoubleZ("w")
+	h = getPropDoubleZ("h")
+	pos = itemValDouble - min
+	diff = max - min
+	pos = pos / diff
+	if (pos > 1.0) {
+		pos = 1.0
+	}
+	if (pos < 0.0) {
+		pos = 0.0
+	}
+	posString = run.string(pos)
+	#targetPos = pos
+	
+	tcDiff = #targetPos - #currentPos
+	tcDiff = run.abs(tcDiff)
+	step = #targetPos - #currentPos
+	step = step / 3.0
+	#currentPos = #currentPos + step
+	
+	colorBorder = getProp("colorBorder")
+	colorMain = getProp("colorMain")
+	borderWidth = getPropDoubleZ("borderWidth")
+	mainWidth = getPropDoubleZ("mainWidth")
+	
+	currentPosRad = #currentPos * 6.2831853
+	start = -1.5707963
+	stop = currentPosRad
+	
+	fontSize = getPropDoubleZ("fontSize")
+	
+	padding = mainWidth / 2.0
+	paddingDouble  = padding * 2.0
+	rw = w - paddingDouble
+	rh = h - paddingDouble
+	
+	#aniPos1 = #aniPos1 + 0.02
+	#aniPos2 = #aniPos2 + 0.03
+	
+	aniWidth1 = borderWidth * 0.2
+	aniWidth2 = mainWidth * 0.2
+	
+	w_half = w * 0.5
+	h_half = h * 0.5
+	
+	ani1w = w * 0.7
+	ani1w2 = ani1w * 0.5
+	ani1x = w_half - ani1w2
+
+	ani1h = h * 0.7
+	ani1h2 = ani1h * 0.5
+	ani1y = h_half - ani1h2
+
+	ani2w = w * 0.7
+	ani2w2 = ani2w * 0.5
+	ani2x = w_half - ani2w2
+
+	ani2h = h * 0.7
+	ani2h2 = ani2h * 0.5
+	ani2y = h_half - ani2h2
+	
+	
+	drawArc(ani1x, ani1y, ani1w, ani1h, colorBorder, aniWidth1, #aniPos1, 4.0)
+	drawArc(ani2x, ani2y, ani2w, ani2h, colorMain, aniWidth2, #aniPos2, 5.0)
+	
+	drawArc(padding, padding, rw, rh, colorBorder, borderWidth, 0.0, 6.2831853)
+	drawArc(padding, padding, rw, rh, colorMain, mainWidth, start, stop)
+	drawText(itemVal, fontSize, colorBorder)
+}

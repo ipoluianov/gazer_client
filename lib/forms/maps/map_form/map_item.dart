@@ -13,6 +13,7 @@ import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/chart_groups/chart_group_form/chart_group_data_items.dart';
 import 'package:gazer_client/widgets/confirmation_dialog/confirmation_dialog.dart';
 
+import '../../../runlang/program.dart';
 import 'map_item_library.dart';
 
 abstract class MapItem extends IPropContainer {
@@ -74,12 +75,6 @@ abstract class MapItem extends IPropContainer {
 
   bool needToZoom() {
     return false;
-    var th = currentThreshold();
-    if (th != ThresholdType.none) {
-      var prefix = thresholdName(th);
-      return getBool(prefix + "_" + "auto_zoom");
-    }
-    return false;
   }
 
   void draw(Canvas canvas, Size size, List<String> parentMaps);
@@ -102,27 +97,23 @@ abstract class MapItem extends IPropContainer {
 
     var zoomForDecorators = calcPrefScale();
 
-    bool allDecorationsReady = true;
+    canvas.save();
 
-    if (allDecorationsReady) {
-      canvas.save();
-
-      var borderCornerRadius = getDoubleZ("border_corner_radius");
-      if (borderCornerRadius > 0) {
-        var rRect = RRect.fromRectAndRadius(
-            backgroundRect(), Radius.circular(borderCornerRadius));
+    var borderCornerRadius = getDoubleZ("border_corner_radius");
+    if (borderCornerRadius > 0) {
+      var rRect = RRect.fromRectAndRadius(
+          backgroundRect(), Radius.circular(borderCornerRadius));
+      canvas.clipRRect(rRect);
+    } else {
+      if (type() == "map") {
+        var rRect =
+            RRect.fromRectAndRadius(backgroundRect(), const Radius.circular(0));
         canvas.clipRRect(rRect);
-      } else {
-        if (type() == "map") {
-          var rRect = RRect.fromRectAndRadius(
-              backgroundRect(), const Radius.circular(0));
-          canvas.clipRRect(rRect);
-        }
       }
-
-      draw(canvas, size, parentMaps);
-      canvas.restore();
     }
+
+    draw(canvas, size, parentMaps);
+    canvas.restore();
   }
 
   void drawPre(Canvas canvas, Size size, {RRect? rRect}) {
@@ -130,8 +121,8 @@ abstract class MapItem extends IPropContainer {
   }
 
   void drawPost(Canvas canvas, Size size, {RRect? rRect}) {
-    rRect ??= RRect.fromRectAndRadius(backgroundRect(),
-        Radius.circular(getDoubleZWithThresholds("border_corner_radius")));
+    rRect ??= RRect.fromRectAndRadius(
+        backgroundRect(), Radius.circular(getDoubleZ("border_corner_radius")));
 
     drawBorders(canvas, size, rRect);
   }
@@ -219,9 +210,9 @@ abstract class MapItem extends IPropContainer {
   }
 
   void drawBack(Canvas canvas, Size size, {RRect? rRect}) {
-    var backColor = getColorWithThresholds("back_color");
+    var backColor = getColor("back_color");
 
-    var backImageBytesB64 = getWithThresholds("back_img");
+    var backImageBytesB64 = get("back_img");
     if (lastBackImageBase64 != backImageBytesB64) {
       Uint8List backImageBytes = Uint8List(0);
       if (backImageBytesB64.isNotEmpty) {
@@ -236,7 +227,7 @@ abstract class MapItem extends IPropContainer {
     }
 
     CalcPreferredScaleType scaleFit = CalcPreferredScaleType.contain;
-    var calcScaleFitString = getWithThresholds("back_img_scale_fit");
+    var calcScaleFitString = get("back_img_scale_fit");
     if (calcScaleFitString == "contain") {
       scaleFit = CalcPreferredScaleType.contain;
     }
@@ -298,9 +289,9 @@ abstract class MapItem extends IPropContainer {
 
   void drawBorders(Canvas canvas, Size size, RRect? rRect) {
     if (rRect != null) {
-      var borderColor = getColorWithThresholds("border_color");
-      var borderWidth = getDoubleWithThresholds("border_width");
-      var borderCornerRadius = getDoubleWithThresholds("border_corner_radius");
+      var borderColor = getColor("border_color");
+      var borderWidth = getDouble("border_width");
+      var borderCornerRadius = getDouble("border_corner_radius");
       if (borderCornerRadius > 0) {
         rRect = RRect.fromRectAndRadius(
             Rect.fromLTWH(rRect.left, rRect.top, rRect.width, rRect.height),
@@ -334,37 +325,6 @@ abstract class MapItem extends IPropContainer {
     return "";
   }
 
-  String getWithThresholds(String name) {
-    var prefix = thresholdName(currentThreshold());
-    if (prefix.isNotEmpty) {
-      name = prefix + "_" + name;
-    }
-    if (props.containsKey(name)) {
-      if (props[name] == null) {
-        return "";
-      }
-      return props[name]!;
-    }
-    return "";
-  }
-
-  String thresholdName(ThresholdType thresholdType) {
-    switch (thresholdType) {
-      case ThresholdType.none:
-        return "";
-      case ThresholdType.downError:
-        return "threshold_down_error";
-      case ThresholdType.downWarning:
-        return "threshold_down_warning";
-      case ThresholdType.upWarning:
-        return "threshold_up_warning";
-      case ThresholdType.upError:
-        return "threshold_up_error";
-      case ThresholdType.uom1:
-        return "threshold_uom_1";
-    }
-  }
-
   @override
   void setDouble(String name, double value) {
     props[name] = value.toString();
@@ -387,11 +347,6 @@ abstract class MapItem extends IPropContainer {
     return val == "1";
   }
 
-  bool getBoolWithThresholds(String name) {
-    var val = getWithThresholds(name);
-    return val == "1";
-  }
-
   Color getColor(String name) {
     var val = get(name);
     if (val != "") {
@@ -400,40 +355,8 @@ abstract class MapItem extends IPropContainer {
     return Colors.transparent;
   }
 
-  Color getColorWithThresholds(String name) {
-    var val = getWithThresholds(name);
-    if (val != "") {
-      return colorFromHex(val);
-    }
-    return Colors.transparent;
-  }
-
-  double getDoubleWithThresholds(String name) {
-    var val = getWithThresholds(name);
-    if (val != "") {
-      double? res = double.tryParse(val);
-      if (res != null) {
-        return res;
-      }
-      return 0;
-    }
-    return 0;
-  }
-
   double getDoubleZ(String name) {
     var val = get(name);
-    if (val != "") {
-      double? res = double.tryParse(val);
-      if (res != null) {
-        return res * zoom;
-      }
-      return 0;
-    }
-    return 0;
-  }
-
-  double getDoubleZWithThresholds(String name) {
-    var val = getWithThresholds(name);
     if (val != "") {
       double? res = double.tryParse(val);
       if (res != null) {
@@ -449,7 +372,7 @@ abstract class MapItem extends IPropContainer {
     //print("3333 ${item.type()}");
 
     for (var key in json.keys) {
-      if (key != "decorations" && key != "children" && json[key] is String) {
+      if (key != "children" && json[key] is String) {
         item.set(key, json[key]);
       }
     }
@@ -534,42 +457,8 @@ abstract class MapItem extends IPropContainer {
     return Repository().itemsWatcher.value(connection, ds);
   }
 
-  ThresholdType currentThreshold() {
-    var dsValue = Repository().itemsWatcher.value(connection, getDataSource());
-    double? valueWithNull = double.tryParse(dsValue.value);
-    if (valueWithNull != null) {
-      double value = valueWithNull;
-      if (get("threshold_up_error_active") == "1") {
-        if (value >= getDouble("threshold_up_error_value")) {
-          return ThresholdType.upError;
-        }
-      }
-      if (get("threshold_down_error_active") == "1") {
-        if (value <= getDouble("threshold_down_error_value")) {
-          return ThresholdType.downError;
-        }
-      }
-      if (get("threshold_down_warning_active") == "1") {
-        if (value <= getDouble("threshold_down_warning_value")) {
-          return ThresholdType.downWarning;
-        }
-      }
-      if (get("threshold_up_warning_active") == "1") {
-        if (value >= getDouble("threshold_up_warning_value")) {
-          return ThresholdType.upWarning;
-        }
-      }
-    }
-
-    String uom = dsValue.uom;
-
-    if (get("threshold_uom_1_active") == "1") {
-      if (uom == get("threshold_uom_1_value")) {
-        return ThresholdType.uom1;
-      }
-    }
-
-    return ThresholdType.none;
+  DataItemInfo itemValue(String name) {
+    return Repository().itemsWatcher.value(connection, name);
   }
 
   bool hasDataSource() {
@@ -645,8 +534,6 @@ abstract class MapItem extends IPropContainer {
     //List<MapItemPropPage> pages = [];
     MapItemPropPage pageMain =
         MapItemPropPage("Main", const Icon(Icons.domain), []);
-    MapItemPropPage pageDecorations =
-        MapItemPropPage("Decor", const Icon(Icons.format_paint), []);
 
     MapItemPropPage pageDataItems =
         MapItemPropPage("Data Items", const Icon(Icons.data_usage), []);
@@ -664,25 +551,24 @@ abstract class MapItem extends IPropContainer {
           props.add(MapItemPropItem("", "back_img", "Background Image", "image", ""));
           props.add(MapItemPropItem("", "back_img_scale_fit", "Background Image Scale Fit", "scale_fit", "contain"));
           props.add(MapItemPropItem("", "border_corner_radius", "Border Corner Radius", "double", "0"));*/
-          pageDecorations.groups.add(MapItemPropGroup("Decorations", false, [
-            MapItemPropItem("", "decorations", "Decorations", "decorations", "")
-          ]));
         } else {
           props.addAll(propListForInnerMap());
         }
         pageMain.groups.add(MapItemPropGroup("Geometry", true, props));
       }
     } else {
-      pageDecorations.groups.add(MapItemPropGroup("Decorations", false, [
-        MapItemPropItem("", "decorations", "Decorations", "decorations", "")
-      ]));
       {
+        List<MapItemPropItem> props = [];
+        props.add(MapItemPropItem("", "code", "Code", "multiline", ""));
+        pageMain.groups.add(MapItemPropGroup("Code", true, props));
+      }
+      /*{
         List<MapItemPropItem> props = [];
         props.add(MapItemPropItem(
             "", "data_source", "Data Source Item", "data_source", ""));
         pageMain.groups.add(MapItemPropGroup("Data Source", true, props));
-      }
-      {
+      }*/
+      /*{
         List<MapItemPropItem> props = [];
         props.add(MapItemPropItem("", "action_on_click_write_data_item",
             "On-Click Write Data Item", "data_source", ""));
@@ -693,21 +579,7 @@ abstract class MapItem extends IPropContainer {
         props.add(MapItemPropItem("", "action_on_click_confirmation_text",
             "On-Click Write Confirmation Text", "text", ""));
         pageMain.groups.add(MapItemPropGroup("Actions", true, props));
-      }
-      {
-        List<MapItemPropItem> props = [];
-        props.add(MapItemPropItem(
-            "", "threshold_up_error", "Up Error", "threshold", ""));
-        props.add(MapItemPropItem(
-            "", "threshold_up_warning", "Up Warning", "threshold", ""));
-        props.add(MapItemPropItem(
-            "", "threshold_down_warning", "Down Warning", "threshold", ""));
-        props.add(MapItemPropItem(
-            "", "threshold_down_error", "Down Error", "threshold", ""));
-        props.add(
-            MapItemPropItem("", "threshold_uom_1", "UOM", "threshold", ""));
-        pageMain.groups.add(MapItemPropGroup("Thresholds", false, props));
-      }
+      }*/
       {
         List<MapItemPropItem> props = [];
         props.add(MapItemPropItem("", "x", "X", "double", "0"));
@@ -717,31 +589,7 @@ abstract class MapItem extends IPropContainer {
         pageMain.groups.add(MapItemPropGroup("Geometry", false, props));
       }
     }
-    return [pageMain, pageDecorations, pageDataItems];
-  }
-
-  @override
-  List<MapItemPropItem> propThreshold() {
-    List<MapItemPropItem> props = [];
-    props.addAll(propThresholdOfItem());
-    //props.add(MapItemPropItem("", "auto_zoom", "Auto Zoom", "bool", "0"));
-    props.add(MapItemPropItem(
-        "", "back_color", "Background Color", "color", "000000"));
-    props.add(MapItemPropItem("", "back_img", "Background Image", "image", ""));
-    props.add(MapItemPropItem("", "back_img_scale_fit",
-        "Background Image Scale Fit", "scale_fit", "contain"));
-    props.add(MapItemPropItem("", "border_color", "Border Color", "color", ""));
-    props.add(
-        MapItemPropItem("", "border_width", "Border Width", "double", "0"));
-    props.add(MapItemPropItem(
-        "", "border_corner_radius", "Border Corner Radius", "double", "0"));
-    return props;
-  }
-
-  @protected
-  List<MapItemPropItem> propThresholdOfItem() {
-    List<MapItemPropItem> props = [];
-    return props;
+    return [pageMain, pageDataItems];
   }
 
   List<ActionPoint> actionPoints() {
@@ -845,7 +693,4 @@ abstract class IPropContainer {
   Connection getConnection();
   List<MapItemPropPage> propList();
   void setDouble(String name, double value);
-  List<MapItemPropItem> propThreshold();
 }
-
-enum ThresholdType { none, downError, downWarning, upWarning, upError, uom1 }

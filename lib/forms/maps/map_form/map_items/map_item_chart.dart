@@ -82,7 +82,7 @@ class MapItemChart extends MapItem {
     drawPre(canvas, size);
     //Color color = Colors.purpleAccent;
 
-    Color chartColor = getColorWithThresholds("chart_color");
+    Color chartColor = getColor("chart_color");
 
     var ds = getDataSource();
 
@@ -97,12 +97,12 @@ class MapItemChart extends MapItem {
       }
     }
 
-    bool showTimeScale = getBoolWithThresholds("show_time_scale");
+    bool showTimeScale = getBool("show_time_scale");
     settings.showTimeScale = showTimeScale;
 
     currentChartColor = chartColor;
 
-    lastSeconds = getDoubleWithThresholds("period");
+    lastSeconds = getDouble("period");
     if (lastSeconds < 1) {
       lastSeconds = 1;
     }
@@ -196,16 +196,5 @@ class MapItemChart extends MapItem {
       groups.add(MapItemPropGroup("Text", true, props));
     }
     return groups;
-  }
-
-  @override
-  List<MapItemPropItem> propThresholdOfItem() {
-    List<MapItemPropItem> props = [];
-    props.add(MapItemPropItem("", "period", "Period, sec", "double", "300"));
-    props.add(
-        MapItemPropItem("", "chart_color", "Chart Color", "color", "FF0EC35E"));
-    props.add(
-        MapItemPropItem("", "show_time_scale", "Show Time Scale", "bool", "0"));
-    return props;
   }
 }

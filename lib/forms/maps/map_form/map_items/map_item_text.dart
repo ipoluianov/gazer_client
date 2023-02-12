@@ -43,8 +43,8 @@ class MapItemText extends MapItem {
     Color color = Colors.green;
 
     var text = get("text");
-    var prefix = getWithThresholds("prefix");
-    var suffix = getWithThresholds("suffix");
+    var prefix = get("prefix");
+    var suffix = get("suffix");
 
     if (hasDataSource()) {
       var value = dataSourceValue();
@@ -56,7 +56,7 @@ class MapItemText extends MapItem {
       }
     }
 
-    targetValue = getDoubleZWithThresholds("font_size");
+    targetValue = getDoubleZ("font_size");
     text = prefix + text + suffix;
     text = text.replaceAll("[nl]", "\n");
     text = text.replaceAll("[name]", dataSourceValue().displayName);
@@ -90,7 +90,7 @@ class MapItemText extends MapItem {
         getDoubleZ("h"),
         text,
         lastValue,
-        getColorWithThresholds("text_color"),
+        getColor("text_color"),
         TextAlign.center);
     drawPost(canvas, size);
   }
@@ -132,17 +132,6 @@ class MapItemText extends MapItem {
       groups.add(MapItemPropGroup("Text", true, props));
     }
     return groups;
-  }
-
-  @override
-  List<MapItemPropItem> propThresholdOfItem() {
-    List<MapItemPropItem> props = [];
-    props.add(
-        MapItemPropItem("", "text_color", "Text Color", "color", "FF00EFFF"));
-    props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
-    props.add(MapItemPropItem("", "prefix", "Prefix", "text", ""));
-    props.add(MapItemPropItem("", "suffix", "Suffix", "text", ""));
-    return props;
   }
 
   @override

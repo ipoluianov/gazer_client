@@ -7,7 +7,8 @@ class MapItemPropColor extends StatefulWidget {
   final IPropContainer item;
   final MapItemPropItem propItem;
 
-  const MapItemPropColor(this.item, this.propItem, {Key? key}) : super(key: key);
+  const MapItemPropColor(this.item, this.propItem, {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -46,7 +47,9 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
         height: 24,
         margin: EdgeInsets.only(left: 3),
         decoration: BoxDecoration(
-            color: colorFromHex(widget.item.get(widget.propItem.name)) ?? Colors.transparent, border: Border.all(color: Colors.white30, width: 1)),
+            color: colorFromHex(widget.item.get(widget.propItem.name)) ??
+                Colors.transparent,
+            border: Border.all(color: Colors.white30, width: 1)),
       ),
       Container(
         padding: EdgeInsets.only(left: 3),
@@ -58,12 +61,12 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
         ),
       ),
       Container(
-        padding: EdgeInsets.only(left: 3),
+        padding: const EdgeInsets.only(left: 1),
         child: OutlinedButton(
           onPressed: () {
             originalColorBeforeDialog = widget.item.get(widget.propItem.name);
-
-            pickerColor = colorFromHex(originalColorBeforeDialog) ?? Colors.blueAccent;
+            pickerColor =
+                colorFromHex(originalColorBeforeDialog) ?? Colors.blueAccent;
             showColorDialog("Select color");
           },
           child: const Text("..."),
@@ -214,8 +217,14 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
                   },
                   child: const Text("Palette"),
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(colorPickerCurrentTypeIndex == 0 ? Colors.blueAccent : Colors.transparent),
-                    foregroundColor: MaterialStateProperty.all(colorPickerCurrentTypeIndex == 0 ? Colors.white : Colors.blueAccent),
+                    backgroundColor: MaterialStateProperty.all(
+                        colorPickerCurrentTypeIndex == 0
+                            ? Colors.blueAccent
+                            : Colors.transparent),
+                    foregroundColor: MaterialStateProperty.all(
+                        colorPickerCurrentTypeIndex == 0
+                            ? Colors.white
+                            : Colors.blueAccent),
                   ),
                 ),
               ),
@@ -228,8 +237,14 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
                   },
                   child: const Text("Free"),
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(colorPickerCurrentTypeIndex == 1 ? Colors.blueAccent : Colors.transparent),
-                    foregroundColor: MaterialStateProperty.all(colorPickerCurrentTypeIndex == 1 ? Colors.white : Colors.blueAccent),
+                    backgroundColor: MaterialStateProperty.all(
+                        colorPickerCurrentTypeIndex == 1
+                            ? Colors.blueAccent
+                            : Colors.transparent),
+                    foregroundColor: MaterialStateProperty.all(
+                        colorPickerCurrentTypeIndex == 1
+                            ? Colors.white
+                            : Colors.blueAccent),
                   ),
                 ),
               ),

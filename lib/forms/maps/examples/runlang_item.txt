@@ -1,0 +1,12 @@
+fn init() {
+	regProp("text", "Text", "text", "123")
+	regProp("color", "Color", "color", "#777777")
+	regProp("size", "FontSize", "double", "14.0")
+}
+
+fn draw() {
+  itemVal = getProp("text")
+  size = getPropDouble("size")
+  color = getProp("color")
+  drawText(itemVal, size, color)
+}

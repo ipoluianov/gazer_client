@@ -52,7 +52,7 @@ class MapItemErrorIndicator extends MapItem {
       }
     }
 
-    targetValue = getDoubleZWithThresholds("font_size");
+    targetValue = getDoubleZ("font_size");
     text = text.replaceAll("[nl]", "\n");
 
     double widthZ = getDoubleZ("w");
@@ -63,9 +63,9 @@ class MapItemErrorIndicator extends MapItem {
 
     var textColor = Colors.white;
     if (isError) {
-      textColor = getColorWithThresholds("text_error_color");
+      textColor = getColor("text_error_color");
     } else {
-      textColor = getColorWithThresholds("text_regular_color");
+      textColor = getColor("text_regular_color");
     }
 
     drawText(
@@ -79,9 +79,9 @@ class MapItemErrorIndicator extends MapItem {
         textColor,
         TextAlign.left);
 
-    var indicatorColor = getColorWithThresholds("regular_color");
+    var indicatorColor = getColor("regular_color");
     if (isError) {
-      indicatorColor = getColorWithThresholds("error_color");
+      indicatorColor = getColor("error_color");
     }
     canvas.drawCircle(
         Offset(getDoubleZ("x") + indicatorWidth / 2,
@@ -141,24 +141,6 @@ class MapItemErrorIndicator extends MapItem {
       groups.add(MapItemPropGroup("Text", true, props));
     }
     return groups;
-  }
-
-  @override
-  List<MapItemPropItem> propThresholdOfItem() {
-    List<MapItemPropItem> props = [];
-    props.add(MapItemPropItem(
-        "", "regular_color", "Regular Color", "color", "FF3BD33B"));
-    props.add(
-        MapItemPropItem("", "error_color", "Error Color", "color", "FFE53535"));
-    props.add(MapItemPropItem(
-        "", "text_regular_color", "Text Color", "color", "FF00EFFF"));
-    props.add(MapItemPropItem(
-        "", "text_error_color", "Text Color", "color", "FFE53535"));
-    props.add(
-        MapItemPropItem("", "font_regular_size", "Font Size", "double", "20"));
-    props.add(
-        MapItemPropItem("", "font_error_size", "Font Size", "double", "20"));
-    return props;
   }
 
   @override

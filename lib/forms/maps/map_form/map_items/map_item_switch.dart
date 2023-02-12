@@ -53,10 +53,10 @@ class MapItemSwitch extends MapItem {
       minSize = getDoubleZ("w");
     }
 
-    Color borderColor = getColorWithThresholds("border_color");
-    Color centerOnColor = getColorWithThresholds("center_color_on");
-    Color centerOffColor = getColorWithThresholds("center_color_off");
-    Color topColor = getColorWithThresholds("top_color");
+    Color borderColor = getColor("border_color");
+    Color centerOnColor = getColor("center_color_on");
+    Color centerOffColor = getColor("center_color_off");
+    Color topColor = getColor("top_color");
 
     double corner = minSize / 2;
     double paddingLeftRight = minSize / 2;
@@ -112,20 +112,6 @@ class MapItemSwitch extends MapItem {
       groups.add(MapItemPropGroup("Colors", true, props));
     }
     return groups;
-  }
-
-  @override
-  List<MapItemPropItem> propThresholdOfItem() {
-    List<MapItemPropItem> props = [];
-    props.add(MapItemPropItem(
-        "", "border_color", "Border Color", "color", "FF00EFFF"));
-    props.add(MapItemPropItem(
-        "", "center_color_on", "Center Color (OFF)", "color", "80555555"));
-    props.add(MapItemPropItem(
-        "", "center_color_off", "Center Color (ON)", "color", "E0555555"));
-    props.add(
-        MapItemPropItem("", "top_color", "Top Color", "color", "FFFFFFFF"));
-    return props;
   }
 
   double speed = 0.1;

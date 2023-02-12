@@ -33,13 +33,13 @@ class MapItemGaugeRound extends MapItem {
             getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h")),
         Radius.circular(getDoubleZ("w")));
     drawPre(canvas, size, rRect: rRect);
-    Color color = getColorWithThresholds("text_color");
+    Color color = getColor("text_color");
 
-    var prefix = getWithThresholds("prefix");
-    var suffix = getWithThresholds("suffix");
-    var borderColor = getColorWithThresholds("border_color");
-    var borderWidth = getDoubleWithThresholds("border_width");
-    var backColor = getColorWithThresholds("back_color");
+    var prefix = get("prefix");
+    var suffix = get("suffix");
+    var borderColor = getColor("border_color");
+    var borderWidth = getDouble("border_width");
+    var backColor = getColor("back_color");
 
     bool validValue = updateGaugeState();
 
@@ -48,8 +48,8 @@ class MapItemGaugeRound extends MapItem {
       lastValue = 0;
     }
 
-    double progressWidth = getDoubleWithThresholds("progress_width");
-    Color progressColor = getColorWithThresholds("progress_color");
+    double progressWidth = getDouble("progress_width");
+    Color progressColor = getColor("progress_color");
 
     if (backColor.alpha > 0) {
       canvas.drawArc(
@@ -146,7 +146,7 @@ class MapItemGaugeRound extends MapItem {
         getDoubleZ("w"),
         getDoubleZ("h"),
         text,
-        getDoubleZWithThresholds("font_size"),
+        getDoubleZ("font_size"),
         color,
         TextAlign.center);
 
@@ -258,20 +258,5 @@ class MapItemGaugeRound extends MapItem {
       groups.add(MapItemPropGroup("Gauge", true, props));
     }
     return groups;
-  }
-
-  @override
-  List<MapItemPropItem> propThresholdOfItem() {
-    List<MapItemPropItem> props = [];
-    props.add(
-        MapItemPropItem("", "text_color", "Text Color", "color", "FFFFFF"));
-    props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
-    props.add(MapItemPropItem("", "prefix", "Prefix", "text", ""));
-    props.add(MapItemPropItem("", "suffix", "Suffix", "text", ""));
-    props.add(
-        MapItemPropItem("", "progress_width", "ProgressWidth", "double", "5"));
-    props.add(MapItemPropItem(
-        "", "progress_color", "ProgressColor", "color", "0088FF"));
-    return props;
   }
 }

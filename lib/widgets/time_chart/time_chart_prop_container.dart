@@ -53,11 +53,6 @@ class TimeChartPropContainer extends IPropContainer {
   }
 
   @override
-  List<MapItemPropItem> propThreshold() {
-    return [];
-  }
-
-  @override
   void setDouble(String name, double value) {
     props[name] = value.toString();
   }
