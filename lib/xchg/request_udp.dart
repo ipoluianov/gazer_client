@@ -21,7 +21,9 @@ Future<void> sendFrame(
             peer.httpCall(addr, "w", frame, 1000).catchError((ex) {
               print("WRITE err = $ex");
             });
-          } catch (ex) {}
+          } catch (ex) {
+            print("sendFrame exception: $ex");
+          }
           //break;
         }
       }

@@ -165,8 +165,12 @@ class Peer {
         var req = http.MultipartRequest(
             'POST', Uri.parse("http://$routerHost/api/$function"));
         req.fields['d'] = base64Encode(frame);
-        http.Response response = await http.Response.fromStream(
-            await client.send(req).timeout(Duration(milliseconds: timeoutMs)));
+        http.Response response = await http.Response.fromStream(await client
+                .send(req)
+                .timeout(Duration(milliseconds: timeoutMs)))
+            .catchError((err) {
+          print("http err $err");
+        });
         if (response.statusCode == 200) {
           var resStr = base64Decode(response.body);
           return resStr;
@@ -175,7 +179,8 @@ class Peer {
         print("exception $function exception: $ex");
       } finally {}
     }
-    throw "Exception: status code";
+    return Uint8List(0);
+    //throw "Exception: status code";
   }
 
   String remotePeerTransport(String address) {
