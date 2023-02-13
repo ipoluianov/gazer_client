@@ -106,7 +106,7 @@ class Border02Painter extends CustomPainter {
           Paint()
             //..isAntiAlias = false
             ..style = PaintingStyle.stroke
-            ..color = DesignColors.fore2().withOpacity(0.1)
+            ..color = DesignColors.fore2().withOpacity(0.05)
             ..strokeCap = StrokeCap.round
             ..strokeJoin = StrokeJoin.round
             ..strokeWidth = 6);
@@ -115,10 +115,19 @@ class Border02Painter extends CustomPainter {
           Paint()
             //..isAntiAlias = false
             ..style = PaintingStyle.stroke
-            ..color = DesignColors.fore()
+            ..color = DesignColors.fore2().withOpacity(0.1)
             ..strokeCap = StrokeCap.round
             ..strokeJoin = StrokeJoin.round
-            ..strokeWidth = 3);
+            ..strokeWidth = 4);
+      canvas.drawPath(
+          buildPathBorder(rect),
+          Paint()
+            //..isAntiAlias = false
+            ..style = PaintingStyle.stroke
+            ..color = DesignColors.fore2()
+            ..strokeCap = StrokeCap.round
+            ..strokeJoin = StrokeJoin.round
+            ..strokeWidth = 1);
     }
   }
 

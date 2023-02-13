@@ -11,7 +11,8 @@ class BottomNavigator extends StatelessWidget {
   final bool show;
   const BottomNavigator(this.show, {Key? key}) : super(key: key);
 
-  Widget buildBottomBarButton(context, int index, String text, IconData iconData, Function()? onPress) {
+  Widget buildBottomBarButton(
+      context, int index, String text, IconData iconData, Function()? onPress) {
     return Expanded(
       child: Container(
         height: 60,
@@ -39,6 +40,7 @@ class BottomNavigator extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: navColorForLeftMenuItem(context, index),
+                          fontWeight: FontWeight.w300,
                         ),
                       ),
                     ],
@@ -84,17 +86,27 @@ class BottomNavigator extends StatelessWidget {
               ? buildBottomBarButton(context, 0, "Units", Icons.blur_on, () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                   Navigator.of(context).pop();
-                  Navigator.pushNamed(context, "/node", arguments: NodeFormArgument(Repository().lastSelectedConnection));
+                  Navigator.pushNamed(context, "/node",
+                      arguments: NodeFormArgument(
+                          Repository().lastSelectedConnection));
                 })
               : Container(),
           showCharts
-              ? buildBottomBarButton(context, 1, "Charts", Icons.stacked_line_chart, () {
+              ? buildBottomBarButton(
+                  context, 1, "Charts", Icons.stacked_line_chart, () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                   Navigator.of(context).pop();
                   Navigator.pushNamed(context, "/chart_groups",
                       arguments: ResourcesFormArgument(
-                          Repository().lastSelectedConnection, "chart_group", "Chart Group", "Chart Groups", Icons.stacked_line_chart, true, false, "", "",
-                          (context, res) {
+                          Repository().lastSelectedConnection,
+                          "chart_group",
+                          "Chart Group",
+                          "Chart Groups",
+                          Icons.stacked_line_chart,
+                          true,
+                          false,
+                          "",
+                          "", (context, res) {
                         Navigator.of(context)
                             .pushNamed(
                           "/chart_group",
@@ -114,8 +126,16 @@ class BottomNavigator extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                   Navigator.of(context).pop();
                   Navigator.pushNamed(context, "/maps",
-                      arguments:
-                          ResourcesFormArgument(Repository().lastSelectedConnection, "map", "Map", "Maps", Icons.layers, true, false, "", "", (context, res) {
+                      arguments: ResourcesFormArgument(
+                          Repository().lastSelectedConnection,
+                          "map",
+                          "Map",
+                          "Maps",
+                          Icons.layers,
+                          true,
+                          false,
+                          "",
+                          "", (context, res) {
                         Navigator.of(context)
                             .pushNamed(
                           "/map",
@@ -134,7 +154,9 @@ class BottomNavigator extends StatelessWidget {
               ? buildBottomBarButton(context, 3, "More", Icons.more_horiz, () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                   Navigator.of(context).pop();
-                  Navigator.pushNamed(context, "/more", arguments: MoreFormArgument(Repository().lastSelectedConnection));
+                  Navigator.pushNamed(context, "/more",
+                      arguments: MoreFormArgument(
+                          Repository().lastSelectedConnection));
                 })
               : Container(),
         ],

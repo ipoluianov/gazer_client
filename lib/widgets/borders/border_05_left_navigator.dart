@@ -15,7 +15,8 @@ class Border05Painter extends CustomPainter {
   }
 
   Rect buildRect(Rect rectOriginal) {
-    return Rect.fromLTWH(rectOriginal.left, rectOriginal.top, rectOriginal.width, rectOriginal.height);
+    return Rect.fromLTWH(rectOriginal.left, rectOriginal.top,
+        rectOriginal.width, rectOriginal.height);
   }
 
   Path buildPath(Rect rectOriginal) {
@@ -39,8 +40,11 @@ class Border05Painter extends CustomPainter {
     points.add(Offset(rect.right, rect.top + cornerRadius));
     points.add(Offset(rect.right, rect.bottom + cornerRadius));
 
-    points.add(Offset(rect.left + rect.width / 2 + cornerRadius - cornerRadius / 2, rect.bottom + cornerRadius));
-    points.add(Offset(rect.left + rect.width / 2 - cornerRadius / 2, rect.bottom));
+    points.add(Offset(
+        rect.left + rect.width / 2 + cornerRadius - cornerRadius / 2,
+        rect.bottom + cornerRadius));
+    points.add(
+        Offset(rect.left + rect.width / 2 - cornerRadius / 2, rect.bottom));
 
     points.add(Offset(rect.left + cornerRadius / 2, rect.bottom));
     points.add(Offset(rect.left, rect.bottom - cornerRadius / 2));
@@ -65,7 +69,11 @@ class Border05Painter extends CustomPainter {
     path.addPolygon(buildPoints(rect), true);
     canvas.clipPath(path);
     canvas.drawRect(
-        Rect.fromLTWH(-calcCornerRadius(), -calcCornerRadius(), size.width + calcCornerRadius() * 2, size.height + calcCornerRadius() * 2),
+        Rect.fromLTWH(
+            -calcCornerRadius(),
+            -calcCornerRadius(),
+            size.width + calcCornerRadius() * 2,
+            size.height + calcCornerRadius() * 2),
         Paint()
           ..style = PaintingStyle.fill
           ..color = backColor);
@@ -82,6 +90,24 @@ class Border05Painter extends CustomPainter {
             ..strokeCap = StrokeCap.round
             ..strokeJoin = StrokeJoin.round
             ..strokeWidth = thickness);
+      canvas.drawPath(
+          buildPath(rect),
+          Paint()
+            //..isAntiAlias = false
+            ..style = PaintingStyle.stroke
+            ..color = DesignColors.fore2().withOpacity(0.1)
+            ..strokeCap = StrokeCap.round
+            ..strokeJoin = StrokeJoin.round
+            ..strokeWidth = thickness * 4);
+      canvas.drawPath(
+          buildPath(rect),
+          Paint()
+            //..isAntiAlias = false
+            ..style = PaintingStyle.stroke
+            ..color = DesignColors.fore2().withOpacity(0.05)
+            ..strokeCap = StrokeCap.round
+            ..strokeJoin = StrokeJoin.round
+            ..strokeWidth = thickness * 6);
     }
   }
 

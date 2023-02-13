@@ -9,13 +9,15 @@ class LeftNavigatorButton extends StatefulWidget {
   final Color color;
   final bool isCurrent;
 
-  const LeftNavigatorButton(this.index, this.text, this.iconData, this.onPress, this.color, this.isCurrent, {Key? key}) : super(key: key);
+  const LeftNavigatorButton(this.index, this.text, this.iconData, this.onPress,
+      this.color, this.isCurrent,
+      {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
     return LeftNavigatorButtonState();
   }
-
 }
 
 class LeftNavigatorButtonState extends State<LeftNavigatorButton> {
@@ -61,6 +63,7 @@ class LeftNavigatorButtonState extends State<LeftNavigatorButton> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: widget.color,
+                        fontWeight: FontWeight.w300,
                       ),
                     ),
                   ],
@@ -72,5 +75,4 @@ class LeftNavigatorButtonState extends State<LeftNavigatorButton> {
       ),
     );
   }
-
 }
