@@ -108,6 +108,15 @@ class Border05Painter extends CustomPainter {
             ..strokeCap = StrokeCap.round
             ..strokeJoin = StrokeJoin.round
             ..strokeWidth = thickness * 6);
+      canvas.drawPath(
+          buildPath(rect),
+          Paint()
+            //..isAntiAlias = false
+            ..style = PaintingStyle.stroke
+            ..color = DesignColors.fore2().withOpacity(0.02)
+            ..strokeCap = StrokeCap.round
+            ..strokeJoin = StrokeJoin.round
+            ..strokeWidth = thickness * 8);
     }
   }
 

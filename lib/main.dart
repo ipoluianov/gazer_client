@@ -9,7 +9,7 @@ void main() {
       debugShowCheckedModeBanner: false,
       home: const MainForm(),
       theme: ThemeData(
-        brightness: Brightness.light,
+        brightness: Brightness.dark,
         primarySwatch: Colors.teal,
         textTheme: const TextTheme(
           bodyText2: TextStyle(fontWeight: FontWeight.w300),

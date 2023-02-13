@@ -106,6 +106,15 @@ class Border02Painter extends CustomPainter {
           Paint()
             //..isAntiAlias = false
             ..style = PaintingStyle.stroke
+            ..color = DesignColors.fore2().withOpacity(0.02)
+            ..strokeCap = StrokeCap.round
+            ..strokeJoin = StrokeJoin.round
+            ..strokeWidth = 8);
+      canvas.drawPath(
+          buildPathBorder(rect),
+          Paint()
+            //..isAntiAlias = false
+            ..style = PaintingStyle.stroke
             ..color = DesignColors.fore2().withOpacity(0.05)
             ..strokeCap = StrokeCap.round
             ..strokeJoin = StrokeJoin.round
