@@ -4,7 +4,7 @@ import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/navigation/bottom_navigator.dart';
 import 'package:gazer_client/core/navigation/left_navigator.dart';
 import 'package:gazer_client/core/navigation/navigation.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item_library.dart';
+import 'package:gazer_client/forms/maps/map_form/main/map_item_library.dart';
 import 'package:gazer_client/core/navigation/route_generator.dart';
 
 import 'map_item_card.dart';

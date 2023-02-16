@@ -6,7 +6,7 @@ import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:intl/intl.dart' as international;
 
 import '../../../../runlang/program.dart';
-import '../map_item.dart';
+import '../main/map_item.dart';
 
 class MapItemItem extends MapItem {
   static const String sType = "item";

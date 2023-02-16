@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item.dart';
+import 'package:gazer_client/forms/maps/map_form/main/map_item.dart';
 import 'package:gazer_client/forms/maps/map_item_properties_form/styles.dart';
 
 class MapItemPropText extends StatefulWidget {

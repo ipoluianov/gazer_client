@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
-import '../map_item.dart';
+import '../../../main/map_item.dart';
 
 class MapItemGaugeRound extends MapItem {
   static const String sType = "gauge.01";

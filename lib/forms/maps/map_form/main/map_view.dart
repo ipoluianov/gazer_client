@@ -8,7 +8,7 @@ import 'package:gazer_client/core/workspace/workspace.dart';
 
 import 'map_item.dart';
 import 'map_item_library.dart';
-import 'map_items/map_item_map.dart';
+import '../map_items/map_item_map.dart';
 
 class MapView {
   MapView(Connection connection) {
@@ -257,8 +257,10 @@ class MapView {
     }
     double calcX1 = itemsToZoom[0].getDouble("x");
     double calcY1 = itemsToZoom[0].getDouble("y");
-    double calcX2 = itemsToZoom[0].getDouble("x") + itemsToZoom[0].getDouble("w");
-    double calcY2 = itemsToZoom[0].getDouble("y") + itemsToZoom[0].getDouble("h");
+    double calcX2 =
+        itemsToZoom[0].getDouble("x") + itemsToZoom[0].getDouble("w");
+    double calcY2 =
+        itemsToZoom[0].getDouble("y") + itemsToZoom[0].getDouble("h");
     for (var i in itemsToZoom) {
       if (i.getDouble("x") < calcX1) {
         calcX1 = i.getDouble("x");
@@ -358,7 +360,8 @@ class MapView {
             Map<String, dynamic> jsonMap = jsonDecode(jsonString);
             if (jsonMap.containsKey("type")) {
               if (jsonMap["type"] == "map_item") {
-                var item = MapItem.fromJson(jsonMap["content"], instance.connection);
+                var item =
+                    MapItem.fromJson(jsonMap["content"], instance.connection);
                 item.setDouble("x", item.getDouble("x") + gridSize);
                 item.setDouble("y", item.getDouble("y") + gridSize);
                 instance.items.add(item);
@@ -411,7 +414,9 @@ class MapView {
 
     if (defaultView) {
       entire();
-      _displayOffset = Offset(size.width / 2 - instance.z(instance.getDouble("w") / 2), size.height / 2 - instance.z(instance.getDouble("h") / 2));
+      _displayOffset = Offset(
+          size.width / 2 - instance.z(instance.getDouble("w") / 2),
+          size.height / 2 - instance.z(instance.getDouble("h") / 2));
       targetDisplayOffset = _displayOffset;
     }
 
@@ -438,16 +443,8 @@ class MapView {
     canvas.restore();
 
     if (currentTool != "") {
-      drawText(
-          canvas,
-          0,
-          0,
-          size.width,
-          size.height,
-          "Click to add $currentTool",
-          36,
-          Colors.white30,
-          TextAlign.left);
+      drawText(canvas, 0, 0, size.width, size.height,
+          "Click to add $currentTool", 36, Colors.white30, TextAlign.left);
     }
 
     while (mapViewLog.length > 10) {
@@ -460,7 +457,8 @@ class MapView {
     }*/
   }
 
-  void drawText(Canvas canvas, double x, double y, double width, double height, String text, double size, Color color, TextAlign align) {
+  void drawText(Canvas canvas, double x, double y, double width, double height,
+      String text, double size, Color color, TextAlign align) {
     var textSpan = TextSpan(
       text: text,
       style: TextStyle(
@@ -468,7 +466,8 @@ class MapView {
         fontSize: size,
       ),
     );
-    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
+    final textPainter = TextPainter(
+        text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
     textPainter.layout(
       minWidth: width,
       maxWidth: width,
@@ -507,7 +506,8 @@ class MapView {
 
       var actionPointsList = item.actionPointsZ();
       for (var ap in actionPointsList) {
-        var offsetFterCorrection = lastTapOffset!.translate(-_displayOffset.dx, -_displayOffset.dy);
+        var offsetFterCorrection =
+            lastTapOffset!.translate(-_displayOffset.dx, -_displayOffset.dy);
         if (ap.rect.contains(offsetFterCorrection)) {
           moveModeResizeItem = true;
         }
@@ -530,15 +530,19 @@ class MapView {
 
   void updateMoving(int pointerCount, Offset offset, double scale) {
     if (moveModeItem) {
-      var x = (offset.dx - _displayOffset.dx) / instance.zoom - movingItemStartOffset.dx;
-      var y = (offset.dy - _displayOffset.dy) / instance.zoom - movingItemStartOffset.dy;
+      var x = (offset.dx - _displayOffset.dx) / instance.zoom -
+          movingItemStartOffset.dx;
+      var y = (offset.dy - _displayOffset.dy) / instance.zoom -
+          movingItemStartOffset.dy;
       setItemPos(movingItem, x, y);
       return;
     }
 
     if (moveModeResizeItem) {
-      var coordinatesOnItemX = (offset.dx - _displayOffset.dx) / instance.zoom - movingItem.getDouble("x");
-      var coordinatesOnItemY = (offset.dy - _displayOffset.dy) / instance.zoom - movingItem.getDouble("y");
+      var coordinatesOnItemX = (offset.dx - _displayOffset.dx) / instance.zoom -
+          movingItem.getDouble("x");
+      var coordinatesOnItemY = (offset.dy - _displayOffset.dy) / instance.zoom -
+          movingItem.getDouble("y");
       setItemSize(movingItem, coordinatesOnItemX, coordinatesOnItemY);
       return;
     }
@@ -559,7 +563,8 @@ class MapView {
 
     var dX = offset.dx - startMovingOffset.dx;
     var dY = offset.dy - startMovingOffset.dy;
-    targetDisplayOffset = Offset(_displayOffset.dx + dX - offsetX, _displayOffset.dy + dY - offsetY);
+    targetDisplayOffset = Offset(
+        _displayOffset.dx + dX - offsetX, _displayOffset.dy + dY - offsetY);
     _displayOffset = targetDisplayOffset;
     startMovingOffset = offset;
     //print("display offset: ${_displayOffset.dx} ${_displayOffset.dy}");
@@ -584,11 +589,18 @@ class MapView {
 
     double itemW = 100;
     double itemH = 100;
-    setItemPos(item, (offset.dx - _displayOffset.dx) / instance.zoom - itemW / 2, (offset.dy - _displayOffset.dy) / instance.zoom - itemH / 2);
+    setItemPos(
+        item,
+        (offset.dx - _displayOffset.dx) / instance.zoom - itemW / 2,
+        (offset.dy - _displayOffset.dy) / instance.zoom - itemH / 2);
     //setItemSize(item, itemW, itemH);
     item.setDefaultsForItem();
-    setItemPos(item, (offset.dx - _displayOffset.dx) / instance.zoom - item.getDouble("w") / 2,
-        (offset.dy - _displayOffset.dy) / instance.zoom - item.getDouble("height") / 2);
+    setItemPos(
+        item,
+        (offset.dx - _displayOffset.dx) / instance.zoom -
+            item.getDouble("w") / 2,
+        (offset.dy - _displayOffset.dy) / instance.zoom -
+            item.getDouble("height") / 2);
     instance.items.add(item);
     currentTool = "";
     currentToolParameter = "";
@@ -612,7 +624,8 @@ class MapView {
 
     if (_editing) {
       if (currentTool != "") {
-        var item = MapItemsLibrary().makeItemByType(currentTool, instance.connection);
+        var item =
+            MapItemsLibrary().makeItemByType(currentTool, instance.connection);
         print("add item " + item.type() + " " + currentTool);
         if (currentTool == "map") {
           item.set("resource_id", currentToolParameter);
@@ -620,11 +633,18 @@ class MapView {
 
         double itemW = 100;
         double itemH = 100;
-        setItemPos(item, (offset.dx - _displayOffset.dx) / instance.zoom - itemW / 2, (offset.dy - _displayOffset.dy) / instance.zoom - itemH / 2);
+        setItemPos(
+            item,
+            (offset.dx - _displayOffset.dx) / instance.zoom - itemW / 2,
+            (offset.dy - _displayOffset.dy) / instance.zoom - itemH / 2);
         //setItemSize(item, itemW, itemH);
         item.setDefaultsForItem();
-        setItemPos(item, (offset.dx - _displayOffset.dx) / instance.zoom - item.getDouble("w") / 2,
-            (offset.dy - _displayOffset.dy) / instance.zoom - item.getDouble("height") / 2);
+        setItemPos(
+            item,
+            (offset.dx - _displayOffset.dx) / instance.zoom -
+                item.getDouble("w") / 2,
+            (offset.dy - _displayOffset.dy) / instance.zoom -
+                item.getDouble("height") / 2);
         instance.items.add(item);
         currentTool = "";
         currentToolParameter = "";
@@ -675,8 +695,10 @@ class MapView {
     MapItem? item = itemUnderPoint(offset, true, false);
     if (item != null) {
       lastTapOffset = offset;
-      movingItemStartOffset =
-          Offset((offset.dx - _displayOffset.dx) / instance.zoom - item.getDouble("x"), (offset.dy - _displayOffset.dy) / instance.zoom - item.getDouble("y"));
+      movingItemStartOffset = Offset(
+          (offset.dx - _displayOffset.dx) / instance.zoom - item.getDouble("x"),
+          (offset.dy - _displayOffset.dy) / instance.zoom -
+              item.getDouble("y"));
       movingItemStartSize = Size(item.getDouble("w"), item.getDouble("h"));
     }
   }
@@ -703,16 +725,20 @@ class MapView {
   }
 
   void zoomOnItem(MapItem item) {
-    Offset itemPos = Offset(item.getDoubleZ("x") + _displayOffset.dx, item.getDoubleZ("y") + _displayOffset.dy);
+    Offset itemPos = Offset(item.getDoubleZ("x") + _displayOffset.dx,
+        item.getDoubleZ("y") + _displayOffset.dy);
     Size itemSize = Size(item.getDoubleZ("w"), item.getDoubleZ("h"));
     //print("item rect : ${itemPos.dx} ${itemPos.dy} ${itemSize.width} ${itemSize.height}");
-    Offset centerOfItem = Offset(itemPos.dx + itemSize.width / 2, itemPos.dy + itemSize.height / 2);
+    Offset centerOfItem = Offset(
+        itemPos.dx + itemSize.width / 2, itemPos.dy + itemSize.height / 2);
     //print("item center : ${centerOfItem.dx} ${centerOfItem.dy}");
     var centerOfScreen = offsetOfCenter();
     double z = calcZoomForEntireItem(item, 0.1);
     //print("Target Zoom ------- : $z");
 
-    setTargetDisplayOffset(Offset(_displayOffset.dx - (centerOfItem.dx - centerOfScreen.dx), _displayOffset.dy - (centerOfItem.dy - centerOfScreen.dy)));
+    setTargetDisplayOffset(Offset(
+        _displayOffset.dx - (centerOfItem.dx - centerOfScreen.dx),
+        _displayOffset.dy - (centerOfItem.dy - centerOfScreen.dy)));
     setTargetZoom(centerOfScreen.dx, centerOfScreen.dy, z);
     //defaultView = true;
 
@@ -722,26 +748,35 @@ class MapView {
   void zoomOnRect(Rect rectOnDisplay) {
     Offset itemPos = Offset(rectOnDisplay.left, rectOnDisplay.top);
     Size itemSize = Size(rectOnDisplay.width, rectOnDisplay.height);
-    Offset centerOfItem = Offset(itemPos.dx + itemSize.width / 2, itemPos.dy + itemSize.height / 2);
+    Offset centerOfItem = Offset(
+        itemPos.dx + itemSize.width / 2, itemPos.dy + itemSize.height / 2);
     var centerOfScreen = offsetOfCenter();
 
     double z = calcZoomForRect(Size(itemSize.width, itemSize.height), 0.1);
     //print("Target Zoom: $z");
 
-    setTargetDisplayOffset(Offset(_displayOffset.dx - (centerOfItem.dx - centerOfScreen.dx), _displayOffset.dy - (centerOfItem.dy - centerOfScreen.dy)));
+    setTargetDisplayOffset(Offset(
+        _displayOffset.dx - (centerOfItem.dx - centerOfScreen.dx),
+        _displayOffset.dy - (centerOfItem.dy - centerOfScreen.dy)));
     setTargetZoom(centerOfScreen.dx, centerOfScreen.dy, z);
   }
 
   void zoomOnRectVirtual(Rect rectVirtual) {
-    Offset itemPos = Offset(instance.z(rectVirtual.left) + _displayOffset.dx, instance.z(rectVirtual.top) + _displayOffset.dy);
-    Size itemSize = Size(instance.z(rectVirtual.width), instance.z(rectVirtual.height));
-    Offset centerOfItem = Offset(itemPos.dx + itemSize.width / 2, itemPos.dy + itemSize.height / 2);
+    Offset itemPos = Offset(instance.z(rectVirtual.left) + _displayOffset.dx,
+        instance.z(rectVirtual.top) + _displayOffset.dy);
+    Size itemSize =
+        Size(instance.z(rectVirtual.width), instance.z(rectVirtual.height));
+    Offset centerOfItem = Offset(
+        itemPos.dx + itemSize.width / 2, itemPos.dy + itemSize.height / 2);
     var centerOfScreen = offsetOfCenter();
 
-    double tz = calcZoomForRect(Size(rectVirtual.width, rectVirtual.height), 0.1);
+    double tz =
+        calcZoomForRect(Size(rectVirtual.width, rectVirtual.height), 0.1);
     //print("Target Zoom: $tz");
 
-    setTargetDisplayOffset(Offset(_displayOffset.dx - (centerOfItem.dx - centerOfScreen.dx), _displayOffset.dy - (centerOfItem.dy - centerOfScreen.dy)));
+    setTargetDisplayOffset(Offset(
+        _displayOffset.dx - (centerOfItem.dx - centerOfScreen.dx),
+        _displayOffset.dy - (centerOfItem.dy - centerOfScreen.dy)));
     setTargetZoom(centerOfScreen.dx, centerOfScreen.dy, tz);
   }
 
@@ -786,14 +821,16 @@ class MapView {
     var offsetOfPointerY = targetZoomY - _displayOffset.dy;
     var offsetX = offsetOfPointerX * deltaZoom - offsetOfPointerX;
     var offsetY = offsetOfPointerY * deltaZoom - offsetOfPointerY;
-    _displayOffset = Offset(_displayOffset.dx - offsetX, _displayOffset.dy - offsetY);
+    _displayOffset =
+        Offset(_displayOffset.dx - offsetX, _displayOffset.dy - offsetY);
     targetDisplayOffset = _displayOffset;
 
     instance.zoom = z;
   }
 
   bool processDisplayOffset() {
-    if (_displayOffset.dx == targetDisplayOffset.dx && _displayOffset.dy == targetDisplayOffset.dy) {
+    if (_displayOffset.dx == targetDisplayOffset.dx &&
+        _displayOffset.dy == targetDisplayOffset.dy) {
       return false;
     }
 
@@ -829,7 +866,8 @@ class MapView {
     var offsetOfPointerY = y - _displayOffset.dy;
     var offsetX = offsetOfPointerX * deltaZoom - offsetOfPointerX;
     var offsetY = offsetOfPointerY * deltaZoom - offsetOfPointerY;
-    _displayOffset = Offset(_displayOffset.dx - offsetX, _displayOffset.dy - offsetY);
+    _displayOffset =
+        Offset(_displayOffset.dx - offsetX, _displayOffset.dy - offsetY);
 
     instance.zoom = z;
   }
@@ -871,7 +909,13 @@ class MapView {
     String itemDS = item.get("data_source");
 
     removeSelectedItem();
-    addItem(type, Offset(itemX, itemY), {"x": itemX.toString(), "y": itemY.toString(), "w": itemW.toString(), "h": itemH.toString(), "data_source": itemDS});
+    addItem(type, Offset(itemX, itemY), {
+      "x": itemX.toString(),
+      "y": itemY.toString(),
+      "w": itemW.toString(),
+      "h": itemH.toString(),
+      "data_source": itemDS
+    });
   }
 }
 

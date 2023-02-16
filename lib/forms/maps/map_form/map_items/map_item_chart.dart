@@ -9,7 +9,7 @@ import 'package:gazer_client/widgets/time_chart/time_chart_settings.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_settings_area.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_settings_series.dart';
 
-import '../map_item.dart';
+import '../main/map_item.dart';
 
 class MapItemChart extends MapItem {
   static const String sType = "chart.01";

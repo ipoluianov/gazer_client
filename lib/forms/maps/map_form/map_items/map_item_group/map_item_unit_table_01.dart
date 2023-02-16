@@ -3,7 +3,7 @@ import 'package:gazer_client/core/protocol/dataitem/data_item_list.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
-import '../map_item.dart';
+import '../../main/map_item.dart';
 
 class MapItemUnitTable01 extends MapItem {
   static const String sType = "unit.table.01";

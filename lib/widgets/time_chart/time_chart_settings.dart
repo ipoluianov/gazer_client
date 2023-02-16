@@ -7,7 +7,7 @@ import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/tools/color_by_index.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/chart_groups/chart_group_form/chart_group_data_items.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item.dart';
+import 'package:gazer_client/forms/maps/map_form/main/map_item.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_horizontal_scale.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_prop_container.dart';
@@ -18,8 +18,6 @@ import 'package:gazer_client/widgets/time_chart/time_chart_vertical_scale.dart';
 class TimeChartSettings extends TimeChartPropContainer {
   List<TimeChartSettingsArea> areas;
   TimeChartHorizontalScale horScale = TimeChartHorizontalScale();
-
-
 
   bool selectionIsStarted = false;
   double selectionMin = 0;
@@ -147,13 +145,15 @@ class TimeChartSettings extends TimeChartPropContainer {
 
     if (pointIsInsideSelectionResizeLeft(Offset(x, 0))) {
       selectionResizingLeftIsStarted = true;
-      selectionResizingLeftStartPositionPixels = horScale.horValueToPixel(selectionMin) - x;
+      selectionResizingLeftStartPositionPixels =
+          horScale.horValueToPixel(selectionMin) - x;
       return;
     }
 
     if (pointIsInsideSelectionResizeRight(Offset(x, 0))) {
       selectionResizingRightIsStarted = true;
-      selectionResizingRightStartPositionPixels = horScale.horValueToPixel(selectionMax) - x;
+      selectionResizingRightStartPositionPixels =
+          horScale.horValueToPixel(selectionMax) - x;
       return;
     }
 
@@ -197,14 +197,16 @@ class TimeChartSettings extends TimeChartPropContainer {
     }
 
     if (selectionResizingLeftIsStarted) {
-      selectionMin = horScale.horPixelToValue(x + selectionResizingLeftStartPositionPixels);
+      selectionMin = horScale
+          .horPixelToValue(x + selectionResizingLeftStartPositionPixels);
       if (selectionMin > selectionMax - pixelsToTime(1)) {
         selectionMin = selectionMax - pixelsToTime(1);
       }
     }
 
     if (selectionResizingRightIsStarted) {
-      selectionMax = horScale.horPixelToValue(x + selectionResizingRightStartPositionPixels);
+      selectionMax = horScale
+          .horPixelToValue(x + selectionResizingRightStartPositionPixels);
       if (selectionMax < selectionMin + pixelsToTime(1)) {
         selectionMax = selectionMin + pixelsToTime(1);
       }
@@ -218,7 +220,8 @@ class TimeChartSettings extends TimeChartPropContainer {
 
     if (movingIsStarted) {
       double shiftTime = pixelsToTime(x - movingStartPositionPixels);
-      horScale.setDisplayRange(movingOriginalDisplayMin - shiftTime, movingOriginalDisplayMax - shiftTime);
+      horScale.setDisplayRange(movingOriginalDisplayMin - shiftTime,
+          movingOriginalDisplayMax - shiftTime);
     }
   }
 
@@ -246,7 +249,8 @@ class TimeChartSettings extends TimeChartPropContainer {
       double timePerPixel = point2 - point1;
       double shiftTime = (y - scalingStartPositionPixels) * timePerPixel;
       shiftTime *= 2;
-      horScale.setDisplayRange(scalingOriginalDisplayMin - shiftTime, scalingOriginalDisplayMax + shiftTime);
+      horScale.setDisplayRange(scalingOriginalDisplayMin - shiftTime,
+          scalingOriginalDisplayMax + shiftTime);
     }
   }
 
@@ -283,7 +287,9 @@ class TimeChartSettings extends TimeChartPropContainer {
         areaIndexToRemove = areaIndex;
         break;
       }
-      for (int serIndex = 0; serIndex < areas[areaIndex].series.length; serIndex++) {
+      for (int serIndex = 0;
+          serIndex < areas[areaIndex].series.length;
+          serIndex++) {
         if (areas[areaIndex].series[serIndex].selected) {
           areaIndexToRemove = areaIndex;
           seriesIndexToRemove = serIndex;
@@ -317,7 +323,8 @@ class TimeChartSettings extends TimeChartPropContainer {
     double timePerPixel = point2 - point1;
     double shiftTime = (y - scalingStartPositionPixels) * timePerPixel;
     shiftTime *= 2;
-    horScale.setDisplayRange(scalingOriginalDisplayMin - shiftTime, scalingOriginalDisplayMax + shiftTime);
+    horScale.setDisplayRange(scalingOriginalDisplayMin - shiftTime,
+        scalingOriginalDisplayMax + shiftTime);
     scalingIsStarted = false;
   }
 
@@ -326,7 +333,9 @@ class TimeChartSettings extends TimeChartPropContainer {
       if (areas[areaIndex].selected) {
         return areas[areaIndex];
       }
-      for (int serIndex = 0; serIndex < areas[areaIndex].series.length; serIndex++) {
+      for (int serIndex = 0;
+          serIndex < areas[areaIndex].series.length;
+          serIndex++) {
         if (areas[areaIndex].series[serIndex].selected) {
           return areas[areaIndex].series[serIndex];
         }
@@ -343,7 +352,9 @@ class TimeChartSettings extends TimeChartPropContainer {
   void resetSelection() {
     for (int areaIndex = 0; areaIndex < areas.length; areaIndex++) {
       areas[areaIndex].selected = false;
-      for (int serIndex = 0; serIndex < areas[areaIndex].series.length; serIndex++) {
+      for (int serIndex = 0;
+          serIndex < areas[areaIndex].series.length;
+          serIndex++) {
         areas[areaIndex].series[serIndex].selected = false;
       }
     }
@@ -359,7 +370,8 @@ class TimeChartSettings extends TimeChartPropContainer {
 
   bool pointIsInsideSelectionAndResizeSections(Offset offset) {
     var val = horScale.horPixelToValue(offset.dx);
-    if (val > selectionMin - pixelsToTime(selectionResizingPadding) && val < selectionMax + pixelsToTime(selectionResizingPadding)) {
+    if (val > selectionMin - pixelsToTime(selectionResizingPadding) &&
+        val < selectionMax + pixelsToTime(selectionResizingPadding)) {
       return true;
     }
     return false;
@@ -372,7 +384,8 @@ class TimeChartSettings extends TimeChartPropContainer {
       return false;
     }
     double borderOfSelection = horScale.horValueToPixel(selectionMin);
-    if (offset.dx > borderOfSelection - selectionResizingPadding && offset.dx < borderOfSelection) {
+    if (offset.dx > borderOfSelection - selectionResizingPadding &&
+        offset.dx < borderOfSelection) {
       return true;
     }
     return false;
@@ -383,7 +396,8 @@ class TimeChartSettings extends TimeChartPropContainer {
       return false;
     }
     double borderOfSelection = horScale.horValueToPixel(selectionMax);
-    if (offset.dx > borderOfSelection && offset.dx < borderOfSelection + selectionResizingPadding) {
+    if (offset.dx > borderOfSelection &&
+        offset.dx < borderOfSelection + selectionResizingPadding) {
       return true;
     }
     return false;
@@ -458,7 +472,8 @@ class TimeChartSettings extends TimeChartPropContainer {
     double timePerPixel = point2 - point1;
     double shiftTime = (y - scalingStartPositionPixels) * timePerPixel;
     shiftTime *= 2;
-    horScale.setDisplayRange(scalingOriginalDisplayMin - shiftTime, scalingOriginalDisplayMax + shiftTime);
+    horScale.setDisplayRange(scalingOriginalDisplayMin - shiftTime,
+        scalingOriginalDisplayMax + shiftTime);
     scalingIsStarted = false;
   }
 
@@ -473,10 +488,12 @@ class TimeChartSettings extends TimeChartPropContainer {
           ..color = backColor);
 
     for (int areaIndex = 0; areaIndex < areas.length; areaIndex++) {
-      areas[areaIndex].calc(this, 0, areaHeight * areaIndex.toDouble(), size.width, areaHeight, verticalScalesWidth);
+      areas[areaIndex].calc(this, 0, areaHeight * areaIndex.toDouble(),
+          size.width, areaHeight, verticalScalesWidth);
     }
 
-    horScale.calc(verticalScalesWidth, areaHeight * areas.length, size.width - verticalScalesWidth, showTimeScale ? 30 : 0);
+    horScale.calc(verticalScalesWidth, areaHeight * areas.length,
+        size.width - verticalScalesWidth, showTimeScale ? 30 : 0);
 
     for (int areaIndex = 0; areaIndex < areas.length; areaIndex++) {
       var area = areas[areaIndex];
@@ -484,19 +501,24 @@ class TimeChartSettings extends TimeChartPropContainer {
 
       if (_editing) {
         canvas.save();
-        canvas.clipRect(Rect.fromLTWH(0, area.yOffset, size.width, area.height));
+        canvas
+            .clipRect(Rect.fromLTWH(0, area.yOffset, size.width, area.height));
         canvas.translate(0, area.yOffset);
         if (area.selected) {
-          drawEditButton(canvas, 0, "Area #${areaIndex + 1}", Colors.white, true);
+          drawEditButton(
+              canvas, 0, "Area #${areaIndex + 1}", Colors.white, true);
         } else {
-          drawEditButton(canvas, 0, "Area #${areaIndex + 1}", Colors.white, false);
+          drawEditButton(
+              canvas, 0, "Area #${areaIndex + 1}", Colors.white, false);
         }
         int index = 1;
         for (var s in area.series) {
           if (s.selected) {
-            drawEditButton(canvas, index, s.getDisplayName(), s.getColor("stroke_color"), true);
+            drawEditButton(canvas, index, s.getDisplayName(),
+                s.getColor("stroke_color"), true);
           } else {
-            drawEditButton(canvas, index, s.getDisplayName(), s.getColor("stroke_color"), false);
+            drawEditButton(canvas, index, s.getDisplayName(),
+                s.getColor("stroke_color"), false);
           }
           index++;
         }
@@ -506,15 +528,26 @@ class TimeChartSettings extends TimeChartPropContainer {
         if (area.getBool("show_legend")) {
           int index = 0;
           canvas.save();
-          canvas.clipRect(Rect.fromLTWH(0, area.yOffset, size.width, area.height));
+          canvas.clipRect(
+              Rect.fromLTWH(0, area.yOffset, size.width, area.height));
           canvas.translate(0, area.yOffset);
           for (var s in area.series) {
             if (s.selected) {
               drawLegendItem(
-                  canvas, index, s.getDisplayName(), s.getColor("stroke_color"), area.series.length, area.unitedVerticalScale() || area.series.length == 1);
+                  canvas,
+                  index,
+                  s.getDisplayName(),
+                  s.getColor("stroke_color"),
+                  area.series.length,
+                  area.unitedVerticalScale() || area.series.length == 1);
             } else {
               drawLegendItem(
-                  canvas, index, s.getDisplayName(), s.getColor("stroke_color"), area.series.length, area.unitedVerticalScale() || area.series.length == 1);
+                  canvas,
+                  index,
+                  s.getDisplayName(),
+                  s.getColor("stroke_color"),
+                  area.series.length,
+                  area.unitedVerticalScale() || area.series.length == 1);
             }
             index++;
           }
@@ -527,7 +560,8 @@ class TimeChartSettings extends TimeChartPropContainer {
 
     if (selectionForZoomIsStarted) {
       canvas.drawRect(
-          Rect.fromLTRB(horScale.horValueToPixel(selectionForZoomMin), 0, horScale.horValueToPixel(selectionForZoomMax), size.height),
+          Rect.fromLTRB(horScale.horValueToPixel(selectionForZoomMin), 0,
+              horScale.horValueToPixel(selectionForZoomMax), size.height),
           Paint()
             ..style = PaintingStyle.fill
             ..color = Colors.white30
@@ -538,36 +572,87 @@ class TimeChartSettings extends TimeChartPropContainer {
       canvas.save();
       canvas.clipRect(Rect.fromLTWH(0, 0, size.width, size.height));
       canvas.drawRect(
-          Rect.fromLTRB(horScale.horValueToPixel(selectionMin), 0, horScale.horValueToPixel(selectionMax), size.height),
+          Rect.fromLTRB(horScale.horValueToPixel(selectionMin), 0,
+              horScale.horValueToPixel(selectionMax), size.height),
           Paint()
             ..style = PaintingStyle.fill
             ..color = Colors.yellow.withOpacity(0.1)
             ..strokeWidth = 1);
 
-      Duration duration = DateTime.fromMicrosecondsSinceEpoch(selectionMax.toInt()).difference(DateTime.fromMicrosecondsSinceEpoch(selectionMin.toInt()));
+      Duration duration =
+          DateTime.fromMicrosecondsSinceEpoch(selectionMax.toInt()).difference(
+              DateTime.fromMicrosecondsSinceEpoch(selectionMin.toInt()));
 
       String durationStringCommon = duration.toString();
       String durationStringSeconds = "In Seconds: ${duration.inSeconds}";
-      String durationStringMinutes = "In Minutes: ${(duration.inSeconds / 60).toStringAsFixed(1)}";
-      String durationStringHours = "In Hours: ${(duration.inSeconds / 3600).toStringAsFixed(2)}";
+      String durationStringMinutes =
+          "In Minutes: ${(duration.inSeconds / 60).toStringAsFixed(1)}";
+      String durationStringHours =
+          "In Hours: ${(duration.inSeconds / 3600).toStringAsFixed(2)}";
 
-      drawSelectionResizeArea(canvas, horScale.horValueToPixel(selectionMin) - selectionResizingPadding, size.height, selectionResizingPadding, true);
-      drawSelectionResizeArea(canvas, horScale.horValueToPixel(selectionMax), size.height, selectionResizingPadding, false);
+      drawSelectionResizeArea(
+          canvas,
+          horScale.horValueToPixel(selectionMin) - selectionResizingPadding,
+          size.height,
+          selectionResizingPadding,
+          true);
+      drawSelectionResizeArea(canvas, horScale.horValueToPixel(selectionMax),
+          size.height, selectionResizingPadding, false);
 
       double leftPadding = 10;
-      drawText(canvas, leftPadding + horScale.horValueToPixel(selectionMin), 0, timeToPixels(selectionMax - selectionMin), size.height, durationStringCommon,
-          14, Colors.yellow, TextAlign.left, false);
-      drawText(canvas, leftPadding + horScale.horValueToPixel(selectionMin), 20, timeToPixels(selectionMax - selectionMin), size.height, durationStringSeconds,
-          14, Colors.yellow, TextAlign.left, false);
-      drawText(canvas, leftPadding + horScale.horValueToPixel(selectionMin), 40, timeToPixels(selectionMax - selectionMin), size.height, durationStringMinutes,
-          14, Colors.yellow, TextAlign.left, false);
-      drawText(canvas, leftPadding + horScale.horValueToPixel(selectionMin), 60, timeToPixels(selectionMax - selectionMin), size.height, durationStringHours,
-          14, Colors.yellow, TextAlign.left, false);
+      drawText(
+          canvas,
+          leftPadding + horScale.horValueToPixel(selectionMin),
+          0,
+          timeToPixels(selectionMax - selectionMin),
+          size.height,
+          durationStringCommon,
+          14,
+          Colors.yellow,
+          TextAlign.left,
+          false);
+      drawText(
+          canvas,
+          leftPadding + horScale.horValueToPixel(selectionMin),
+          20,
+          timeToPixels(selectionMax - selectionMin),
+          size.height,
+          durationStringSeconds,
+          14,
+          Colors.yellow,
+          TextAlign.left,
+          false);
+      drawText(
+          canvas,
+          leftPadding + horScale.horValueToPixel(selectionMin),
+          40,
+          timeToPixels(selectionMax - selectionMin),
+          size.height,
+          durationStringMinutes,
+          14,
+          Colors.yellow,
+          TextAlign.left,
+          false);
+      drawText(
+          canvas,
+          leftPadding + horScale.horValueToPixel(selectionMin),
+          60,
+          timeToPixels(selectionMax - selectionMin),
+          size.height,
+          durationStringHours,
+          14,
+          Colors.yellow,
+          TextAlign.left,
+          false);
 
       canvas.restore();
     }
 
-    if (hoverPos.dy > 0 && hoverPos.dx > 0 && !selectionMovingIsStarted && !selectionForZoomIsStarted && !movingIsStarted) {
+    if (hoverPos.dy > 0 &&
+        hoverPos.dx > 0 &&
+        !selectionMovingIsStarted &&
+        !selectionForZoomIsStarted &&
+        !movingIsStarted) {
       canvas.drawLine(
           Offset(0, hoverPos.dy),
           Offset(size.width, hoverPos.dy),
@@ -590,7 +675,8 @@ class TimeChartSettings extends TimeChartPropContainer {
           ..strokeWidth = 1);
   }
 
-  void drawSelectionResizeArea(Canvas canvas, double x, double height, double width, bool left) {
+  void drawSelectionResizeArea(
+      Canvas canvas, double x, double height, double width, bool left) {
     double step = 20;
     double lineWidth = 5;
     for (double y = -step; y < height; y += step) {
@@ -646,7 +732,8 @@ class TimeChartSettings extends TimeChartPropContainer {
   double btnHeight = 40;
   double btnWidth = 300;
 
-  void drawEditButton(Canvas canvas, int index, String text, Color color, bool active) {
+  void drawEditButton(
+      Canvas canvas, int index, String text, Color color, bool active) {
     double borderWidth = 2;
     double bottomPadding = 1;
     canvas.drawRect(
@@ -660,7 +747,8 @@ class TimeChartSettings extends TimeChartPropContainer {
       double indY = btnHeight * index;
 
       double indRightMargin = 6;
-      var indRect = Rect.fromLTWH(btnWidth - indWidth - indRightMargin, indY + btnHeight / 2 - indHeight / 2, indWidth, indHeight);
+      var indRect = Rect.fromLTWH(btnWidth - indWidth - indRightMargin,
+          indY + btnHeight / 2 - indHeight / 2, indWidth, indHeight);
       Path p = Path();
       p.addPolygon([
         Offset(indRect.left, indRect.top),
@@ -676,13 +764,16 @@ class TimeChartSettings extends TimeChartPropContainer {
             ..strokeWidth = borderWidth);
     }
     canvas.drawLine(
-        Offset(0, btnHeight * index + btnHeight - borderWidth / 2 - bottomPadding),
-        Offset(btnWidth, btnHeight * index + btnHeight - borderWidth / 2 - bottomPadding),
+        Offset(
+            0, btnHeight * index + btnHeight - borderWidth / 2 - bottomPadding),
+        Offset(btnWidth,
+            btnHeight * index + btnHeight - borderWidth / 2 - bottomPadding),
         Paint()
           ..color = color
           ..style = PaintingStyle.stroke
           ..strokeWidth = borderWidth);
-    drawText(canvas, 5, index * btnHeight, btnWidth - 10, btnHeight, "select [" + text + "]", 14, color, TextAlign.left, true);
+    drawText(canvas, 5, index * btnHeight, btnWidth - 10, btnHeight,
+        "select [" + text + "]", 14, color, TextAlign.left, true);
   }
 
   double legendItemWidth = 250;
@@ -690,12 +781,16 @@ class TimeChartSettings extends TimeChartPropContainer {
   double legendItemXOffset = 0;
   double legendItemYOffset = 0;
 
-  void drawLegendItem(Canvas canvas, int index, String text, Color color, int totalCount, bool oneVScale) {
+  void drawLegendItem(Canvas canvas, int index, String text, Color color,
+      int totalCount, bool oneVScale) {
     //double borderWidth = 0;
     double bottomPadding = 0;
-    double fullWidth = legendItemWidth + ((totalCount - index - 1) * TimeChartVerticalScale.defaultVerticalScaleWidthInline);
+    double fullWidth = legendItemWidth +
+        ((totalCount - index - 1) *
+            TimeChartVerticalScale.defaultVerticalScaleWidthInline);
 
-    double posOffset = index * TimeChartVerticalScale.defaultVerticalScaleWidthInline;
+    double posOffset =
+        index * TimeChartVerticalScale.defaultVerticalScaleWidthInline;
     if (oneVScale) {
       posOffset = TimeChartVerticalScale.defaultVerticalScaleWidthInline;
       fullWidth = legendItemWidth;
@@ -703,7 +798,11 @@ class TimeChartSettings extends TimeChartPropContainer {
 
     canvas.drawRRect(
         RRect.fromRectAndRadius(
-            Rect.fromLTWH(legendItemXOffset + posOffset, index * legendItemHeight + legendItemYOffset, fullWidth, legendItemHeight - bottomPadding),
+            Rect.fromLTWH(
+                legendItemXOffset + posOffset,
+                index * legendItemHeight + legendItemYOffset,
+                fullWidth,
+                legendItemHeight - bottomPadding),
             const Radius.circular(0)),
         Paint()
           ..color = color.withOpacity(0.3)
@@ -714,11 +813,30 @@ class TimeChartSettings extends TimeChartPropContainer {
           ..color = color
           ..style = PaintingStyle.stroke);*/
 
-    drawText(canvas, legendItemXOffset + 5 + posOffset, index * legendItemHeight + legendItemYOffset, fullWidth - 10, legendItemHeight - bottomPadding, text,
-        14, color, TextAlign.right, true);
+    drawText(
+        canvas,
+        legendItemXOffset + 5 + posOffset,
+        index * legendItemHeight + legendItemYOffset,
+        fullWidth - 10,
+        legendItemHeight - bottomPadding,
+        text,
+        14,
+        color,
+        TextAlign.right,
+        true);
   }
 
-  void drawText(Canvas canvas, double x, double y, double width, double height, String text, double size, Color color, TextAlign align, bool verticalCenter) {
+  void drawText(
+      Canvas canvas,
+      double x,
+      double y,
+      double width,
+      double height,
+      String text,
+      double size,
+      Color color,
+      TextAlign align,
+      bool verticalCenter) {
     var textSpan = TextSpan(
       text: text,
       style: TextStyle(
@@ -726,14 +844,19 @@ class TimeChartSettings extends TimeChartPropContainer {
         fontSize: size,
       ),
     );
-    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: align, ellipsis: "   ...");
+    final textPainter = TextPainter(
+        text: textSpan,
+        textDirection: TextDirection.ltr,
+        textAlign: align,
+        ellipsis: "   ...");
     textPainter.layout(
       minWidth: width,
       maxWidth: width,
     );
     //textPainter.paint(canvas, Offset(x, y));
     if (verticalCenter) {
-      textPainter.paint(canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
+      textPainter.paint(
+          canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
     } else {
       textPainter.paint(canvas, Offset(x, y));
     }
@@ -755,9 +878,15 @@ class TimeChartSettings extends TimeChartPropContainer {
     return result;
   }
 
-  factory TimeChartSettings.fromJson(Connection conn, Map<String, dynamic> json) {
+  factory TimeChartSettings.fromJson(
+      Connection conn, Map<String, dynamic> json) {
     print("loading settings ${json['areas']}");
-    var settings = TimeChartSettings(conn, json['areas'].map<TimeChartSettingsArea>((model) => TimeChartSettingsArea.fromJson(conn, model)).toList());
+    var settings = TimeChartSettings(
+        conn,
+        json['areas']
+            .map<TimeChartSettingsArea>(
+                (model) => TimeChartSettingsArea.fromJson(conn, model))
+            .toList());
     for (var propKey in json.keys) {
       if (propKey == "areas") {
         continue;
@@ -770,7 +899,8 @@ class TimeChartSettings extends TimeChartPropContainer {
   @override
   List<MapItemPropPage> propList() {
     //MapItemPropPage pageMain = MapItemPropPage("Chart Group", const Icon(Icons.domain), []);
-    MapItemPropPage pageDataItems = MapItemPropPage("Data Items", const Icon(Icons.data_usage), []);
+    MapItemPropPage pageDataItems =
+        MapItemPropPage("Data Items", const Icon(Icons.data_usage), []);
     pageDataItems.widget = ChartGroupDataItems(connection);
     {
       List<MapItemPropItem> props = [];
@@ -801,12 +931,12 @@ class TimeChartSettings extends TimeChartPropContainer {
     }
 
     if (areaIndex >= 0) {
-      areas[areaIndex].series
-          .add(TimeChartSettingsSeries(connection, dataItemName, [], colorByIndex(areas[areaIndex].series.length)));
+      areas[areaIndex].series.add(TimeChartSettingsSeries(connection,
+          dataItemName, [], colorByIndex(areas[areaIndex].series.length)));
     } else {
-      areas.add(TimeChartSettingsArea(
-          connection, <TimeChartSettingsSeries>[TimeChartSettingsSeries(connection, dataItemName, [], colorByIndex(0))]));
-
+      areas.add(TimeChartSettingsArea(connection, <TimeChartSettingsSeries>[
+        TimeChartSettingsSeries(connection, dataItemName, [], colorByIndex(0))
+      ]));
     }
   }
 

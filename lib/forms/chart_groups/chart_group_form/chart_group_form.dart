@@ -10,7 +10,7 @@ import 'package:gazer_client/core/navigation/bottom_navigator.dart';
 import 'package:gazer_client/core/navigation/left_navigator.dart';
 import 'package:gazer_client/core/navigation/navigation.dart';
 import 'package:gazer_client/core/navigation/route_generator.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item.dart';
+import 'package:gazer_client/forms/maps/map_form/main/map_item.dart';
 import 'package:gazer_client/forms/maps/map_item_properties_form/map_item_properties_widget.dart';
 import 'package:gazer_client/forms/utilities/lookup_form/lookup_form.dart';
 import 'package:gazer_client/widgets/error_widget/error_block.dart';
@@ -97,7 +97,9 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
 
     try {
       for (int offset = 0; offset < 100 * 1000000; offset += step) {
-        var value = await Repository().client(widget.arg.connection).fetch<ResGetRequest, ResGetResponse>(
+        var value = await Repository()
+            .client(widget.arg.connection)
+            .fetch<ResGetRequest, ResGetResponse>(
               'resource_get',
               ResGetRequest(resourceId, offset, step),
               (Map<String, dynamic> json) => ResGetResponse.fromJson(json),
@@ -119,10 +121,10 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
       var jsonString = utf8.decode(result);
       var jsonObject = jsonDecode(jsonString);
       setState(() {
-        _settings = TimeChartSettings.fromJson(widget.arg.connection, jsonObject);
+        _settings =
+            TimeChartSettings.fromJson(widget.arg.connection, jsonObject);
       });
-    } catch (e) {
-    }
+    } catch (e) {}
 
     setState(() {
       lastLoadedResource = resourceId;
@@ -155,9 +157,12 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
         if (offset + currentStep > listOfBytes.length) {
           currentStep = listOfBytes.length - offset;
         }
-        await Repository()
-            .client(widget.arg.connection)
-            .resSet(widget.arg.id, "", offset, Uint8List.fromList(listOfBytes.sublist(offset, offset + currentStep)));
+        await Repository().client(widget.arg.connection).resSet(
+            widget.arg.id,
+            "",
+            offset,
+            Uint8List.fromList(
+                listOfBytes.sublist(offset, offset + currentStep)));
 
         if (listOfBytes.isNotEmpty) {
           setState(() {
@@ -174,7 +179,8 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
         _settings.setEditing(false);
       });
     } else {
-      _showErrorMessage("Error", "Can not save the chart group. Please try again.");
+      _showErrorMessage(
+          "Error", "Can not save the chart group. Please try again.");
     }
 
     saving = false;
@@ -247,11 +253,15 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
     return LayoutBuilder(
       builder: (context, constraints) {
         List<Widget> buttons = [];
-        buttons.add(buildActionButtonFull(context, Icons.keyboard_tab, "Move Forward", () {
+        buttons.add(buildActionButtonFull(
+            context, Icons.keyboard_tab, "Move Forward", () {
           setState(() {
             _settings.horScale.setFixedHorScale(false);
           });
-        }, false, imageColor: _settings.horScale.fixedHorScale ? Colors.white38 : DesignColors.fore()));
+        }, false,
+            imageColor: _settings.horScale.fixedHorScale
+                ? Colors.white38
+                : DesignColors.fore()));
         if (!fullScreen) {
           /*buttons.add(buildActionButtonFull(context, Icons.adjust, "Auto Zoom", () {
             map.autoZoomToggle();
@@ -277,24 +287,34 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
         var leftButtons = buttons.getRange(0, countOfButtons).toList();
         List<Widget> rightButtons = [];
         if (_settings.editing()) {
-          rightButtons.add(buildActionButton(context, Icons.add, "Add item", () {
-            Navigator.pushNamed(context, "/lookup", arguments: LookupFormArgument(Repository().lastSelectedConnection, "Select source item", "data-item"))
+          rightButtons
+              .add(buildActionButton(context, Icons.add, "Add item", () {
+            Navigator.pushNamed(context, "/lookup",
+                    arguments: LookupFormArgument(
+                        Repository().lastSelectedConnection,
+                        "Select source item",
+                        "data-item"))
                 .then((value) {
               if (value != null) {
                 var res = value as LookupFormResult;
                 setState(() {
-                  _settings.areas
-                      .add(TimeChartSettingsArea(widget.arg.connection, <TimeChartSettingsSeries>[TimeChartSettingsSeries(widget.arg.connection, res.field("name"), [], Colors.blueAccent)]));
+                  _settings.areas.add(TimeChartSettingsArea(
+                      widget.arg.connection, <TimeChartSettingsSeries>[
+                    TimeChartSettingsSeries(widget.arg.connection,
+                        res.field("name"), [], Colors.blueAccent)
+                  ]));
                 });
               }
             });
           }));
-          rightButtons.add(buildActionButton(context, Icons.delete_forever, "Remove item", () {
+          rightButtons.add(buildActionButton(
+              context, Icons.delete_forever, "Remove item", () {
             setState(() {
               _settings.removeSelected();
             });
           }));
-          rightButtons.add(buildActionButtonFull(context, Icons.more_horiz, "Item Properties", () {
+          rightButtons.add(buildActionButtonFull(
+              context, Icons.more_horiz, "Item Properties", () {
             /*var item = map.currentItem();
             if (item != null) {
               Navigator.of(context)
@@ -311,7 +331,8 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
         leftButtons.add(Expanded(child: Container()));
         leftButtons.addAll(rightButtons);
         if (fullScreen) {
-          leftButtons.add(buildActionButtonFull(context, Icons.fullscreen_exit, "Exit Full Screen", () {
+          leftButtons.add(buildActionButtonFull(
+              context, Icons.fullscreen_exit, "Exit Full Screen", () {
             setState(() {
               fullScreen = false;
               //map.fullscreen = false;
@@ -405,16 +426,18 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
                     onScaleEnd: (details) {
                       map.stopMoving(details.pointerCount);
                     },*/
-                    child: TimeChart(widget.arg.connection, "u2/Time", _settings, () {
-                      setState(() {
-                      });
+                    child: TimeChart(
+                        widget.arg.connection, "u2/Time", _settings, () {
+                      setState(() {});
                     }),
                   ),
                 ),
               ),
               Container(
                 constraints: const BoxConstraints(maxHeight: 55),
-                child: fullScreen ? Opacity(opacity: 0.2, child: buildMapToolbar(context)) : Container(),
+                child: fullScreen
+                    ? Opacity(opacity: 0.2, child: buildMapToolbar(context))
+                    : Container(),
               ),
             ],
           ),
@@ -452,85 +475,86 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
 
         return Scaffold(
           appBar: TitleBar(
-            widget.arg.connection, nodeName() + " - Chart Group - " + nameOfChartGroup,
+            widget.arg.connection,
+            nodeName() + " - Chart Group - " + nameOfChartGroup,
             actions: <Widget>[
               !fullScreen
-                  ? buildActionButton(context, Icons.fullscreen, "Full Screen", () {
-                setState(() {
-                  fullScreen = true;
-                  //map.fullscreen = true;
-                  //map.entire();
-                });
-              })
+                  ? buildActionButton(context, Icons.fullscreen, "Full Screen",
+                      () {
+                      setState(() {
+                        fullScreen = true;
+                        //map.fullscreen = true;
+                        //map.entire();
+                      });
+                    })
                   : Container(),
               !_settings.editing()
                   ? buildActionButton(context, Icons.edit, "Edit", () {
-                //saveOriginal();
-                setState(() {
-                  _settings.setEditing(true);
-                });
-              })
+                      //saveOriginal();
+                      setState(() {
+                        _settings.setEditing(true);
+                      });
+                    })
                   : Container(),
               (_settings.editing() && !saving)
                   ? Padding(
-                padding: const EdgeInsets.all(10),
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    load();
-                    setState(() {
-                      _settings.setEditing(false);
-                    });
-                  },
-                  icon: const Icon(Icons.cancel),
-                  label: const Text("Reject"),
-                ),
-              )
+                      padding: const EdgeInsets.all(10),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          load();
+                          setState(() {
+                            _settings.setEditing(false);
+                          });
+                        },
+                        icon: const Icon(Icons.cancel),
+                        label: const Text("Reject"),
+                      ),
+                    )
                   : Container(),
               (_settings.editing() && !saving)
                   ? Padding(
-                padding: const EdgeInsets.all(10),
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    save();
-                  },
-                  icon: const Icon(Icons.save),
-                  label: const Text("Save"),
-                ),
-              )
+                      padding: const EdgeInsets.all(10),
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          save();
+                        },
+                        icon: const Icon(Icons.save),
+                        label: const Text("Save"),
+                      ),
+                    )
                   : Container(),
               (saving)
                   ? Padding(
-                padding: const EdgeInsets.all(10),
-                child: SizedBox(
-                  width: 100,
-                  height: 20,
-                  child: LinearProgressIndicator(
-                    value: savingProgress,
-                  ),
-                ),
-              )
+                      padding: const EdgeInsets.all(10),
+                      child: SizedBox(
+                        width: 100,
+                        height: 20,
+                        child: LinearProgressIndicator(
+                          value: savingProgress,
+                        ),
+                      ),
+                    )
                   : Container(),
               buildHomeButton(context),
             ],
           ),
-
           body: Container(
             color: DesignColors.mainBackgroundColor,
-            child:Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    LeftNavigator(showLeft),
-                    buildContent(context),
-                  ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      LeftNavigator(showLeft),
+                      buildContent(context),
+                    ],
+                  ),
                 ),
-              ),
-              BottomNavigator(showBottom),
-            ],
-          ),
+                BottomNavigator(showBottom),
+              ],
+            ),
           ),
         );
       },

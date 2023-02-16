@@ -1,18 +1,18 @@
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/forms/maps/map_form/map_items/map_item_unit_table_01.dart';
+import 'package:gazer_client/forms/maps/map_form/map_items/map_item_group/map_item_unit_table_01.dart';
 import 'package:gazer_client/forms/maps/map_item_add_form/map_item_add_form.dart';
 
 import 'map_item.dart';
-import 'map_items/map_item_button.dart';
-import 'map_items/map_item_chart.dart';
-import 'map_items/map_item_error_indicator.dart';
-import 'map_items/map_item_gauge_round.dart';
-import 'map_items/map_item_item.dart';
-import 'map_items/map_item_map.dart';
-import 'map_items/map_item_switch.dart';
-import 'map_items/map_item_text.dart';
-import 'map_items/map_item_text_02.dart';
-import 'map_items/maps_item_runlang.dart';
+import '../map_items/map_item_control/map_item_button.dart';
+import '../map_items/map_item_chart.dart';
+import '../map_items/map_item_error_indicator.dart';
+import '../map_items/map_item_single/gauge/map_item_gauge_round.dart';
+import '../map_items/map_item_item.dart';
+import '../map_items/map_item_map.dart';
+import '../map_items/map_item_switch.dart';
+import '../map_items/map_item_single/text/map_item_text.dart';
+import '../map_items/map_item_single/text/map_item_text_02.dart';
+import '../map_items/maps_item_runlang.dart';
 
 class MapItemsLibrary {
   static final MapItemsLibrary _singleton = MapItemsLibrary._internal();

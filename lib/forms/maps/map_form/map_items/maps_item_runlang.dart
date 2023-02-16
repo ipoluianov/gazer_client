@@ -10,7 +10,7 @@ import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
 import '../../../../runlang/program.dart';
-import '../map_item.dart';
+import '../main/map_item.dart';
 
 class MapItemRunlang extends MapItem {
   static const String sType = "runlang.01";

@@ -13,7 +13,7 @@ import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/chart_groups/chart_group_form/chart_group_data_items.dart';
 import 'package:gazer_client/widgets/confirmation_dialog/confirmation_dialog.dart';
 
-import '../../../runlang/program.dart';
+import '../../../../runlang/program.dart';
 import 'map_item_library.dart';
 
 abstract class MapItem extends IPropContainer {

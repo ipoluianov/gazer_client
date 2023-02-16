@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/tools/hex_colors.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item.dart';
+import 'package:gazer_client/forms/maps/map_form/main/map_item.dart';
 
 class TimeChartPropContainer extends IPropContainer {
   late Map<String, String> props;

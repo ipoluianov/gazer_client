@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/forms/utilities/lookup_form/lookup_form.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item.dart';
+import 'package:gazer_client/forms/maps/map_form/main/map_item.dart';
 
 import '../../../core/navigation/route_generator.dart';
 
@@ -13,7 +13,8 @@ class MapItemPropImage extends StatefulWidget {
   final IPropContainer item;
   final MapItemPropItem propItem;
 
-  const MapItemPropImage(this.item, this.propItem, {Key? key}) : super(key: key);
+  const MapItemPropImage(this.item, this.propItem, {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -41,7 +42,9 @@ class MapItemPropImageSt extends State<MapItemPropImage> {
         SizedBox(
           width: 100,
           height: 64,
-          child: imageBytes.isNotEmpty ? Image.memory(imageBytes, fit: BoxFit.contain) : Container(color: Colors.black54),
+          child: imageBytes.isNotEmpty
+              ? Image.memory(imageBytes, fit: BoxFit.contain)
+              : Container(color: Colors.black54),
         ),
         Expanded(child: Container()),
         OutlinedButton(

@@ -5,7 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/chart_groups/chart_group_form/chart_group_data_items.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item.dart';
+import 'package:gazer_client/forms/maps/map_form/main/map_item.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_prop_container.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_vertical_scale.dart';
 
@@ -52,21 +52,14 @@ class TimeTableSettings extends TimeChartPropContainer {
           ..color = Colors.black38);
 
     int startVisibleIndex = scrollOffset ~/ itemHeight;
-    for (int i = startVisibleIndex; i < startVisibleIndex + currentHeight / itemHeight; i++) {
+    for (int i = startVisibleIndex;
+        i < startVisibleIndex + currentHeight / itemHeight;
+        i++) {
       if (i < 0 || i >= currentItems.length) {
         continue;
       }
-      drawText(
-          canvas,
-          0,
-          i * itemHeight,
-          300,
-          itemHeight,
-          currentItems[i],
-          12,
-          Colors.white,
-          TextAlign.start,
-          false);
+      drawText(canvas, 0, i * itemHeight, 300, itemHeight, currentItems[i], 12,
+          Colors.white, TextAlign.start, false);
     }
 
     canvas.drawRect(
@@ -77,7 +70,17 @@ class TimeTableSettings extends TimeChartPropContainer {
           ..strokeWidth = 1);
   }
 
-  void drawText(Canvas canvas, double x, double y, double width, double height, String text, double size, Color color, TextAlign align, bool verticalCenter) {
+  void drawText(
+      Canvas canvas,
+      double x,
+      double y,
+      double width,
+      double height,
+      String text,
+      double size,
+      Color color,
+      TextAlign align,
+      bool verticalCenter) {
     var textSpan = TextSpan(
       text: text,
       style: TextStyle(
@@ -85,14 +88,19 @@ class TimeTableSettings extends TimeChartPropContainer {
         fontSize: size,
       ),
     );
-    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr, textAlign: align, ellipsis: "   ...");
+    final textPainter = TextPainter(
+        text: textSpan,
+        textDirection: TextDirection.ltr,
+        textAlign: align,
+        ellipsis: "   ...");
     textPainter.layout(
       minWidth: width,
       maxWidth: width,
     );
     //textPainter.paint(canvas, Offset(x, y));
     if (verticalCenter) {
-      textPainter.paint(canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
+      textPainter.paint(
+          canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
     } else {
       textPainter.paint(canvas, Offset(x, y));
     }
@@ -107,7 +115,8 @@ class TimeTableSettings extends TimeChartPropContainer {
     return result;
   }
 
-  factory TimeTableSettings.fromJson(Connection conn, Map<String, dynamic> json) {
+  factory TimeTableSettings.fromJson(
+      Connection conn, Map<String, dynamic> json) {
     print("loading settings ${json['areas']}");
     var settings = TimeTableSettings(conn);
     for (var propKey in json.keys) {
@@ -122,7 +131,8 @@ class TimeTableSettings extends TimeChartPropContainer {
   @override
   List<MapItemPropPage> propList() {
     //MapItemPropPage pageMain = MapItemPropPage("Chart Group", const Icon(Icons.domain), []);
-    MapItemPropPage pageDataItems = MapItemPropPage("Data Items", const Icon(Icons.data_usage), []);
+    MapItemPropPage pageDataItems =
+        MapItemPropPage("Data Items", const Icon(Icons.data_usage), []);
     pageDataItems.widget = ChartGroupDataItems(connection);
     {
       List<MapItemPropItem> props = [];

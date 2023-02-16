@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/design.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item.dart';
+import 'package:gazer_client/forms/maps/map_form/main/map_item.dart';
 import 'package:gazer_client/forms/maps/map_item_properties_form/map_item_group_of_properties.dart';
 import 'package:gazer_client/core/navigation/route_generator.dart';
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/forms/utilities/lookup_form/lookup_form.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item.dart';
+import 'package:gazer_client/forms/maps/map_form/main/map_item.dart';
 import 'package:gazer_client/forms/maps/map_item_properties_form/styles.dart';
 
 import '../../../core/navigation/route_generator.dart';
@@ -11,7 +11,8 @@ class MapItemPropDataSource extends StatefulWidget {
   final IPropContainer item;
   final MapItemPropItem propItem;
 
-  const MapItemPropDataSource(this.item, this.propItem, {Key? key}) : super(key: key);
+  const MapItemPropDataSource(this.item, this.propItem, {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -49,7 +50,11 @@ class MapItemPropDataSourceSt extends State<MapItemPropDataSource> {
         ),
         OutlinedButton(
             onPressed: () {
-              Navigator.pushNamed(context, "/lookup", arguments: LookupFormArgument(Repository().lastSelectedConnection, "Select source item", "data-item"))
+              Navigator.pushNamed(context, "/lookup",
+                      arguments: LookupFormArgument(
+                          Repository().lastSelectedConnection,
+                          "Select source item",
+                          "data-item"))
                   .then((value) {
                 if (value != null) {
                   var res = value as LookupFormResult;

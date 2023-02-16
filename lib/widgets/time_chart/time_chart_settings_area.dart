@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/chart_groups/chart_group_form/chart_group_data_items.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item.dart';
+import 'package:gazer_client/forms/maps/map_form/main/map_item.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_horizontal_scale.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_prop_container.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_settings.dart';

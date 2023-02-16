@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:gazer_client/forms/maps/map_form/map_item.dart';
+import 'package:gazer_client/forms/maps/map_form/main/map_item.dart';
 import 'package:gazer_client/forms/maps/map_item_properties_form/styles.dart';
 
 class MapItemPropDouble extends StatefulWidget {
   final IPropContainer item;
   final MapItemPropItem propItem;
 
-  const MapItemPropDouble(this.item, this.propItem, {Key? key}) : super(key: key);
+  const MapItemPropDouble(this.item, this.propItem, {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
