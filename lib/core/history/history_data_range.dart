@@ -54,7 +54,7 @@ class HistoryDataRange {
     if (timeDiff < 1000) {
       return;
     }
-    print("timediff: $timeDiff");
+    // print("timediff: $timeDiff");
     lastRequestTime = DateTime.now();
 
     List<DataItemHistoryChartItemRequest> reqItems = [];

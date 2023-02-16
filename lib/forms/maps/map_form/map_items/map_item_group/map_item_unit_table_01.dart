@@ -104,7 +104,7 @@ class MapItemUnitTable01 extends MapItem {
         unitDisplayName,
         fontSizeScaled * 2,
         getColor("name_color"),
-        TextVAlign.middle,
+        TextVAlign.top,
         TextAlign.left);
     yOffset += textSize.height;
 
@@ -155,7 +155,7 @@ class MapItemUnitTable01 extends MapItem {
               itemName,
               fontSizeScaled,
               getColor("name_color"),
-              TextVAlign.middle,
+              TextVAlign.top,
               TextAlign.left);
 
           drawValueAndUOM(

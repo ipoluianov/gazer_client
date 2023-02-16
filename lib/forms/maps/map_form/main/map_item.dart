@@ -677,7 +677,7 @@ abstract class MapItem extends IPropContainer {
       minWidth: width,
       maxWidth: width,
     );
-    double yOffset = 0;
+    double yOffset = y;
     if (vAlign == TextVAlign.middle) {
       yOffset = y + (height / 2) - (textPainter.height / 2);
     }
