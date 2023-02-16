@@ -18,6 +18,10 @@ fn init() {
 fn draw() {
 	dsPropValue = getProp("dataitem")
 	itemVal = itemValue(dsPropValue)
+	itemDT = itemDT(dsPropValue)
+	itemDTStr = run.dtFormat(itemDT, "yyyy-MM-dd HH:mm:ss")
+	text = run.concat(itemVal, "_")
+	text = run.concat(text, itemDTStr)
 	itemValDouble = run.double(itemVal)
 	min = getPropDouble("min")
 	max = getPropDouble("max")
@@ -88,5 +92,5 @@ fn draw() {
 	
 	drawArc(padding, padding, rw, rh, colorBorder, borderWidth, 0.0, 6.2831853)
 	drawArc(padding, padding, rw, rh, colorMain, mainWidth, start, stop)
-	drawText(itemVal, fontSize, colorBorder)
+	drawText(text, fontSize, colorBorder)
 }

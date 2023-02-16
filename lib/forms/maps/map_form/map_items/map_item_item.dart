@@ -1,11 +1,9 @@
-import 'dart:convert';
-import 'dart:math';
-import 'dart:typed_data';
 import 'dart:ui' as dart_ui;
 
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/tools/hex_colors.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
+import 'package:intl/intl.dart' as international;
 
 import '../../../../runlang/program.dart';
 import '../map_item.dart';
@@ -29,6 +27,10 @@ class MapItemItem extends MapItem {
     program_.addFunction("fillRRect", fnFillRRect);
     program_.addFunction("drawArc", fnDrawArc);
     program_.addFunction("itemValue", fnItemValue);
+    program_.addFunction("itemUOM", fnItemUOM);
+    program_.addFunction("run.dtFormat", fnDTFormat);
+    program_.addFunction("run.concat", fnConcat);
+    program_.addFunction("itemDT", fnItemDT);
     program_.addFunction("zoom", fnZoom);
     program_.addFunction("regProp", fnRegProp);
     program_.addFunction("getProp", fnGetProp);
@@ -163,6 +165,43 @@ class MapItemItem extends MapItem {
 
     var itemVal = itemValue(args[0]);
     return [itemVal.value];
+  }
+
+  List<dynamic> fnItemUOM(List<dynamic> args) {
+    if (args.length != 1 || args[0] is! String) {
+      throw "wrong argument";
+    }
+
+    var itemVal = itemValue(args[0]);
+    return [itemVal.uom];
+  }
+
+  List<dynamic> fnConcat(List<dynamic> args) {
+    if (args.length != 2 || args[0] is! String || args[1] is! String) {
+      throw "wrong argument";
+    }
+
+    var result = args[0] + args[1];
+    return [result];
+  }
+
+  List<dynamic> fnItemDT(List<dynamic> args) {
+    if (args.length != 1 || args[0] is! String) {
+      throw "wrong argument";
+    }
+    var itemVal = itemValue(args[0]);
+    return [itemVal.dt];
+  }
+
+  List<dynamic> fnDTFormat(List<dynamic> args) {
+    if (args.length != 2 || args[0] is! int || args[1] is! String) {
+      throw "wrong argument";
+    }
+    // "yyyy-MM-dd HH:mm:ss"
+    international.DateFormat timeFormat = international.DateFormat(args[1]);
+    DateTime dt = DateTime.fromMicrosecondsSinceEpoch(args[0]);
+    var dtAsString = timeFormat.format(dt);
+    return [dtAsString];
   }
 
   List<dynamic> fnZoom(List<dynamic> args) {

@@ -1,0 +1,49 @@
+run.dtFormat(int, str) str
+
+run.strLen(str) int
+run.strLimit(str, int) str
+run.strLower(str) str
+run.strUpper(str) str
+run.strContains(str) int
+run.strHasPrefix(str, str) int
+run.strHasSuffix(str, str) int
+run.strIndex(str, str) int
+run.strLastIndex(str, str) int
+run.strReplace(str, str, str) str
+
+run.abs(double) double
+run.ceil(double) double
+run.sin(double) double
+run.cos(double) double
+run.tan(double) double
+run.log(double) double
+run.log10(double) double
+run.log2(double) double
+run.pow(double, double) double
+run.round(double, int)
+run.pi() double
+run.e() double
+
+canvas.save()
+canvas.restore()
+canvas.pathAddPoint(string path, double x, double y) string
+canvas.drawPath(string path, string color, double strokeWidth)
+canvas.fillPath(string path, string color)
+canvas.clipPath(string path)
+canvas.clipRect(double x, double y, double w, double h)
+canvas.clipRRect(double x, double y, double w, double h, double radius)
+canvas.drawImage(double x, double y, double w, double h, string imgContent, string fit)
+canvas.drawRect(double x, double y, double w, double h, string color, double strokeWidth)
+canvas.drawRRect(double x, double y, double w, double h, double radius, string color, double strokeWidth)
+canvas.fillRect(double x, double y, double w, double h, string color)
+canvas.fillRRect(double x, double y, double w, double h, double radius, string color)
+canvas.drawLine(double x1, double y1, double x2, double x2, string color, double strokeWidth)
+canvas.drawArc(double x, double y, double w, double h, double start, double stop, string color, double strokeWidth)
+canvas.fillArc(double x, double y, double w, double h, double start, double stop, string color)
+canvas.drawText(double x, double y, double w, double h, string text, string align, double fontFamily, double fontSize)
+canvas.translate(double dx, double dy)
+
+itemName() string
+itemValue() string
+itemUOM() string
+itemDT() string

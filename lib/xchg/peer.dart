@@ -96,31 +96,36 @@ class Peer {
     copyBytes(getMessagesRequest, 16, localAddressBS);
 
     Uint8List res = Uint8List(0);
-    try {
+    /*try {
       res = await httpCall(host, "r", getMessagesRequest, 20000);
     } catch (err) {
       print("ex: $err");
-    }
-    if (res.length >= 8) {
-      lastReceivedMessageId = res.buffer.asUint64List(0)[0];
-      int offset = 8;
-      while (offset < res.length) {
-        if (offset + 128 < res.length) {
-          var tempBuf = res.sublist(offset);
-          int frameLen = tempBuf.buffer.asUint32List(0)[0];
-          if (offset + frameLen <= res.length) {
-            Uint8List frame = res.sublist(offset, offset + frameLen);
-            processFrame(null, host, frame);
+    }*/
+
+    httpCall(host, "r", getMessagesRequest, 20000).then((res) {
+      if (res.length >= 8) {
+        lastReceivedMessageId = res.buffer.asUint64List(0)[0];
+        int offset = 8;
+        while (offset < res.length) {
+          if (offset + 128 < res.length) {
+            var tempBuf = res.sublist(offset);
+            int frameLen = tempBuf.buffer.asUint32List(0)[0];
+            if (offset + frameLen <= res.length) {
+              Uint8List frame = res.sublist(offset, offset + frameLen);
+              processFrame(null, host, frame);
+            } else {
+              break;
+            }
+            offset += frameLen;
           } else {
             break;
           }
-          offset += frameLen;
-        } else {
-          break;
         }
       }
-    }
-    requestingFromInternet = false;
+      requestingFromInternet = false;
+    }).catchError((err) {
+      requestingFromInternet = false;
+    });
   }
 
   bool updatingNetwork = false;

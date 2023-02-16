@@ -45,20 +45,32 @@ class Program {
   void addLine(String line) {
     Line l = Line();
     String currentLexem = "";
+    bool inScopes = false;
     for (int i = 0; i < line.length; i++) {
-      if (line[i] == " " ||
-          line[i] == "\t" ||
-          line[i] == "(" ||
-          line[i] == ")" ||
-          line[i] == ",") {
-        if (currentLexem.isNotEmpty) {
-          l.lexems.add(currentLexem);
-          currentLexem = "";
+      if (line[i] == "\"") {
+        if (inScopes) {
+          inScopes = false;
+        } else {
+          inScopes = true;
         }
-        continue;
+      }
+
+      if (!inScopes) {
+        if (line[i] == " " ||
+            line[i] == "\t" ||
+            line[i] == "(" ||
+            line[i] == ")" ||
+            line[i] == ",") {
+          if (currentLexem.isNotEmpty) {
+            l.lexems.add(currentLexem);
+            currentLexem = "";
+          }
+          continue;
+        }
       }
       currentLexem += line[i];
     }
+
     if (currentLexem.isNotEmpty) {
       l.lexems.add(currentLexem);
     }
