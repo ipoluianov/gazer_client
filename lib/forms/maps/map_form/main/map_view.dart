@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as dart_ui;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -488,7 +489,8 @@ class MapView {
   late Offset startMovingOffset;
   double multiTouchScaleOriginal = 1;
 
-  Offset lastHoverOffset = const Offset(0, 0);
+  //Offset lastHoverOffset = const Offset(0, 0);
+  PointerDeviceKind lastDeviceType = PointerDeviceKind.unknown;
 
   void startMoving(int pointerCount, Offset offsetDoNotUse) {
     if (lastTapOffset != null) {

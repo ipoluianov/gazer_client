@@ -434,7 +434,7 @@ class MapFormSt extends State<MapForm> {
                   },
                   onPointerHover: (event) {
                     //print("hover: ${event.localPosition}");
-                    map.lastHoverOffset = event.localPosition;
+                    //map.lastHoverOffset = event.localPosition;
                     map.onHover(event.localPosition);
                     //map.lastTapOffset = event.localPosition;
                     //map.setTargetDisplayOffset(event.localPosition);
@@ -442,16 +442,32 @@ class MapFormSt extends State<MapForm> {
                   child: GestureDetector(
                     onHorizontalDragStart: (DragStartDetails ev) {
                       print(
-                          "GestureDetector::onHorizontalDragStart ${ev.globalPosition}");
-                      map.startMoving(1, ev.globalPosition);
+                          "GestureDetector::onHorizontalDragStart ${ev.kind} ${ev.globalPosition}");
+                      if (ev.kind != null) {
+                        map.lastDeviceType = ev.kind!;
+                      }
+                      if (ev.kind == PointerDeviceKind.mouse) {
+                        map.startMoving(1, ev.localPosition);
+                      }
+                      if (ev.kind == PointerDeviceKind.trackpad) {
+                        map.startMoving(1, ev.globalPosition);
+                      }
+
                       //map.startMoving(1, map.lastHoverOffset);
                       setState(() {});
                     },
                     onHorizontalDragUpdate: (DragUpdateDetails ev) {
                       print(
                           "GestureDetector::onHorizontalDragUpdate ${ev.globalPosition}");
+                      Offset offset = ev.localPosition;
+                      if (map.lastDeviceType == PointerDeviceKind.mouse) {
+                        offset = ev.localPosition;
+                      }
+                      if (map.lastDeviceType == PointerDeviceKind.trackpad) {
+                        offset = ev.globalPosition;
+                      }
                       setState(() {
-                        map.updateMoving(1, ev.globalPosition, 1);
+                        map.updateMoving(1, offset, 1);
                       });
                     },
                     onHorizontalDragEnd: (DragEndDetails ev) {
