@@ -5,8 +5,8 @@ import 'package:gazer_client/core/tools/hex_colors.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:intl/intl.dart' as international;
 
-import '../../../../runlang/program.dart';
-import '../main/map_item.dart';
+import '../../../../../runlang/program.dart';
+import '../../main/map_item.dart';
 
 class MapItemItem extends MapItem {
   static const String sType = "item";

@@ -8,7 +8,7 @@ import 'package:gazer_client/core/workspace/workspace.dart';
 
 import 'map_item.dart';
 import 'map_item_library.dart';
-import '../map_items/map_item_map.dart';
+import '../map_items/map_item_special/map_item_map.dart';
 
 class MapView {
   MapView(Connection connection) {

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
-import '../main/map_item.dart';
+import '../../main/map_item.dart';
 
 class MapItemSwitch extends MapItem {
   static const String sType = "switch.01";

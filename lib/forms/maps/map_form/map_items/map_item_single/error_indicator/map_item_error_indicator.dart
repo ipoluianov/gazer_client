@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
-import '../main/map_item.dart';
+import '../../../main/map_item.dart';
 
 class MapItemErrorIndicator extends MapItem {
   static const String sType = "error_indicator.01";
