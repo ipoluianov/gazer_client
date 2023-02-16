@@ -120,17 +120,6 @@ class MapItemChart extends MapItem {
       ..color = Colors.black54
       ..style = PaintingStyle.fill
     );*/
-    /*drawText(
-        canvas,
-        getDoubleZ("x") + z(30),
-        getDoubleZ("y"),
-        getDoubleZ("w"),
-        z(25),
-        getDataSource(),
-        z(14),
-        Colors.yellow,
-        TextAlign.left);*/
-
     drawPost(canvas, size);
   }
 
@@ -163,25 +152,6 @@ class MapItemChart extends MapItem {
 
   @override
   void setDefaultsForItem() {}
-
-  void drawText(Canvas canvas, double x, double y, double width, double height,
-      String text, double size, Color color, TextAlign align) {
-    var textSpan = TextSpan(
-      text: text,
-      style: TextStyle(
-        color: color,
-        fontSize: size,
-      ),
-    );
-    final textPainter = TextPainter(
-        text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
-    textPainter.layout(
-      minWidth: width,
-      maxWidth: width,
-    );
-    textPainter.paint(
-        canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
-  }
 
   @override
   List<MapItemPropGroup> propGroupsOfItem() {

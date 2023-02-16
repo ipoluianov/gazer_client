@@ -10,7 +10,7 @@ void main() {
       home: const MainForm(),
       theme: ThemeData(
         brightness: Brightness.dark,
-        primarySwatch: Colors.teal,
+        primarySwatch: Colors.blue,
         textTheme: const TextTheme(
           bodyText2: TextStyle(fontWeight: FontWeight.w300),
           bodyText1: TextStyle(fontWeight: FontWeight.w300),

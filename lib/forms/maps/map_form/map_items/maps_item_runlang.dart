@@ -61,6 +61,7 @@ fn draw(vv) {
         args[0].toString(),
         24,
         getColor("text_color"),
+        TextVAlign.middle,
         TextAlign.center);
     return [];
   }
@@ -85,30 +86,9 @@ fn draw(vv) {
           ex.toString(),
           24,
           getColor("text_color"),
+          TextVAlign.middle,
           TextAlign.center);
     }
-  }
-
-  void drawText(Canvas canvas, double x, double y, double width, double height,
-      String text, double size, Color color, TextAlign align) {
-    canvas.save();
-    var textSpan = TextSpan(
-      text: text,
-      style: TextStyle(
-        color: color,
-        fontSize: size,
-      ),
-    );
-    final textPainter = TextPainter(
-        text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
-    textPainter.layout(
-      minWidth: width,
-      maxWidth: width,
-    );
-    textPainter.paint(
-        canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
-    //textPainter.paint(canvas, Offset(x, y));
-    canvas.restore();
   }
 
   @override

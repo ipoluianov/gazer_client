@@ -79,6 +79,7 @@ class MapItemText extends MapItem {
           "replaced by a text element\r\nplease update your software\r\n[$replaceType]",
           z(14),
           Colors.red,
+          TextVAlign.middle,
           TextAlign.center);
     }
 
@@ -91,11 +92,12 @@ class MapItemText extends MapItem {
         text,
         lastValue,
         getColor("text_color"),
+        TextVAlign.middle,
         TextAlign.center);
     drawPost(canvas, size);
   }
 
-  void drawText(Canvas canvas, double x, double y, double width, double height,
+  /*void drawText(Canvas canvas, double x, double y, double width, double height,
       String text, double size, Color color, TextAlign align) {
     canvas.save();
     var textSpan = TextSpan(
@@ -115,7 +117,7 @@ class MapItemText extends MapItem {
         canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
     //textPainter.paint(canvas, Offset(x, y));
     canvas.restore();
-  }
+  }*/
 
   @override
   List<MapItemPropGroup> propGroupsOfItem() {

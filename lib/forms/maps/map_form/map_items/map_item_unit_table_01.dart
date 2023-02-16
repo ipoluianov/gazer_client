@@ -104,6 +104,7 @@ class MapItemUnitTable01 extends MapItem {
         unitDisplayName,
         fontSizeScaled * 2,
         getColor("name_color"),
+        TextVAlign.middle,
         TextAlign.left);
     yOffset += textSize.height;
 
@@ -154,6 +155,7 @@ class MapItemUnitTable01 extends MapItem {
               itemName,
               fontSizeScaled,
               getColor("name_color"),
+              TextVAlign.middle,
               TextAlign.left);
 
           drawValueAndUOM(
@@ -227,31 +229,6 @@ class MapItemUnitTable01 extends MapItem {
       maxWidth: width,
     );
     textPainter.paint(canvas, Offset(x, y));
-    return Size(textPainter.maxIntrinsicWidth, textPainter.height);
-  }
-
-  Size drawText(Canvas canvas, double x, double y, double width, double height,
-      String text, double size, Color color, TextAlign align) {
-    canvas.save();
-
-    //Size res = const Size(0, 0);
-    var textSpan = TextSpan(
-      text: text,
-      style: TextStyle(
-        color: color,
-        fontSize: size,
-        height: 1.2,
-      ),
-    );
-    final textPainter = TextPainter(
-        text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
-    textPainter.layout(
-      minWidth: width,
-      maxWidth: width,
-    );
-    textPainter.paint(canvas, Offset(x, y));
-    canvas.restore();
-
     return Size(textPainter.maxIntrinsicWidth, textPainter.height);
   }
 
