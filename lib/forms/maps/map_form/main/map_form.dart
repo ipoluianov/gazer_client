@@ -411,6 +411,7 @@ class MapFormSt extends State<MapForm> {
                 cursor: mapCursor(),
                 child: Listener(
                   onPointerDown: (PointerDownEvent ev) {
+                    print("Listener::onPointerDown");
                     FocusScope.of(context).requestFocus(_focusNode);
                     setState(() {
                       map.onPointerDown(ev.localPosition);
@@ -418,11 +419,14 @@ class MapFormSt extends State<MapForm> {
                   },
                   onPointerMove: (PointerMoveEvent ev) {},
                   onPointerUp: (PointerUpEvent ev) {
+                    print("Listener::onPointerUp");
+
                     setState(() {
                       map.onPointerUp(ev.localPosition);
                     });
                   },
                   onPointerSignal: (pointerSignal) {
+                    print("Listener::onPointerSignal");
                     if (pointerSignal is PointerScrollEvent) {
                       map.scroll(pointerSignal.scrollDelta,
                           pointerSignal.localPosition);
@@ -430,44 +434,60 @@ class MapFormSt extends State<MapForm> {
                   },
                   onPointerHover: (event) {
                     //print("hover: ${event.localPosition}");
+                    map.lastHoverOffset = event.localPosition;
                     map.onHover(event.localPosition);
+                    //map.lastTapOffset = event.localPosition;
+                    //map.setTargetDisplayOffset(event.localPosition);
                   },
                   child: GestureDetector(
                     onHorizontalDragStart: (DragStartDetails ev) {
-                      map.startMoving(1, ev.localPosition);
+                      print(
+                          "GestureDetector::onHorizontalDragStart ${ev.globalPosition}");
+                      map.startMoving(1, ev.globalPosition);
+                      //map.startMoving(1, map.lastHoverOffset);
                       setState(() {});
                     },
                     onHorizontalDragUpdate: (DragUpdateDetails ev) {
+                      print(
+                          "GestureDetector::onHorizontalDragUpdate ${ev.globalPosition}");
                       setState(() {
-                        map.updateMoving(1, ev.localPosition, 1);
+                        map.updateMoving(1, ev.globalPosition, 1);
                       });
                     },
                     onHorizontalDragEnd: (DragEndDetails ev) {
+                      print("GestureDetector::onHorizontalDragEnd");
                       setState(() {
                         map.stopMoving(1);
                       });
                     },
                     onTapDown: (details) {
+                      print("GestureDetector::onTapDown");
                       FocusScope.of(context).requestFocus(_focusNode);
                       setState(() {
                         map.tapDown(details.localPosition, context);
                       });
                     },
                     onTapUp: (details) {
+                      print("GestureDetector::onTapUp");
                       setState(() {
                         map.tapUp(details.localPosition, context);
                       });
                     },
                     onScaleStart: (details) {
+                      print("GestureDetector::onScaleStart");
                       FocusScope.of(context).requestFocus(_focusNode);
                       map.startMoving(
                           details.pointerCount, details.localFocalPoint);
                     },
                     onScaleUpdate: (details) {
+                      print("GestureDetector::onScaleUpdate");
+
                       map.updateMoving(details.pointerCount,
                           details.localFocalPoint, details.scale);
                     },
                     onScaleEnd: (details) {
+                      print("GestureDetector::onScaleEnd");
+
                       map.stopMoving(details.pointerCount);
                     },
                     child: DragTarget<DataItemsObject>(

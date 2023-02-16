@@ -488,9 +488,13 @@ class MapView {
   late Offset startMovingOffset;
   double multiTouchScaleOriginal = 1;
 
+  Offset lastHoverOffset = const Offset(0, 0);
+
   void startMoving(int pointerCount, Offset offsetDoNotUse) {
     if (lastTapOffset != null) {
-      //print("startMoving last: $lastTapOffset current: $offsetDoNotUse");
+      print("startMoving last: $lastTapOffset current: $offsetDoNotUse");
+    } else {
+      print("startMoving last: -------------- current: $offsetDoNotUse");
     }
     lastTapOffset ??= offsetDoNotUse;
     var item = itemUnderPoint(lastTapOffset!, true, false);
