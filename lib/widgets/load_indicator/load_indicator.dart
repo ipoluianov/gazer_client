@@ -5,18 +5,16 @@ class LoadIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-            Expanded(
-              child: LinearProgressIndicator(
-                minHeight: 8,
-              ),
-            ),
-        ],
-      ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const [
+        Expanded(
+          child: LinearProgressIndicator(
+            minHeight: 3,
+          ),
+        ),
+      ],
     );
   }
 }

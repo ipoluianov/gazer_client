@@ -173,6 +173,7 @@ class RemotePeer {
   }
 
   void resetSession() {
+    print("reseting session");
     sessionId = 0;
     sessionNonceCounter = 0;
     aesKey = Uint8List(0);
@@ -180,7 +181,7 @@ class RemotePeer {
   }
 
   Future<CallResult> call(String function, Uint8List data) async {
-    if (lastTransactionDT.difference(DateTime.now()).inSeconds > 30) {
+    if (DateTime.now().difference(lastTransactionDT).inSeconds > 30) {
       resetSession();
     }
     lastTransactionDT = DateTime.now();

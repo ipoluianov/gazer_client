@@ -22,9 +22,10 @@ XchgNetwork networkContainerLoadStaticDefault() {
 }
 
 Future<Uint8List> httpCall(String url) async {
+  throw "123";
   http.Response response = await http
       .get(Uri.parse(url))
-      .timeout(const Duration(milliseconds: 1000));
+      .timeout(const Duration(milliseconds: 1500));
   if (response.statusCode == 200) {
     var body = response.body.trim();
     return base64Decode(body);
@@ -45,7 +46,9 @@ Future<XchgNetwork> networkContainerLoadFromInternet() async {
       XchgNetwork n = networkContainerLoadDefault(resp);
       n.debugSource = initialPoint;
       networks.add(n);
-    } catch (ex) {}
+    } catch (ex) {
+      print("initial points error: $ex");
+    }
   }
 
   // No fresh networks - use default static network

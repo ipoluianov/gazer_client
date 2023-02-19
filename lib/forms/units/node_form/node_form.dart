@@ -131,7 +131,7 @@ class NodeFormSt extends State<NodeForm> {
 
   Widget buildContent(BuildContext context) {
     if (loading && !loaded) {
-      return Text("loading ...");
+      return const LoadIndicator();
     }
     if (items.isEmpty && loaded) {
       return buildEmptyUnitList(context);
