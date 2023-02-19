@@ -8,10 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
+import 'package:gazer_client/forms/maps/map_form/map_items/map_item_single/map_item_single.dart';
 
 import '../../../main/map_item.dart';
 
-class MapItemText extends MapItem {
+class MapItemText extends MapItemSingle {
   static const String sType = "text.01";
   static const String sName = "Text.01";
   @override
@@ -33,6 +34,7 @@ class MapItemText extends MapItem {
 
   @override
   void setDefaultsForItem() {
+    super.setDefaults();
     setDouble("w", 100);
     setDouble("h", 40);
   }
@@ -133,6 +135,7 @@ class MapItemText extends MapItem {
       props.add(MapItemPropItem("", "suffix", "Suffix", "text", ""));
       groups.add(MapItemPropGroup("Text", true, props));
     }
+    groups.addAll(super.propGroupsOfItem());
     return groups;
   }
 

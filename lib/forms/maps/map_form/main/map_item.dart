@@ -557,11 +557,11 @@ abstract class MapItem extends IPropContainer {
         pageMain.groups.add(MapItemPropGroup("Geometry", true, props));
       }
     } else {
-      {
+      /*{
         List<MapItemPropItem> props = [];
         props.add(MapItemPropItem("", "code", "Code", "multiline", ""));
         pageMain.groups.add(MapItemPropGroup("Code", true, props));
-      }
+      }*/
       /*{
         List<MapItemPropItem> props = [];
         props.add(MapItemPropItem(
