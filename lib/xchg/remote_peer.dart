@@ -37,6 +37,8 @@ class RemotePeer {
   Map<int, Transaction> outgoingTransactions = {};
   int nextTransactionId = 1;
 
+  DateTime lastTransactionDT = DateTime(0);
+
   RemotePeer(this.peer, this.remoteAddress, this.authData, this.keyPair) {
     nextTransactionId = (DateTime.now().microsecondsSinceEpoch % 1000000);
   }
@@ -170,7 +172,19 @@ class RemotePeer {
     }
   }
 
+  void resetSession() {
+    sessionId = 0;
+    sessionNonceCounter = 0;
+    aesKey = Uint8List(0);
+    nextTransactionId = 1;
+  }
+
   Future<CallResult> call(String function, Uint8List data) async {
+    if (lastTransactionDT.difference(DateTime.now()).inSeconds > 30) {
+      resetSession();
+    }
+    lastTransactionDT = DateTime.now();
+
     await checkInternetConnectionPoint();
 
     if (lanConnectionPoint1 == null) {
