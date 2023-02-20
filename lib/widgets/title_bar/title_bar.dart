@@ -29,19 +29,19 @@ class TitleBarSt extends State<TitleBar> {
   bool serviceInfoLoaded = false;
   late ServiceInfoResponse serviceInfo;
   void loadNodeInfo() {
-    /*Repository().client(widget.connection).serviceInfo().then((value) {
+    Repository().client(widget.connection).serviceInfo().then((value) {
       if (mounted) {
         setState(() {
           serviceInfo = value;
           serviceInfoLoaded = true;
         });
       }
-    });*/
+    }).catchError((err) {});
   }
 
   String nodeName() {
     if (serviceInfoLoaded) {
-      return serviceInfo.nodeName;
+      return widget.connection.address + " - " + serviceInfo.nodeName;
     }
     return widget.connection.address;
   }
@@ -54,10 +54,6 @@ class TitleBarSt extends State<TitleBar> {
 
   String addressLine() {
     return Repository().client(widget.connection).linkInformation();
-    if (widget.connection.transport == "https/cloud") {
-      return "Node " + widget.connection.address + " (via Cloud)";
-    }
-    return widget.connection.address + " (direct connection)";
   }
 
   List<Widget> getActions() {

@@ -45,11 +45,9 @@ class UnitEditFormSt extends State<UnitEditForm> {
     super.initState();
 
     if (widget.arg.unitId == "") {
-      loadUnitConfigMeta();
+      loadUnitConfigMeta(widget.arg.unitType);
     } else {
-      if (widget.arg.unitType != "") {
-        loadUnitConfig();
-      }
+      loadUnitConfig();
     }
   }
 
@@ -61,10 +59,10 @@ class UnitEditFormSt extends State<UnitEditForm> {
     super.dispose();
   }
 
-  void loadUnitConfigMeta() {
+  void loadUnitConfigMeta(unitType) {
     Repository()
         .client(widget.arg.connection)
-        .unitTypeConfigMeta(widget.arg.unitType)
+        .unitTypeConfigMeta(unitType)
         .then((value) {
       if (mounted) {
         setState(() {
@@ -81,8 +79,12 @@ class UnitEditFormSt extends State<UnitEditForm> {
         .client(widget.arg.connection)
         .unitsGetConfig(widget.arg.unitId)
         .then((value) {
-      name = value.unitName;
-      _txtNameController.text = value.unitName;
+      setState(() {
+        name = value.unitName;
+        _txtNameController.text = value.unitName;
+        unitConfig_ = value;
+      });
+      loadUnitConfigMeta(value.unitType);
     }).catchError((err) {
       print("unit config loading $err");
     });
