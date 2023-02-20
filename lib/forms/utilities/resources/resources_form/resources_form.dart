@@ -12,6 +12,7 @@ import 'package:gazer_client/widgets/error_widget/error_block.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
 import 'package:gazer_client/widgets/title_widget/title_widget.dart';
 
+import '../../../../widgets/load_indicator/load_indicator.dart';
 import 'resource_item_card.dart';
 
 class ResourcesForm extends StatefulWidget {
@@ -88,10 +89,12 @@ class ResourcesFormSt extends State<ResourcesForm> {
         });
       }
     }).catchError((e) {
-      setState(() {
-        loadingFolders = false;
-        errorMessageFolders = e.toString();
-      });
+      if (mounted) {
+        setState(() {
+          loadingFolders = false;
+          errorMessageFolders = e.toString();
+        });
+      }
     });
   }
 
@@ -254,13 +257,17 @@ class ResourcesFormSt extends State<ResourcesForm> {
         buttons.add(buildActionButtonFull(context, Icons.favorite, "Favorites",
             () {
           if (filter == ItemsFilter.favorite) {
-            setState(() {
-              filter = ItemsFilter.all;
-            });
+            if (mounted) {
+              setState(() {
+                filter = ItemsFilter.all;
+              });
+            }
           } else {
-            setState(() {
-              filter = ItemsFilter.favorite;
-            });
+            if (mounted) {
+              setState(() {
+                filter = ItemsFilter.favorite;
+              });
+            }
           }
         }, false,
             imageColor: (filter == ItemsFilter.favorite)
@@ -303,7 +310,7 @@ class ResourcesFormSt extends State<ResourcesForm> {
 
   Widget buildContent(BuildContext context) {
     if (loading()) {
-      return const Text("loading ...");
+      return const LoadIndicator();
     }
 
     if (errorMessage().isNotEmpty) {

@@ -8,24 +8,24 @@ import 'package:base32/base32.dart';
 
 Future<void> sendFrame(
     UdpAddress? address, List<Uint8List> frames, Peer peer) async {
-  if (address != null) {
-    requestUDP1(address, frames, peer);
-  } else {
-    if (peer.network != null) {
-      for (var frame in frames) {
-        var destAddr = base32
-            .encode(Uint8List.fromList(frame.sublist(70, 70 + 30)))
-            .toLowerCase();
-        for (var addr in peer.network!.getNodesAddressesByAddress(destAddr)) {
-          peer.httpCall(addr, "w", frame, 1000).catchError((ex) {
-            print("WRITE err = $ex");
-          }).catchError((err) {
-            print("sendFrame exception: $err");
-          });
-          //break;
+  try {
+    if (address != null) {
+      requestUDP1(address, frames, peer);
+    } else {
+      if (peer.network != null) {
+        for (var frame in frames) {
+          var destAddr = base32
+              .encode(Uint8List.fromList(frame.sublist(70, 70 + 30)))
+              .toLowerCase();
+          for (var addr in peer.network!.getNodesAddressesByAddress(destAddr)) {
+            await peer.httpCall(addr, "w", frame, 1000);
+            //break;
+          }
         }
       }
     }
+  } catch (ex) {
+    print("send Frame error");
   }
 }
 

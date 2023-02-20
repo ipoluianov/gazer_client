@@ -340,6 +340,7 @@ class RemotePeer {
     CallResult callResult =
         await executeTransaction(remoteConnectionPoint, sessionId, frame);
     if (callResult.isError()) {
+      print("call error: ${callResult.toString()}");
       return callResult;
     }
 
@@ -348,6 +349,7 @@ class RemotePeer {
         callResult.data = aesDecrypt(aesKey, callResult.data);
         callResult.data = unpack(callResult.data);
       } catch (ex) {
+        print("aes error: $ex");
         sessionId = 0;
         aesKey = Uint8List(0);
         return CallResult.createError(ex.toString());

@@ -170,12 +170,8 @@ class Peer {
         var req = http.MultipartRequest(
             'POST', Uri.parse("http://$routerHost/api/$function"));
         req.fields['d'] = base64Encode(frame);
-        http.Response response = await http.Response.fromStream(await client
-                .send(req)
-                .timeout(Duration(milliseconds: timeoutMs)))
-            .catchError((err) {
-          print("http err $err");
-        });
+        http.Response response = await http.Response.fromStream(
+            await client.send(req).timeout(Duration(milliseconds: timeoutMs)));
         if (response.statusCode == 200) {
           var resStr = base64Decode(response.body);
           return resStr;

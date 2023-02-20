@@ -120,17 +120,21 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
     try {
       var jsonString = utf8.decode(result);
       var jsonObject = jsonDecode(jsonString);
-      setState(() {
-        _settings =
-            TimeChartSettings.fromJson(widget.arg.connection, jsonObject);
-      });
+      if (mounted) {
+        setState(() {
+          _settings =
+              TimeChartSettings.fromJson(widget.arg.connection, jsonObject);
+        });
+      }
     } catch (e) {}
 
-    setState(() {
-      lastLoadedResource = resourceId;
-      loading = false;
-      loaded = true;
-    });
+    if (mounted) {
+      setState(() {
+        lastLoadedResource = resourceId;
+        loading = false;
+        loaded = true;
+      });
+    }
   }
 
   void load() {
