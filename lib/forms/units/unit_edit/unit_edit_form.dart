@@ -10,6 +10,7 @@ import 'package:gazer_client/forms/units/unit_edit/config/unit_config_object.dar
 import 'package:gazer_client/widgets/error_dialog/error_dialog.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
 
+import '../../../core/design.dart';
 import '../../../core/navigation/route_generator.dart';
 
 class UnitEditForm extends StatefulWidget {
@@ -228,32 +229,35 @@ class UnitEditFormSt extends State<UnitEditForm> {
             ),
           ],
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  LeftNavigator(showLeft),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      child: Scrollbar(
-                        thumbVisibility: true,
-                        controller: _scrollController1,
-                        child: SingleChildScrollView(
+        body: Container(
+          color: DesignColors.mainBackgroundColor,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    LeftNavigator(showLeft),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        child: Scrollbar(
+                          thumbVisibility: true,
                           controller: _scrollController1,
-                          child: buildConfigWidget(),
+                          child: SingleChildScrollView(
+                            controller: _scrollController1,
+                            child: buildConfigWidget(),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            BottomNavigator(showBottom),
-          ],
+              BottomNavigator(showBottom),
+            ],
+          ),
         ),
       );
     });

@@ -189,11 +189,15 @@ class UnitAddFormSt extends State<UnitAddForm> {
     );
   }
 
+  String getCurrentTitleKey() {
+    return "units_new_";
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        bool narrow = constraints.maxWidth < 600;
+        bool narrow = constraints.maxWidth < constraints.maxHeight;
         bool showLeft = !narrow;
         bool showBottom = narrow;
 
@@ -201,6 +205,7 @@ class UnitAddFormSt extends State<UnitAddForm> {
           appBar: TitleBar(
             widget.arg.connection,
             "Add Unit",
+            key: Key(getCurrentTitleKey()),
             actions: <Widget>[
               buildHomeButton(context),
             ],

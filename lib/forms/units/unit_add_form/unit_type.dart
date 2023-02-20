@@ -9,7 +9,8 @@ class UnitType extends StatefulWidget {
   final Function(String, String) onClicked;
   final UnitTypeListItemResponse unitType;
   final int index;
-  const UnitType(this.onClicked, this.unitType, this.index, {Key? key}) : super(key: key);
+  const UnitType(this.onClicked, this.unitType, this.index, {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -20,7 +21,8 @@ class UnitType extends StatefulWidget {
 class UnitTypeState extends State<UnitType> with TickerProviderStateMixin {
   bool hover = false;
 
-  late final Uint8List _bytesImage = const Base64Decoder().convert(widget.unitType.Image);
+  late final Uint8List _bytesImage =
+      const Base64Decoder().convert(widget.unitType.Image);
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +72,6 @@ class UnitTypeState extends State<UnitType> with TickerProviderStateMixin {
             gotoUnit(widget.unitType.type, "");
           },
           child: Container(
-            color: Colors.black26,
             child: Container(
               padding: const EdgeInsets.all(10),
               width: 300,
@@ -82,11 +83,12 @@ class UnitTypeState extends State<UnitType> with TickerProviderStateMixin {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
+                      SizedBox(
                         width: 48,
                         height: 48,
                         child: ColorFiltered(
-                          colorFilter: const ColorFilter.mode(Colors.orange, BlendMode.srcATop),
+                          colorFilter: const ColorFilter.mode(
+                              Colors.orange, BlendMode.srcATop),
                           child: Image.memory(_bytesImage),
                         ),
                       ),
