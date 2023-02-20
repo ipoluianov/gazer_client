@@ -1,8 +1,6 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/protocol/unit/unit_get_config.dart';
 import 'package:gazer_client/core/protocol/unit_type/unit_type_config_meta.dart';
 import 'package:gazer_client/core/repository.dart';
@@ -13,7 +11,6 @@ import 'package:gazer_client/widgets/error_dialog/error_dialog.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
 
 import '../../../core/navigation/route_generator.dart';
-import 'unit_edit_form_bloc.dart';
 
 class UnitEditForm extends StatefulWidget {
   final UnitEditFormArgument arg;
