@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+import 'package:dio/dio.dart';
 import 'package:gazer_client/xchg/network.dart';
 import 'package:gazer_client/xchg/remote_peer.dart';
 import 'package:gazer_client/xchg/request_udp.dart';
@@ -124,6 +125,7 @@ class Peer {
       }
       requestingFromInternet = false;
     }).catchError((err) {
+      print("catchError read $err");
       requestingFromInternet = false;
     });
   }
@@ -151,33 +153,57 @@ class Peer {
     updatingNetwork = false;
   }
 
-  Map<String, http.Client> httpClients = {};
+  Map<String, Dio> httpClients = {};
+
+  int wcounter = 0;
 
   Future<Uint8List> httpCall(String routerHost, String function,
       Uint8List frame, int timeoutMs) async {
     //print("httpCall $routerHost $function");
-    http.Client? client;
-    if (httpClients.containsKey(routerHost)) {
-      client = httpClients[routerHost];
+    wcounter++;
+    Dio? dio;
+    if (httpClients.containsKey(routerHost + "-" + function)) {
+      dio = httpClients[routerHost + "-" + function];
     } else {
-      HttpClient.enableTimelineLogging = false;
-      client = http.Client();
-      httpClients[routerHost] = client;
+      //HttpClient.enableTimelineLogging = false;
+      dio = Dio();
+      dio.options.connectTimeout = 1000;
+      if (function == "w") {
+        dio.options.receiveTimeout = 1000;
+      }
+      if (function == "r") {
+        dio.options.receiveTimeout = 10000;
+      }
+      httpClients[routerHost + "-" + function] = dio;
     }
 
-    if (client != null) {
+    if (dio != null) {
       try {
+        final formData = FormData.fromMap({
+          'd': base64Encode(frame),
+        });
+        final response = await dio
+            .post('http://$routerHost/api/$function?$wcounter', data: formData);
+        if (response.statusCode == 200) {
+          var resStr = base64Decode(response.data);
+          return resStr;
+        }
+
+        /*print("httpCall begin $function $wcounter");
         var req = http.MultipartRequest(
-            'POST', Uri.parse("http://$routerHost/api/$function"));
+            'POST', Uri.parse("http://$routerHost/api/$function?$wcounter"));
         req.fields['d'] = base64Encode(frame);
         http.Response response = await http.Response.fromStream(
             await client.send(req).timeout(Duration(milliseconds: timeoutMs)));
         if (response.statusCode == 200) {
+          print("httpCall success $wcounter");
           var resStr = base64Decode(response.body);
           return resStr;
         }
+        print("httpCall success code $wcounter");*/
+
       } catch (ex) {
-        print("exception $function exception: $ex");
+        print("httpCall exception $function exception: $ex $wcounter");
       } finally {}
     }
     return Uint8List(0);

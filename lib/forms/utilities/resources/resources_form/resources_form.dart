@@ -117,10 +117,12 @@ class ResourcesFormSt extends State<ResourcesForm> {
         });
       }
     }).catchError((e) {
-      setState(() {
-        loadingItems = false;
-        errorMessageItems = e.toString();
-      });
+      if (mounted) {
+        setState(() {
+          loadingItems = false;
+          errorMessageItems = e.toString();
+        });
+      }
     });
   }
 
