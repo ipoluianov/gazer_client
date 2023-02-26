@@ -64,12 +64,12 @@ class XchgNetwork {
       XchgNetworkRange("7", [XchgNetworkHost("127.0.0.1:8084", "7")]),
       XchgNetworkRange("8", [XchgNetworkHost("127.0.0.1:8084", "8")]),
       XchgNetworkRange("9", [XchgNetworkHost("127.0.0.1:8084", "9")]),
-      XchgNetworkRange("A", [XchgNetworkHost("127.0.0.1:8084", "A")]),
-      XchgNetworkRange("B", [XchgNetworkHost("127.0.0.1:8084", "B")]),
-      XchgNetworkRange("C", [XchgNetworkHost("127.0.0.1:8084", "C")]),
-      XchgNetworkRange("D", [XchgNetworkHost("127.0.0.1:8084", "D")]),
-      XchgNetworkRange("E", [XchgNetworkHost("127.0.0.1:8084", "E")]),
-      XchgNetworkRange("F", [XchgNetworkHost("127.0.0.1:8084", "F")]),
+      XchgNetworkRange("a", [XchgNetworkHost("127.0.0.1:8084", "a")]),
+      XchgNetworkRange("b", [XchgNetworkHost("127.0.0.1:8084", "b")]),
+      XchgNetworkRange("c", [XchgNetworkHost("127.0.0.1:8084", "c")]),
+      XchgNetworkRange("d", [XchgNetworkHost("127.0.0.1:8084", "d")]),
+      XchgNetworkRange("e", [XchgNetworkHost("127.0.0.1:8084", "e")]),
+      XchgNetworkRange("f", [XchgNetworkHost("127.0.0.1:8084", "f")]),
     ]);
   }
 
