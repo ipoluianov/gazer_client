@@ -49,7 +49,7 @@ class Peer {
 
   Peer(AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>? privKey,
       this.useLocalRouter) {
-    print("PEER CREATED!");
+    print("PEER CREATED! local: ${useLocalRouter}");
 
     if (privKey == null) {
       AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> pair =
@@ -103,7 +103,7 @@ class Peer {
       print("ex: $err");
     }*/
 
-    httpCall(host, "r", getMessagesRequest, 20000).then((res) {
+    httpCall(host, "r", getMessagesRequest, 5000).then((res) {
       if (res.length >= 8) {
         lastReceivedMessageId = res.buffer.asUint64List(0)[0];
         int offset = 8;
@@ -167,12 +167,12 @@ class Peer {
     } else {
       //HttpClient.enableTimelineLogging = false;
       dio = Dio();
-      dio.options.connectTimeout = 1000;
+      dio.options.connectTimeout = Duration(milliseconds: 1000);
       if (function == "w") {
-        dio.options.receiveTimeout = 1000;
+        dio.options.receiveTimeout = Duration(milliseconds: 1000);
       }
       if (function == "r") {
-        dio.options.receiveTimeout = 10000;
+        dio.options.receiveTimeout = Duration(milliseconds: 10000);
       }
       httpClients[routerHost + "-" + function] = dio;
     }
@@ -182,9 +182,13 @@ class Peer {
         final formData = FormData.fromMap({
           'd': base64Encode(frame),
         });
-        final response = await dio
-            .post('http://$routerHost/api/$function?$wcounter', data: formData);
+
+        final response =
+            await dio.post('http://$routerHost/api/$function', data: formData);
         if (response.statusCode == 200) {
+          if (response.data == null) {
+            return Uint8List(0);
+          }
           var resStr = base64Decode(response.data);
           return resStr;
         }
@@ -201,7 +205,6 @@ class Peer {
           return resStr;
         }
         print("httpCall success code $wcounter");*/
-
       } catch (ex) {
         print("httpCall exception $function exception: $ex $wcounter");
       } finally {}
@@ -315,6 +318,7 @@ class Peer {
 
   void processFrame11(
       UdpAddress? sourceAddress, String router, Uint8List frame) {
+    //print("processFrame11");
     Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
 
     if (sourceAddress != null) {

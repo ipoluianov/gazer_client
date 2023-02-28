@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'forms/nodes/main_form/main_form.dart';
 
 void main() {
+  FontWeight fontWeight = FontWeight.w400;
+
   runApp(
     MaterialApp(
       title: 'Gazer Client',
@@ -11,9 +13,10 @@ void main() {
       theme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.blue,
-        textTheme: const TextTheme(
-          bodyText2: TextStyle(fontWeight: FontWeight.w300),
-          bodyText1: TextStyle(fontWeight: FontWeight.w300),
+        textTheme: TextTheme(
+          bodySmall: TextStyle(fontWeight: fontWeight),
+          bodyLarge: TextStyle(fontWeight: fontWeight),
+          bodyMedium: TextStyle(fontWeight: fontWeight),
         ),
       ),
       initialRoute: '/',

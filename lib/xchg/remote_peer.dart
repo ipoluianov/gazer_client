@@ -88,6 +88,7 @@ class RemotePeer {
 
   void processFrame11(Transaction transaction) {
     //Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
+    //print("remotePeer processFrame11 ${transaction}");
 
     if (outgoingTransactions.containsKey(transaction.transactionId)) {
       var t = outgoingTransactions[transaction.transactionId];

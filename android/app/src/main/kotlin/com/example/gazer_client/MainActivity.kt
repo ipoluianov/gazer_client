@@ -1,4 +1,4 @@
-package cloud.gazer.gazer_client
+package com.example.gazer_client
 
 import io.flutter.embedding.android.FlutterActivity
 

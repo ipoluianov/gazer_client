@@ -8,7 +8,7 @@
 PRODUCT_NAME = gazer_client
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = cloud.gazer.gazerClient
+PRODUCT_BUNDLE_IDENTIFIER = com.example.gazerClient
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2023 cloud.gazer. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2023 com.example. All rights reserved.
