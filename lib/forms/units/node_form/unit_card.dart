@@ -11,7 +11,9 @@ class UnitCard extends StatefulWidget {
   final Function onNavigate;
   final Function onRemove;
 
-  const UnitCard(this.conn, this.unitState, this.onNavigate, this.onRemove, {Key? key}) : super(key: key);
+  const UnitCard(this.conn, this.unitState, this.onNavigate, this.onRemove,
+      {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -80,12 +82,16 @@ class UnitCardState extends State<UnitCard> {
                                 children: [
                                   Text(
                                     widget.unitState.unitName,
-                                    style: TextStyle(fontSize: 14, color: DesignColors.fore()),
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: DesignColors.fore()),
                                     overflow: TextOverflow.fade,
                                   ),
                                   Text(
-                                    widget.unitState.unitId + " (" + widget.unitState.typeName + ")",
-                                    style: TextStyle(fontSize: 14, color: DesignColors.fore2()),
+                                    "${widget.unitState.unitId} (${widget.unitState.typeName})",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: DesignColors.fore2()),
                                     overflow: TextOverflow.fade,
                                   ),
                                 ],
@@ -110,7 +116,8 @@ class UnitCardState extends State<UnitCard> {
                                   //margin: const EdgeInsets.only(top: 10),
                                   padding: const EdgeInsets.all(3),
                                   child: Text(
-                                    widget.unitState.mainItem.replaceAll(widget.unitState.unitId + "/", ""),
+                                    widget.unitState.mainItem.replaceAll(
+                                        widget.unitState.unitId + "/", ""),
                                     style: TextStyle(
                                       color: DesignColors.fore1(),
                                     ),
@@ -124,7 +131,8 @@ class UnitCardState extends State<UnitCard> {
                                     style: TextStyle(
                                         fontSize: valueAndUOMFontSize,
                                         color: colorByUOM(widget.unitState.uom),
-                                        fontWeight: fontWeightByUOM(widget.unitState.uom)),
+                                        fontWeight: fontWeightByUOM(
+                                            widget.unitState.uom)),
                                   ),
                                 ),
                               ],

@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
+import '../../../core/design.dart';
+import '../../../widgets/borders/border_01_item.dart';
+
 class NodeWidget extends StatefulWidget {
   final Connection conn;
   final Function() onNavigate;
@@ -105,7 +108,14 @@ class NodeWidgetSt extends State<NodeWidget> {
 
   @override
   Widget build(BuildContext context) {
+    //double valueAndUOMFontSize = 14;
+    //var valueAndUOM = widget.unitState.value + " " + widget.unitState.uom;
+    /*if (valueAndUOM.length > 20) {
+      valueAndUOMFontSize = 16;
+    }*/
+
     return MouseRegion(
+      cursor: SystemMouseCursors.click,
       onEnter: (_) {
         setState(() {
           hover = true;
@@ -116,95 +126,100 @@ class NodeWidgetSt extends State<NodeWidget> {
           hover = false;
         });
       },
-      cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () {
           widget.onNavigate();
         },
-        child: Card(
+        child: Container(
           margin: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5),
-          color: Colors.black12,
+          //color: Colors.black12,
           child: Container(
             color: hover ? Colors.black12 : Colors.transparent,
-            padding: const EdgeInsets.all(10),
+            //padding: const EdgeInsets.all(10),
             constraints: const BoxConstraints(
               maxWidth: 400,
             ),
-            height: 150,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            height: 120,
+            child: Stack(
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
-                      (widget.conn.transport == "http/local")
-                          ? Icons.computer
-                          : Icons.cloud_queue,
-                      color: Colors.blue,
-                    ),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              //"nodeName",
-                              nodeName,
-                              style: const TextStyle(fontSize: 14),
-                              overflow: TextOverflow.fade,
-                            ),
-                            Text(
-                              widget.conn.address,
-                              //widget.conn.transport + " : " + widget.conn.address,
-                              style: const TextStyle(
-                                  fontSize: 12, color: Colors.white24),
-                              overflow: TextOverflow.fade,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                Border01Painter.build(hover),
                 Container(
-                  height: 1,
-                  color: Colors.white24,
-                  margin: const EdgeInsets.only(top: 10),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
-                            //margin: const EdgeInsets.only(top: 10),
-                            padding: const EdgeInsets.all(3),
-                            child: buildStatus(),
+                          Icon(
+                            Icons.blur_on,
+                            color: DesignColors.fore(),
                           ),
-                          Container(
-                            //margin: const EdgeInsets.only(top: 10),
-                            padding: const EdgeInsets.all(3),
-                            child: const Text(
-                              "Node",
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    //"nodeName",
+                                    nodeName,
+                                    style: const TextStyle(fontSize: 14),
+                                    overflow: TextOverflow.fade,
+                                  ),
+                                  Text(
+                                    widget.conn.address,
+                                    //widget.conn.transport + " : " + widget.conn.address,
+                                    style: const TextStyle(
+                                        fontSize: 12, color: Colors.white24),
+                                    overflow: TextOverflow.fade,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        showAlertDialog(context);
-                      },
-                      icon: const Icon(Icons.delete),
-                      color: Colors.white54,
-                    ),
-                  ],
-                )
+                      Container(
+                        height: 0.5,
+                        color: DesignColors.back1(),
+                        margin: const EdgeInsets.only(top: 10),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  //margin: const EdgeInsets.only(top: 10),
+                                  padding: const EdgeInsets.all(3),
+                                  child: buildStatus(),
+                                ),
+                                Container(
+                                  //margin: const EdgeInsets.only(top: 10),
+                                  padding: const EdgeInsets.all(3),
+                                  child: const Text(
+                                    "Node",
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              showAlertDialog(context);
+                            },
+                            icon: const Icon(Icons.delete),
+                            color: DesignColors.fore2(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
