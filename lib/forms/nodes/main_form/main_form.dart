@@ -1,15 +1,12 @@
-import 'dart:async';
-import 'dart:typed_data';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/forms/nodes/main_form/main_form_bloc.dart';
 import 'package:gazer_client/forms/nodes/main_form/node_widget.dart';
 import 'package:gazer_client/core/navigation/route_generator.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
-//import 'package:gazer_client/xchg/xchg_connection.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/workspace/add_local_connection.dart';
 import '../../../core/navigation/bottom_navigator.dart';
@@ -26,12 +23,13 @@ class MainForm extends StatefulWidget {
 }
 
 class MainFormSt extends State<MainForm> {
-  MainFormCubit bloc = MainFormCubit(MainFormState([]));
+  //MainFormCubit bloc = MainFormCubit(MainFormState([]));
+
+  List<Connection> connections = [];
+
   int updateCounter = 0;
   ScrollController scrollController1 = ScrollController();
   ScrollController scrollController2 = ScrollController();
-
-  late Timer timerUpdate_;
 
   @override
   void initState() {
@@ -47,16 +45,40 @@ class MainFormSt extends State<MainForm> {
         return;
       }
 
-      bloc.load();
-    });
-
-    timerUpdate_ = Timer.periodic(const Duration(seconds: 5), (timer) {
-      //updateCounter++;
-      //bloc.load();
+      loadNodesList();
     });
   }
 
-  Widget buildNodeList(BuildContext context, MainFormState state) {
+  bool loading = true;
+  void loadNodesList() async {
+    setState(() {
+      loading = true;
+      connections = [];
+    });
+
+    SharedPreferences.getInstance().then((prefs) {
+      var wsContent = prefs.getString("ws") ?? "{}";
+      try {
+        late Workspace ws;
+        ws = Workspace.fromJson(jsonDecode(wsContent));
+        for (var conn in ws.connections) {
+          connections.add(conn);
+        }
+      } catch (ex) {
+        // TODO: show error
+      }
+      setState(() {
+        loading = false;
+      });
+    }).catchError((err) {
+      // TODO: show error
+      setState(() {
+        loading = false;
+      });
+    });
+  }
+
+  Widget buildNodeList(BuildContext context) {
     return Expanded(
       child: Scrollbar(
         controller: scrollController1,
@@ -64,14 +86,16 @@ class MainFormSt extends State<MainForm> {
         child: SingleChildScrollView(
           controller: scrollController1,
           child: Wrap(
-            children: state.connections.map<Widget>((e) {
+            children: connections.map<Widget>((e) {
               return NodeWidget(e, () {
                 Navigator.of(context).popUntil((route) => route.isFirst);
                 Navigator.of(context).pop();
                 Navigator.pushNamed(context, "/node",
                     arguments: NodeFormArgument(e));
               }, () {
-                bloc.remove(e.id);
+                wsRemoveConnection(e.id).then((value) {
+                  loadNodesList();
+                });
               }, key: Key(e.id + updateCounter.toString()));
             }).toList(),
           ),
@@ -80,7 +104,7 @@ class MainFormSt extends State<MainForm> {
     );
   }
 
-  Widget buildEmptyNodeList(context, state) {
+  Widget buildEmptyNodeList(context) {
     return Expanded(
       child: Scrollbar(
         controller: scrollController2,
@@ -132,11 +156,15 @@ class MainFormSt extends State<MainForm> {
     );
   }
 
-  Widget buildContent(BuildContext context, MainFormState state) {
-    if (state.connections.isNotEmpty) {
-      return buildNodeList(context, state);
+  Widget buildContent(BuildContext context) {
+    if (loading) {
+      return const Text("Loading ...");
     }
-    return buildEmptyNodeList(context, state);
+
+    if (connections.isNotEmpty) {
+      return buildNodeList(context);
+    }
+    return buildEmptyNodeList(context);
   }
 
   void addNode(bool toCloud) {
@@ -145,7 +173,7 @@ class MainFormSt extends State<MainForm> {
         .then(
       (value) {
         updateCounter++;
-        bloc.load();
+        loadNodesList();
       },
     );
   }
@@ -177,7 +205,7 @@ class MainFormSt extends State<MainForm> {
                 "Refresh",
                 () {
                   updateCounter++;
-                  bloc.load();
+                  loadNodesList();
                 },
               ),
             ],
@@ -192,12 +220,7 @@ class MainFormSt extends State<MainForm> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const LeftNavigator(false),
-                      BlocBuilder<MainFormCubit, MainFormState>(
-                        bloc: bloc,
-                        builder: (context, state) {
-                          return buildContent(context, state);
-                        },
-                      ),
+                      buildContent(context),
                     ],
                   ),
                 ),
