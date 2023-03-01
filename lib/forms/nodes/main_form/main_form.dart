@@ -85,19 +85,27 @@ class MainFormSt extends State<MainForm> {
         thumbVisibility: false,
         child: SingleChildScrollView(
           controller: scrollController1,
-          child: Wrap(
-            children: connections.map<Widget>((e) {
-              return NodeWidget(e, () {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-                Navigator.of(context).pop();
-                Navigator.pushNamed(context, "/node",
-                    arguments: NodeFormArgument(e));
-              }, () {
-                wsRemoveConnection(e.id).then((value) {
-                  loadNodesList();
-                });
-              }, key: Key(e.id + updateCounter.toString()));
-            }).toList(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                child: Wrap(
+                  children: connections.map<Widget>((e) {
+                    return NodeWidget(e, () {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      Navigator.of(context).pop();
+                      Navigator.pushNamed(context, "/node",
+                          arguments: NodeFormArgument(e));
+                    }, () {
+                      wsRemoveConnection(e.id).then((value) {
+                        loadNodesList();
+                      });
+                    }, key: Key(e.id + updateCounter.toString()));
+                  }).toList(),
+                ),
+              ),
+            ],
           ),
         ),
       ),

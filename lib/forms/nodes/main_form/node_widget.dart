@@ -5,7 +5,7 @@ import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
 import '../../../core/design.dart';
-import '../../../widgets/borders/border_01_item.dart';
+import '../../../widgets/borders/border_10_node_item.dart';
 
 class NodeWidget extends StatefulWidget {
   final Connection conn;
@@ -142,7 +142,7 @@ class NodeWidgetSt extends State<NodeWidget> {
             height: 120,
             child: Stack(
               children: [
-                Border01Painter.build(hover),
+                Border10Painter.build(hover),
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: Column(
