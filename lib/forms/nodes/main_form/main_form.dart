@@ -188,7 +188,7 @@ class MainFormSt extends State<MainForm> {
 
         return Scaffold(
           appBar: TitleBar(
-            Connection.makeDefault(),
+            null,
             "Nodes Gazer.Cloud",
             actions: <Widget>[
               buildActionButton(

@@ -4,11 +4,10 @@ import 'package:gazer_client/core/navigation/navigation.dart';
 import 'package:gazer_client/core/protocol/service/service_info.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/widgets/borders/border_01_item.dart';
 import 'package:gazer_client/widgets/borders/border_02_titlebar.dart';
 
 class TitleBar extends StatefulWidget implements PreferredSizeWidget {
-  final Connection connection;
+  final Connection? connection;
   final String title;
   final List<Widget>? actions;
   const TitleBar(this.connection, this.title, {Key? key, this.actions})
@@ -29,21 +28,33 @@ class TitleBarSt extends State<TitleBar> {
   bool serviceInfoLoaded = false;
   late ServiceInfoResponse serviceInfo;
   void loadNodeInfo() {
-    Repository().client(widget.connection).serviceInfo().then((value) {
-      if (mounted) {
-        setState(() {
-          serviceInfo = value;
-          serviceInfoLoaded = true;
-        });
-      }
-    }).catchError((err) {});
+    if (widget.connection != null) {
+      Repository().client(widget.connection!).serviceInfo().then((value) {
+        if (mounted) {
+          setState(() {
+            serviceInfo = value;
+            serviceInfoLoaded = true;
+          });
+        }
+      }).catchError((err) {});
+    }
   }
 
   String nodeName() {
-    if (serviceInfoLoaded) {
-      return widget.connection.address + " - " + serviceInfo.nodeName;
+    if (widget.connection == null) {
+      return "1werwer";
     }
-    return widget.connection.address;
+    if (serviceInfoLoaded) {
+      return "${widget.connection!.address} - ${serviceInfo.nodeName}";
+    }
+    return widget.connection!.address;
+  }
+
+  String titleLine() {
+    if (widget.connection != null) {
+      return "${nodeName()} - ${widget.title}";
+    }
+    return widget.title;
   }
 
   @override
@@ -53,7 +64,10 @@ class TitleBarSt extends State<TitleBar> {
   }
 
   String addressLine() {
-    return Repository().client(widget.connection).linkInformation();
+    if (widget.connection != null) {
+      return Repository().client(widget.connection!).linkInformation();
+    }
+    return "";
   }
 
   List<Widget> getActions() {
@@ -99,7 +113,7 @@ class TitleBarSt extends State<TitleBar> {
                               //color: Colors.cyan,
                               alignment: Alignment.bottomLeft,
                               child: Text(
-                                nodeName() + " - " + widget.title,
+                                titleLine(),
                                 style: TextStyle(
                                     color: DesignColors.fore(),
                                     overflow: TextOverflow.ellipsis),
