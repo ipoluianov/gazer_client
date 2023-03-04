@@ -18,7 +18,9 @@ Future<void> sendFrame(
               .encode(Uint8List.fromList(frame.sublist(70, 70 + 30)))
               .toLowerCase();
           for (var addr in peer.network!.getNodesAddressesByAddress(destAddr)) {
-            await peer.httpCall(addr, "w", frame, 1011);
+            peer.httpCall(addr, "w", frame, 1011).catchError((err) {
+              print("write error: $err");
+            });
             //break;
           }
         }
