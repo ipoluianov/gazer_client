@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:archive/archive.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:gazer_client/xchg/rsa.dart';
 
 import 'network.dart';
-import 'package:http/http.dart' as http;
 
 const NetworkContainerDefault =
     "UEsDBBQACAAIADWLdFUAAAAAAAAAAAAAAAAMAAkAbmV0d29yay5qc29uVVQFAAEGVXpj1NBBbqswEAbgvU8xmnXkBEIc4A7vXaBClQMTsAo2Mq6KEuXulVNaqVGlsJ2NF+Nfv76ZqwC0eiAsAf9pY/9TwI0ADGagKehhxBISpfJCJYcsjT/GmmB0/zo6Y8OEJbwIAOxCGMvtdq67dpaWwtZS+HD+TV7MKE96IpXF3l9B2eoLeVn37r15ltd9TzXJ2g0rkysMS9L59q+kgCqu67Vt6XvNqwAAHD2dzRwvtrv3AXZu+jnFkgJA3TSepjjHQyb3R3ncy0TtynyXf0Fi6PH49/Ft87QoTYs1RfGtxNL4yE9481Pe/D1vfsabf+DNV7z5R978nDe/4M3XvPkn3vyaN7/hzSfe/DMfvoBK3D4DAAD//1BLBwhlUgJHEgEAAB8NAABQSwMEFAAIAAgANYt0VQAAAAAAAAAAAAAAABAACQBzaWduYXR1cmUuYmFzZTY0VVQFAAEGVXpjBMC5YoIwAADQD3IQtRwZOpQiigiBkEPckDQiCfepX99nuIzPH/n3m4tLX6Q+CEXoEZ5n5krHxPCMMGg1rdINDYP0bk3EDRaYwyz+2qyH7aaBq05jPSKbL4zJJhC8/TxAqenIKqx17GYRLQ4RwgLEHsemOuK7HaC1nvwnQ9ihGPw5rxxdpIqdM5c/2+hj8u2yC4L5wIaMUV8/LUkamQenaK8t6HZSS0169DJ0O1fuYncXrin9RftQm9NwJS7sVcYqiSvmJz8wM492vIP1VdgKLV3BKbxJte0eahHesC+oFacP62hYDodEINOt97u3o/ryagPRdjWL6qj8fV9t5u9lM8kpU/3A/BqO1fN98nJx8pvb9ByCi3tOwClBJVF3HH9//wcAAP//UEsHCNxX1PkmAQAAWAEAAFBLAQIUABQACAAIADWLdFVlUgJHEgEAAB8NAAAMAAkAAAAAAAAAAAAAAAAAAABuZXR3b3JrLmpzb25VVAUAAQZVemNQSwECFAAUAAgACAA1i3RV3FfU+SYBAABYAQAAEAAJAAAAAAAAAAAAAABVAQAAc2lnbmF0dXJlLmJhc2U2NFVUBQABBlV6Y1BLBQYAAAAAAgACAIoAAADCAgAAAAA=";
@@ -21,7 +21,7 @@ XchgNetwork networkContainerLoadStaticDefault() {
   return networkContainerLoad(zipFileBS, NetworkContainerPublicKey);
 }
 
-Future<Uint8List> httpCall(String url) async {
+/*Future<Uint8List> httpCall(String url) async {
   //throw "123";
   http.Response response = await http
       .get(Uri.parse(url))
@@ -31,6 +31,21 @@ Future<Uint8List> httpCall(String url) async {
     return base64Decode(body);
   }
   throw "Exception: ${response.statusCode}";
+}*/
+
+Future<String> httpGet(String url, int timeoutMs) async {
+  var dio = Dio();
+  dio.options.connectTimeout = Duration(milliseconds: timeoutMs);
+  dio.options.sendTimeout = Duration(milliseconds: timeoutMs);
+  dio.options.receiveTimeout = Duration(milliseconds: timeoutMs);
+  final response = await dio.get(url);
+  if (response.statusCode == 200) {
+    if (response.data == null) {
+      return "";
+    }
+    return response.data;
+  }
+  throw "status code: ${response.statusCode}";
 }
 
 Future<XchgNetwork> networkContainerLoadFromInternet() async {
@@ -42,8 +57,10 @@ Future<XchgNetwork> networkContainerLoadFromInternet() async {
 
   for (var initialPoint in network.initialPoints) {
     try {
-      var resp = await httpCall(initialPoint);
-      XchgNetwork n = networkContainerLoadDefault(resp);
+      var resp = await httpGet(initialPoint, 1000);
+      resp = resp.trim();
+      var respDecoded = base64Decode(resp);
+      XchgNetwork n = networkContainerLoadDefault(respDecoded);
       n.debugSource = initialPoint;
       networks.add(n);
     } catch (ex) {

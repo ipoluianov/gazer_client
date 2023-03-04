@@ -18,8 +18,6 @@ import 'transaction.dart';
 import 'udp_address.dart';
 import 'utils.dart';
 
-import 'package:http/http.dart' as http;
-
 class XchgServerProcessor {}
 
 class Peer {
@@ -192,19 +190,6 @@ class Peer {
           var resStr = base64Decode(response.data);
           return resStr;
         }
-
-        /*print("httpCall begin $function $wcounter");
-        var req = http.MultipartRequest(
-            'POST', Uri.parse("http://$routerHost/api/$function?$wcounter"));
-        req.fields['d'] = base64Encode(frame);
-        http.Response response = await http.Response.fromStream(
-            await client.send(req).timeout(Duration(milliseconds: timeoutMs)));
-        if (response.statusCode == 200) {
-          print("httpCall success $wcounter");
-          var resStr = base64Decode(response.body);
-          return resStr;
-        }
-        print("httpCall success code $wcounter");*/
       } catch (ex) {
         print("httpCall exception $function exception: $ex $wcounter");
       } finally {}

@@ -50,7 +50,6 @@ import 'package:gazer_client/core/protocol/user/user_prop_set.dart';
 import 'package:gazer_client/core/protocol/user/user_remove.dart';
 import 'package:gazer_client/core/protocol/user/user_set_password.dart';
 import 'package:gazer_client/core/repository.dart';
-import 'package:http/http.dart' as http;
 
 typedef FromJsonFunc = dynamic Function(Map<String, dynamic> json);
 
