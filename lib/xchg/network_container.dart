@@ -21,18 +21,6 @@ XchgNetwork networkContainerLoadStaticDefault() {
   return networkContainerLoad(zipFileBS, NetworkContainerPublicKey);
 }
 
-/*Future<Uint8List> httpCall(String url) async {
-  //throw "123";
-  http.Response response = await http
-      .get(Uri.parse(url))
-      .timeout(const Duration(milliseconds: 1500));
-  if (response.statusCode == 200) {
-    var body = response.body.trim();
-    return base64Decode(body);
-  }
-  throw "Exception: ${response.statusCode}";
-}*/
-
 Future<String> httpGet(String url, int timeoutMs) async {
   var dio = Dio();
   dio.options.connectTimeout = Duration(milliseconds: timeoutMs);

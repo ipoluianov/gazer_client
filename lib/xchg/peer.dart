@@ -80,14 +80,15 @@ class Peer {
   }
 
   int lastReceivedMessageId = 0;
-  bool requestingFromInternet = false;
+  //bool requestingFromInternet = false;
+  Set<String> requestingFromInternet = {};
 
   Future<void> requestFramesFromInternet(String host) async {
-    if (requestingFromInternet) {
+    if (requestingFromInternet.contains(host)) {
       return;
     }
 
-    requestingFromInternet = true;
+    requestingFromInternet.add(host);
     Uint8List localAddressBS = addressBSForPublicKey(keyPair.publicKey);
     Uint8List getMessagesRequest = Uint8List(16 + 30);
     getMessagesRequest.buffer.asUint64List(0)[0] = lastReceivedMessageId;
@@ -121,10 +122,10 @@ class Peer {
           }
         }
       }
-      requestingFromInternet = false;
+      requestingFromInternet.remove(host);
     }).catchError((err) {
       print("catchError read $err");
-      requestingFromInternet = false;
+      requestingFromInternet.remove(host);
     });
   }
 
@@ -170,6 +171,7 @@ class Peer {
         dio.options.receiveTimeout = Duration(milliseconds: 1000);
       }
       if (function == "r") {
+        print("Read from $routerHost");
         dio.options.receiveTimeout = Duration(milliseconds: 10000);
       }
       httpClients[routerHost + "-" + function] = dio;
