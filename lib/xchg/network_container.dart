@@ -22,7 +22,7 @@ XchgNetwork networkContainerLoadStaticDefault() {
 }
 
 Future<Uint8List> httpCall(String url) async {
-  // throw "123";
+  //throw "123";
   http.Response response = await http
       .get(Uri.parse(url))
       .timeout(const Duration(milliseconds: 1500));
