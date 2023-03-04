@@ -3,11 +3,15 @@ import 'package:gazer_client/core/design.dart';
 
 class Border10Painter extends CustomPainter {
   bool hover;
-  Border10Painter(this.hover);
+  Color indicatorColor = Colors.black;
+  Border10Painter(this.hover, this.indicatorColor);
 
-  static Widget build(bool hover) {
+  static Widget build(
+    bool hover,
+    Color indicatorColor,
+  ) {
     return CustomPaint(
-      painter: Border10Painter(hover),
+      painter: Border10Painter(hover, indicatorColor),
       child: Container(),
       key: UniqueKey(),
     );
@@ -21,6 +25,12 @@ class Border10Painter extends CustomPainter {
   Path buildPath(Rect rectOriginal) {
     Path p = Path();
     p.addPolygon(buildPoints(buildRect(rectOriginal)), true);
+    return p;
+  }
+
+  Path buildPathDiamond(Rect rectOriginal) {
+    Path p = Path();
+    p.addPolygon(buildDiamond(buildRect(rectOriginal)), true);
     return p;
   }
 
@@ -57,6 +67,21 @@ class Border10Painter extends CustomPainter {
 
     points.add(Offset(rect.left, rect.bottom));
     points.add(Offset(rect.left, rect.top + cornerRadius));
+    return points;
+  }
+
+  List<Offset> buildDiamond(Rect rect) {
+    List<Offset> points = [];
+    double offset = rect.height / 2;
+
+    points.add(Offset(rect.left + offset, rect.top));
+    points.add(Offset(rect.right - offset, rect.top));
+    points.add(Offset(rect.right, rect.top + offset));
+    points.add(Offset(rect.right - offset, rect.bottom));
+    points.add(Offset(rect.left + offset, rect.bottom));
+    points.add(Offset(rect.left, rect.bottom - offset));
+    points.add(Offset(rect.left + offset, rect.top));
+
     return points;
   }
 
@@ -134,6 +159,17 @@ class Border10Painter extends CustomPainter {
             ..strokeCap = StrokeCap.round
             ..strokeJoin = StrokeJoin.round
             ..strokeWidth = thickness * 8);
+
+      canvas.drawPath(
+          buildPathDiamond(Rect.fromLTRB(rect.left + rect.width / 3 + 3,
+              rect.top + 5, rect.right - rect.width / 3, rect.top + 14)),
+          Paint()
+            //..isAntiAlias = false
+            ..style = PaintingStyle.fill
+            ..color = indicatorColor
+            ..strokeCap = StrokeCap.round
+            ..strokeJoin = StrokeJoin.round
+            ..strokeWidth = thickness);
     }
   }
 

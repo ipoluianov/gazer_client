@@ -70,7 +70,7 @@ class NodeWidgetSt extends State<NodeWidget> {
     }).catchError((err) {
       if (mounted) {
         setState(() {
-          nodeName = "error";
+          nodeName = "";
           status = err.toString();
           errorExists = true;
         });
@@ -114,6 +114,16 @@ class NodeWidgetSt extends State<NodeWidget> {
       valueAndUOMFontSize = 16;
     }*/
 
+    Color indicatorColor = DesignColors.good();
+
+    if (errorExists) {
+      indicatorColor = DesignColors.bad();
+    }
+
+    if (status == "") {
+      indicatorColor = DesignColors.fore2();
+    }
+
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) {
@@ -142,7 +152,10 @@ class NodeWidgetSt extends State<NodeWidget> {
             height: 120,
             child: Stack(
               children: [
-                Border10Painter.build(hover),
+                Border10Painter.build(
+                  hover,
+                  indicatorColor,
+                ),
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: Column(
