@@ -498,6 +498,8 @@ class ResourcesFormSt extends State<ResourcesForm> {
         .then((value) {
       if (value != null) {
         if (widget.arg.onCreated != null) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+          Navigator.of(context).pop();
           var resp = value as ResAddResponse;
           widget.arg.onCreated!(context, resp.id);
         }

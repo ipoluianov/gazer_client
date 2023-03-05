@@ -1,12 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/widgets/action_button/action_button.dart';
-import 'package:gazer_client/widgets/borders/border_01_item.dart';
-import 'package:gazer_client/widgets/borders/border_02_titlebar.dart';
-import 'package:gazer_client/widgets/borders/border_03_item_details.dart';
-import 'package:gazer_client/widgets/borders/border_04_action_button.dart';
 
 import '../design.dart';
 import 'route_generator.dart';
@@ -56,20 +50,24 @@ String navCurrentPath(context) {
   return path;
 }
 
-Widget buildActionButton(context, IconData icon, String tooltip, Function() onPress, {key}) {
-  return buildActionButtonFull(context, icon, tooltip, onPress, false, key: key);
+Widget buildActionButton(
+    context, IconData icon, String tooltip, Function() onPress,
+    {key}) {
+  return buildActionButtonFull(context, icon, tooltip, onPress, false,
+      key: key);
 }
 
-Widget buildActionButtonFull(context, IconData icon, String tooltip, Function() onPress, bool checked, {Color? imageColor, Color? backColor, key}) {
+Widget buildActionButtonFull(
+    context, IconData icon, String tooltip, Function() onPress, bool checked,
+    {Color? imageColor, Color? backColor, key}) {
   return ActionButton(
-    icon: icon,
-    tooltip: tooltip,
-    onPress: onPress,
-    checked: checked,
-    imageColor: imageColor,
-    backColor: backColor,
-    key: key
-  );
+      icon: icon,
+      tooltip: tooltip,
+      onPress: onPress,
+      checked: checked,
+      imageColor: imageColor,
+      backColor: backColor,
+      key: key);
 }
 
 Widget buildHomeButton(context) {

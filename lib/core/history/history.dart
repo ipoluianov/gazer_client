@@ -27,6 +27,13 @@ class History {
         nodes[nodeKey]!.request();
       }
     });
+
+    // Service Info
+    Timer.periodic(const Duration(milliseconds: 4000), (timer) {
+      for (var nKey in nodes.keys) {
+        nodes[nKey]!.requestServiceInfo();
+      }
+    });
   }
 
   HistoryNode getNode(Connection conn) {

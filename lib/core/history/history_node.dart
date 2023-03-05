@@ -1,3 +1,5 @@
+import 'package:gazer_client/core/protocol/service/service_info.dart';
+
 import '../protocol/dataitem/data_item_history_chart.dart';
 import '../protocol/dataitem/data_item_list.dart';
 import '../repository.dart';
@@ -7,6 +9,7 @@ import 'history_loading_task.dart';
 
 class HistoryNode {
   final Connection connection;
+  ServiceInfoResponse? serviceInfo;
   Map<String, HistoryItem> items = {};
 
   HistoryNode(this.connection);
@@ -45,6 +48,12 @@ class HistoryNode {
     for (var iKey in items.keys) {
       items[iKey]!.cleanUp();
     }
+  }
+
+  void requestServiceInfo() {
+    Repository().client(connection).serviceInfo().then((value) {
+      serviceInfo = value;
+    }).catchError((err) {});
   }
 
   List<HistoryLoadingTask> getLoadingTasks(String itemName) {
