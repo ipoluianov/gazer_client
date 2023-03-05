@@ -451,6 +451,7 @@ class ResourcesFormArgument {
   String folderId;
   String folderName;
   Function(BuildContext context, ResListItemItemResponse res) onClick;
+  Function(BuildContext context, String resId)? onCreated;
   ResourcesFormArgument(
       this.connection,
       this.type,
@@ -461,13 +462,15 @@ class ResourcesFormArgument {
       this.filterByFolder,
       this.folderId,
       this.folderName,
-      this.onClick);
+      this.onClick,
+      this.onCreated);
 }
 
 class MapFormArgument {
   Connection connection;
   String id;
-  MapFormArgument(this.connection, this.id);
+  bool edit;
+  MapFormArgument(this.connection, this.id, this.edit);
 }
 
 class ResourceItemAddFormArgument {

@@ -96,17 +96,20 @@ class BottomNavigator extends StatelessWidget {
                   context, 1, "Charts", Icons.stacked_line_chart, () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                   Navigator.of(context).pop();
-                  Navigator.pushNamed(context, "/chart_groups",
-                      arguments: ResourcesFormArgument(
-                          Repository().lastSelectedConnection,
-                          "chart_group",
-                          "Chart Group",
-                          "Chart Groups",
-                          Icons.stacked_line_chart,
-                          true,
-                          false,
-                          "",
-                          "", (context, res) {
+                  Navigator.pushNamed(
+                    context,
+                    "/chart_groups",
+                    arguments: ResourcesFormArgument(
+                      Repository().lastSelectedConnection,
+                      "chart_group",
+                      "Chart Group",
+                      "Chart Groups",
+                      Icons.stacked_line_chart,
+                      true,
+                      false,
+                      "",
+                      "",
+                      (context, res) {
                         Navigator.of(context)
                             .pushNamed(
                           "/chart_group",
@@ -118,36 +121,46 @@ class BottomNavigator extends StatelessWidget {
                             .then((value) {
                           //load();
                         });
-                      }));
+                      },
+                      (context, res) {},
+                    ),
+                  );
                 })
               : Container(),
           showMaps
               ? buildBottomBarButton(context, 2, "Maps", Icons.layers, () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                   Navigator.of(context).pop();
-                  Navigator.pushNamed(context, "/maps",
-                      arguments: ResourcesFormArgument(
-                          Repository().lastSelectedConnection,
-                          "map",
-                          "Map",
-                          "Maps",
-                          Icons.layers,
-                          true,
-                          false,
-                          "",
-                          "", (context, res) {
+                  Navigator.pushNamed(
+                    context,
+                    "/maps",
+                    arguments: ResourcesFormArgument(
+                      Repository().lastSelectedConnection,
+                      "map",
+                      "Map",
+                      "Maps",
+                      Icons.layers,
+                      true,
+                      false,
+                      "",
+                      "",
+                      (context, res) {
                         Navigator.of(context)
                             .pushNamed(
                           "/map",
                           arguments: MapFormArgument(
                             Repository().lastSelectedConnection,
                             res.id,
+                            true,
                           ),
                         )
                             .then((value) {
                           //load();
                         });
-                      }));
+                      },
+                      (context, res) {},
+                    ),
+                  );
                 })
               : Container(),
           showMore

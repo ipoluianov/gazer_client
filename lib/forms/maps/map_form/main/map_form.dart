@@ -89,7 +89,12 @@ class MapFormSt extends State<MapForm> {
 
   void load() {
     map.initMapInstance(widget.arg.connection);
-    map.instance.loadFromResource(widget.arg.id, {});
+    map.instance.loadFromResource(widget.arg.id, {}).then((value) {
+      if (widget.arg.edit) {
+        // TODO: edit mode
+        openEditor();
+      }
+    });
     return;
   }
 
@@ -98,6 +103,11 @@ class MapFormSt extends State<MapForm> {
     var encoder = JsonUtf8Encoder();
     Map<String, dynamic> j = map.instance.toJson();
     mapOriginal = String.fromCharCodes(encoder.convert(j));
+  }
+
+  void openEditor() {
+    saveOriginal();
+    map.setEditing(true);
   }
 
   /*void loadOriginal() {
@@ -664,8 +674,7 @@ class MapFormSt extends State<MapForm> {
                   : Container(),
               !map.editing()
                   ? buildActionButton(context, Icons.edit, "Edit", () {
-                      saveOriginal();
-                      map.setEditing(true);
+                      openEditor();
                     })
                   : Container(),
               (map.editing() && !saving)

@@ -42,96 +42,127 @@ class LeftNavigator extends StatelessWidget {
     return Container(
       width: 120,
       decoration: BoxDecoration(
-        //color: Colors.black12,
-      ),
+          //color: Colors.black12,
+          ),
       child: Stack(
         children: [
           Border09Painter.build(false),
           Container(
             padding: EdgeInsets.all(6),
             child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              showUnits
-                  ? buildLeftBarButton(context, 0, "Units", Icons.blur_on, () {
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                      Navigator.of(context).pop();
-                      Navigator.pushNamed(context, "/node",
-                          arguments: NodeFormArgument(
-                              Repository().lastSelectedConnection));
-                    })
-                  : Container(),
-              showCharts
-                  ? buildLeftBarButton(
-                      context, 1, "Charts", Icons.stacked_line_chart, () {
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                      Navigator.of(context).pop();
-                      Navigator.pushNamed(context, "/chart_groups",
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                showUnits
+                    ? buildLeftBarButton(context, 0, "Units", Icons.blur_on,
+                        () {
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
+                        Navigator.of(context).pop();
+                        Navigator.pushNamed(context, "/node",
+                            arguments: NodeFormArgument(
+                                Repository().lastSelectedConnection));
+                      })
+                    : Container(),
+                showCharts
+                    ? buildLeftBarButton(
+                        context, 1, "Charts", Icons.stacked_line_chart, () {
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
+                        Navigator.of(context).pop();
+                        Navigator.pushNamed(
+                          context,
+                          "/chart_groups",
                           arguments: ResourcesFormArgument(
-                              Repository().lastSelectedConnection,
-                              "chart_group",
-                              "Chart Group",
-                              "Chart Groups",
-                              Icons.stacked_line_chart,
-                              true,
-                              false,
-                              "",
-                              "", (context, res) {
-                            Navigator.of(context)
-                                .pushNamed(
-                              "/chart_group",
-                              arguments: ChartGroupFormArgument(
-                                Repository().lastSelectedConnection,
-                                res.id,
-                              ),
-                            )
-                                .then((value) {
-                              //load();
-                            });
-                          }));
-                    })
-                  : Container(),
-              showMaps
-                  ? buildLeftBarButton(context, 2, "Maps", Icons.layers, () {
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                      Navigator.of(context).pop();
-                      Navigator.pushNamed(context, "/maps",
+                            Repository().lastSelectedConnection,
+                            "chart_group",
+                            "Chart Group",
+                            "Chart Groups",
+                            Icons.stacked_line_chart,
+                            true,
+                            false,
+                            "",
+                            "",
+                            (context, res) {
+                              Navigator.of(context)
+                                  .pushNamed(
+                                "/chart_group",
+                                arguments: ChartGroupFormArgument(
+                                  Repository().lastSelectedConnection,
+                                  res.id,
+                                ),
+                              )
+                                  .then((value) {
+                                //load();
+                              });
+                            },
+                            (context, res) {},
+                          ),
+                        );
+                      })
+                    : Container(),
+                showMaps
+                    ? buildLeftBarButton(context, 2, "Maps", Icons.layers, () {
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
+                        Navigator.of(context).pop();
+                        Navigator.pushNamed(
+                          context,
+                          "/maps",
                           arguments: ResourcesFormArgument(
-                              Repository().lastSelectedConnection,
-                              "map",
-                              "Map",
-                              "Maps",
-                              Icons.layers,
-                              true,
-                              false,
-                              "",
-                              "", (context, res) {
-                            Navigator.of(context)
-                                .pushNamed(
-                              "/map",
-                              arguments: MapFormArgument(
-                                Repository().lastSelectedConnection,
-                                res.id,
-                              ),
-                            )
-                                .then((value) {
-                              //load();
-                            });
-                          }));
-                    })
-                  : Container(),
-              showMore
-                  ? buildLeftBarButton(context, 3, "More", Icons.more_horiz,
-                      () {
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                      Navigator.of(context).pop();
-                      Navigator.pushNamed(context, "/more",
-                          arguments: MoreFormArgument(
-                              Repository().lastSelectedConnection));
-                    })
-                  : Container(),
-            ],
-          ),
+                            Repository().lastSelectedConnection,
+                            "map",
+                            "Map",
+                            "Maps",
+                            Icons.layers,
+                            true,
+                            false,
+                            "",
+                            "",
+                            (context, res) {
+                              Navigator.of(context)
+                                  .pushNamed(
+                                "/map",
+                                arguments: MapFormArgument(
+                                  Repository().lastSelectedConnection,
+                                  res.id,
+                                  false,
+                                ),
+                              )
+                                  .then((value) {
+                                //load();
+                              });
+                            },
+                            (context, resId) {
+                              Navigator.of(context)
+                                  .pushNamed(
+                                "/map",
+                                arguments: MapFormArgument(
+                                  Repository().lastSelectedConnection,
+                                  resId,
+                                  true,
+                                ),
+                              )
+                                  .then((value) {
+                                //load();
+                              });
+                            },
+                          ),
+                        );
+                      })
+                    : Container(),
+                showMore
+                    ? buildLeftBarButton(context, 3, "More", Icons.more_horiz,
+                        () {
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
+                        Navigator.of(context).pop();
+                        Navigator.pushNamed(context, "/more",
+                            arguments: MoreFormArgument(
+                                Repository().lastSelectedConnection));
+                      })
+                    : Container(),
+              ],
+            ),
           ),
         ],
       ),

@@ -1,7 +1,9 @@
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/design.dart';
+import 'package:gazer_client/core/protocol/resource/resource_add.dart';
 import 'package:gazer_client/core/protocol/resource/resource_list.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/navigation/bottom_navigator.dart';
@@ -401,6 +403,7 @@ class ResourcesFormSt extends State<ResourcesForm> {
                                 e.id,
                                 e.getProp("name"),
                                 widget.arg.onClick,
+                                widget.arg.onCreated,
                               ),
                             )
                                 .then((value) {
@@ -494,6 +497,10 @@ class ResourcesFormSt extends State<ResourcesForm> {
                 widget.arg.typeNamePlural))
         .then((value) {
       if (value != null) {
+        if (widget.arg.onCreated != null) {
+          var resp = value as ResAddResponse;
+          widget.arg.onCreated!(context, resp.id);
+        }
         load();
       }
     });

@@ -54,7 +54,8 @@ class MapItemMap extends MapItem {
     }
   }
 
-  void loadFromResource(String resourceId, Set<String> loadedMaps) async {
+  Future<void> loadFromResource(
+      String resourceId, Set<String> loadedMaps) async {
     //lastResourceId = resourceId;
     //print("loadFromResource $resourceId");
 
