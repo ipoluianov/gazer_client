@@ -140,47 +140,89 @@ class MapItemGaugeRound extends MapItemSingle {
   }
 
   void drawAnimatedCircles(Canvas canvas) {
+    // Get properties
+    var radius = getDouble("animated_circles_radius") / 100.0;
+    /*var rect = Rect.fromCircle(
+      center: Offset(getDoubleZ("x") + getDoubleZ("w") / 2,
+          getDoubleZ("y") + getDoubleZ("h") / 2),
+      radius: radius * getDoubleZ("w") / 2,
+    );*/
+
+    var x = getDoubleZ("x");
+    var y = getDoubleZ("y");
+    var w = getDoubleZ("w");
+    var h = getDoubleZ("h");
+
+    var invertedOffsetX = w * (1 - radius);
+    var invertedOffsetY = h * (1 - radius);
+
+    var rect = Rect.fromLTWH(
+      x + invertedOffsetX,
+      y + invertedOffsetY,
+      w - invertedOffsetX * 2,
+      h - invertedOffsetY * 2,
+    );
+
+    Color col1 = getColor("animated_circles_color1");
+    double width1 = getDoubleZ("animated_circles_width1");
+    Color col2 = getColor("animated_circles_color2");
+    double width2 = getDoubleZ("animated_circles_width2");
+
+    // Draw
+    // Bold
     canvas.drawArc(
-        Offset(getDoubleZ("x") + getDoubleZ("w") / 8,
-                getDoubleZ("y") + getDoubleZ("h") / 8) &
-            Size(getDoubleZ("w") - getDoubleZ("w") / 4,
-                getDoubleZ("h") - getDoubleZ("h") / 4),
+        rect,
         aniCounter1,
         3,
         false,
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Colors.lightBlueAccent.withOpacity(0.3)
+          ..color = col1
           ..strokeCap = StrokeCap.round
-          ..strokeWidth = z(5));
+          ..strokeWidth = width1);
 
+    // Thin
     canvas.drawArc(
-        Offset(getDoubleZ("x") + getDoubleZ("w") / 8,
-                getDoubleZ("y") + getDoubleZ("h") / 8) &
-            Size(getDoubleZ("w") - getDoubleZ("w") / 4,
-                getDoubleZ("h") - getDoubleZ("h") / 4),
+        rect,
         aniCounter2,
         5,
         false,
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Colors.lightBlueAccent
+          ..color = col2
           ..strokeCap = StrokeCap.round
-          ..strokeWidth = z(0.5));
+          ..strokeWidth = width2);
 
     canvas.drawArc(
-        Offset(getDoubleZ("x") + getDoubleZ("w") / 8,
-                getDoubleZ("y") + getDoubleZ("h") / 8) &
-            Size(getDoubleZ("w") - getDoubleZ("w") / 4,
-                getDoubleZ("h") - getDoubleZ("h") / 4),
+        rect,
         aniCounter2,
         5,
         false,
         Paint()
           ..style = PaintingStyle.stroke
-          ..color = Colors.lightBlueAccent.withOpacity(0.5)
+          ..color = col2.withOpacity(0.1)
           ..strokeCap = StrokeCap.round
-          ..strokeWidth = z(2));
+          ..strokeWidth = width2 + 4);
+    canvas.drawArc(
+        rect,
+        aniCounter2,
+        5,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..color = col2.withOpacity(0.05)
+          ..strokeCap = StrokeCap.round
+          ..strokeWidth = width2 + 6);
+    canvas.drawArc(
+        rect,
+        aniCounter2,
+        5,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..color = col2.withOpacity(0.02)
+          ..strokeCap = StrokeCap.round
+          ..strokeWidth = width2 + 8);
   }
 
   @override
@@ -250,25 +292,46 @@ class MapItemGaugeRound extends MapItemSingle {
   @override
   List<MapItemPropGroup> propGroupsOfItem() {
     List<MapItemPropGroup> groups = [];
+    groups.addAll(super.propGroupsOfItem());
     {
       List<MapItemPropItem> props = [];
-      props.add(MapItemPropItem("", "text", "Text", "text", "42"));
-      props.add(MapItemPropItem("", "min", "Minimum Value", "double", "0"));
-      props.add(MapItemPropItem("", "max", "Maximum Value", "double", "100"));
-
-      props.add(
-          MapItemPropItem("", "text_color", "Text Color", "color", "FFFFFF"));
-      props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
-      props.add(MapItemPropItem("", "prefix", "Prefix", "text", ""));
-      props.add(MapItemPropItem("", "suffix", "Suffix", "text", ""));
+      props.add(MapItemPropItem("", "min", "Min Value", "double", "0"));
+      props.add(MapItemPropItem("", "max", "Max Value", "double", "100"));
+      groups.add(MapItemPropGroup("Main", true, props));
+    }
+    {
+      List<MapItemPropItem> props = [];
       props.add(MapItemPropItem(
           "", "progress_width", "ProgressWidth", "double", "5"));
       props.add(MapItemPropItem(
           "", "progress_color", "ProgressColor", "color", "0088FF"));
 
-      groups.add(MapItemPropGroup("Gauge", true, props));
+      groups.add(MapItemPropGroup("Appearance", false, props));
     }
-    groups.addAll(super.propGroupsOfItem());
+    {
+      List<MapItemPropItem> props = [];
+      props.add(MapItemPropItem("", "text", "Text", "text", "42"));
+      props.add(
+          MapItemPropItem("", "text_color", "Text Color", "color", "FFFFFF"));
+      props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
+      props.add(MapItemPropItem("", "prefix", "Prefix", "text", ""));
+      props.add(MapItemPropItem("", "suffix", "Suffix", "text", ""));
+      groups.add(MapItemPropGroup("Text", false, props));
+    }
+    {
+      List<MapItemPropItem> props = [];
+      props.add(MapItemPropItem(
+          "", "animated_circles_radius", "Radius, %", "double", "80"));
+      props.add(MapItemPropItem(
+          "", "animated_circles_color1", "Color 1", "color", "0088FF"));
+      props.add(MapItemPropItem(
+          "", "animated_circles_width1", "Width 1", "double", "5"));
+      props.add(MapItemPropItem(
+          "", "animated_circles_color2", "Color 2", "color", "0088FF"));
+      props.add(MapItemPropItem(
+          "", "animated_circles_width2", "Width 2", "double", "1"));
+      groups.add(MapItemPropGroup("Animation", false, props));
+    }
     return groups;
   }
 }
