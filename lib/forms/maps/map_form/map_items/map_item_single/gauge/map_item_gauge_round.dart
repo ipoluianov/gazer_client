@@ -153,8 +153,8 @@ class MapItemGaugeRound extends MapItemSingle {
     var w = getDoubleZ("w");
     var h = getDoubleZ("h");
 
-    var invertedOffsetX = w * (1 - radius);
-    var invertedOffsetY = h * (1 - radius);
+    var invertedOffsetX = w / 2 * (1 - radius);
+    var invertedOffsetY = h / 2 * (1 - radius);
 
     var rect = Rect.fromLTWH(
       x + invertedOffsetX,
@@ -246,7 +246,7 @@ class MapItemGaugeRound extends MapItemSingle {
       aniCounter2 = 0;
     }
 
-    double readyThreshold = 0.01;
+    double readyThreshold = targetValue * 0.01;
     if ((lastValue - targetValue).abs() < readyThreshold) {
       lastValue = targetValue;
     }
