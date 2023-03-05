@@ -6,8 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
 import '../../../main/map_item.dart';
+import '../map_item_single.dart';
 
-class MapItemGaugeRound extends MapItem {
+class MapItemGaugeRound extends MapItemSingle {
   static const String sType = "gauge.01";
   static const String sName = "Gauge.01";
   @override
@@ -118,24 +119,6 @@ class MapItemGaugeRound extends MapItem {
           ..color = progressColor.withOpacity(0.5)
           ..strokeWidth = progressWidthZ / 4);
 
-    /*canvas.drawArc(Offset(getDoubleZ("x") + getDoubleZ("w") / 8, getDoubleZ("y") + getDoubleZ("h") / 8) & Size(getDoubleZ("w") - getDoubleZ("w") / 4, getDoubleZ("h") - getDoubleZ("h") / 4), aniCounter1, 3, false, Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.lightBlueAccent.withOpacity(0.3)
-      ..strokeCap = StrokeCap.round
-        ..strokeWidth = z(5));
-
-    canvas.drawArc(Offset(getDoubleZ("x") + getDoubleZ("w") / 8, getDoubleZ("y") + getDoubleZ("h") / 8) & Size(getDoubleZ("w") - getDoubleZ("w") / 4, getDoubleZ("h") - getDoubleZ("h") / 4), aniCounter2, 5, false, Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.lightBlueAccent
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = z(0.5));
-
-    canvas.drawArc(Offset(getDoubleZ("x") + getDoubleZ("w") / 8, getDoubleZ("y") + getDoubleZ("h") / 8) & Size(getDoubleZ("w") - getDoubleZ("w") / 4, getDoubleZ("h") - getDoubleZ("h") / 4), aniCounter2, 5, false, Paint()
-      ..style = PaintingStyle.stroke
-      ..color = Colors.lightBlueAccent.withOpacity(0.5)
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = z(2));*/
-
     String text = prefix + currentText + suffix;
     text = text.replaceAll("[nl]", "\n");
 
@@ -151,7 +134,53 @@ class MapItemGaugeRound extends MapItem {
         TextVAlign.middle,
         TextAlign.center);
 
+    drawAnimatedCircles(canvas);
+
     drawPost(canvas, size);
+  }
+
+  void drawAnimatedCircles(Canvas canvas) {
+    canvas.drawArc(
+        Offset(getDoubleZ("x") + getDoubleZ("w") / 8,
+                getDoubleZ("y") + getDoubleZ("h") / 8) &
+            Size(getDoubleZ("w") - getDoubleZ("w") / 4,
+                getDoubleZ("h") - getDoubleZ("h") / 4),
+        aniCounter1,
+        3,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..color = Colors.lightBlueAccent.withOpacity(0.3)
+          ..strokeCap = StrokeCap.round
+          ..strokeWidth = z(5));
+
+    canvas.drawArc(
+        Offset(getDoubleZ("x") + getDoubleZ("w") / 8,
+                getDoubleZ("y") + getDoubleZ("h") / 8) &
+            Size(getDoubleZ("w") - getDoubleZ("w") / 4,
+                getDoubleZ("h") - getDoubleZ("h") / 4),
+        aniCounter2,
+        5,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..color = Colors.lightBlueAccent
+          ..strokeCap = StrokeCap.round
+          ..strokeWidth = z(0.5));
+
+    canvas.drawArc(
+        Offset(getDoubleZ("x") + getDoubleZ("w") / 8,
+                getDoubleZ("y") + getDoubleZ("h") / 8) &
+            Size(getDoubleZ("w") - getDoubleZ("w") / 4,
+                getDoubleZ("h") - getDoubleZ("h") / 4),
+        aniCounter2,
+        5,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..color = Colors.lightBlueAccent.withOpacity(0.5)
+          ..strokeCap = StrokeCap.round
+          ..strokeWidth = z(2));
   }
 
   @override
@@ -239,6 +268,7 @@ class MapItemGaugeRound extends MapItem {
 
       groups.add(MapItemPropGroup("Gauge", true, props));
     }
+    groups.addAll(super.propGroupsOfItem());
     return groups;
   }
 }

@@ -1,11 +1,4 @@
-import 'dart:convert';
-import 'dart:math';
-import 'dart:typed_data';
-import 'dart:ui' as dart_ui;
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
 import '../../../main/map_item.dart';
