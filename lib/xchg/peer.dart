@@ -102,7 +102,7 @@ class Peer {
       print("ex: $err");
     }*/
 
-    httpCall(host, "r", getMessagesRequest, 5000).then((res) {
+    httpCall(host, "r", getMessagesRequest).then((res) {
       if (res.length >= 8) {
         lastReceivedMessageId = res.buffer.asUint64List(0)[0];
         int offset = 8;
@@ -156,25 +156,26 @@ class Peer {
 
   int wcounter = 0;
 
-  Future<Uint8List> httpCall(String routerHost, String function,
-      Uint8List frame, int timeoutMs) async {
+  Future<Uint8List> httpCall(
+      String routerHost, String function, Uint8List frame) async {
     //print("httpCall $routerHost $function");
     wcounter++;
     Dio? dio;
-    if (httpClients.containsKey(routerHost + "-" + function)) {
-      dio = httpClients[routerHost + "-" + function];
+    if (httpClients.containsKey("$routerHost-$function")) {
+      dio = httpClients["$routerHost-$function"];
     } else {
       //HttpClient.enableTimelineLogging = false;
       dio = Dio();
-      dio.options.connectTimeout = Duration(milliseconds: 1000);
+      dio.options.connectTimeout = const Duration(milliseconds: 1000);
+      dio.options.sendTimeout = const Duration(milliseconds: 1000);
       if (function == "w") {
-        dio.options.receiveTimeout = Duration(milliseconds: 1000);
+        dio.options.receiveTimeout = const Duration(milliseconds: 1000);
       }
       if (function == "r") {
         print("Read from $routerHost");
-        dio.options.receiveTimeout = Duration(milliseconds: 10000);
+        dio.options.receiveTimeout = const Duration(milliseconds: 10000);
       }
-      httpClients[routerHost + "-" + function] = dio;
+      httpClients["$routerHost-$function"] = dio;
     }
 
     if (dio != null) {
