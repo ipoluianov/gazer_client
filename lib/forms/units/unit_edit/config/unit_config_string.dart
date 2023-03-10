@@ -38,12 +38,59 @@ class UnitConfigStringState extends State<UnitConfigString>
           widget.meta['default_value'], widget.meta['format']);
     }
     _controller.text = widget.config[widget.meta['name']];
+    dropdownValue = widget.config[widget.meta['name']];
+
     super.initState();
   }
 
   @override
   void dispose() {
     super.dispose();
+  }
+
+  String dropdownValue = "int32";
+
+  Widget buildInputField(String metaMin, String metaMax, String format) {
+    if (metaMin.isEmpty) {
+      return TextField(
+          controller: _controller,
+          decoration: InputDecoration(
+            hintText: widget.meta['display_name'],
+            labelText: widget.meta['display_name'],
+          ),
+          onChanged: (text) {
+            setState(() {
+              widget.config[widget.meta['name']] = text;
+            });
+            //widget.onChanged();
+          });
+    }
+
+    var options = metaMin.split("|");
+    for (var i = 0; i < options.length; i++) {
+      options[i] = options[i].trim();
+    }
+
+    return DropdownButton<String>(
+      value: dropdownValue,
+      onChanged: (String? newValue) {
+        setState(
+          () {
+            dropdownValue = newValue!;
+            widget.config[widget.meta['name']] = dropdownValue;
+          },
+        );
+      },
+      style: TextStyle(
+        fontSize: 14,
+      ),
+      items: options.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
   }
 
   @override
@@ -53,53 +100,37 @@ class UnitConfigStringState extends State<UnitConfigString>
       constraints: const BoxConstraints(minWidth: 100, maxWidth: 300),
       child: Row(children: [
         Expanded(
-          child: TextField(
-            controller: _controller,
-            decoration: InputDecoration(
-              hintText: widget.meta['display_name'],
-              labelText: widget.meta['display_name'],
-            ),
-            onChanged: (text) {
-              setState(() {
-                widget.config[widget.meta['name']] = text;
-              });
-              //widget.onChanged();
-            },
-          ),
+          child: buildInputField(widget.meta['min_value'],
+              widget.meta['max_value'], widget.meta['format']),
         ),
         widget.meta['format'] != ""
             ? OutlinedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, "/lookup", arguments: LookupFormArgument(Repository().lastSelectedConnection, "Select source item", widget.meta['format'])).then((value) {
-                if (value != null) {
-                  var res = value as LookupFormResult;
+                onPressed: () {
+                  Navigator.pushNamed(context, "/lookup",
+                          arguments: LookupFormArgument(
+                              Repository().lastSelectedConnection,
+                              "Select source item",
+                              widget.meta['format']))
+                      .then((value) {
+                    if (value != null) {
+                      var res = value as LookupFormResult;
 
-                  setState(() {
-                    _controller.text = res.code();
-                    widget.config[widget.meta['name']] = res.code();
-                    //print('Selected: $value');
-                  });                }
-              });
-              /*_futureServiceLookupResponse =
-                  widget.client.serviceLookup(widget.meta['format'], "");
-              selectedIndex = -1;
-              _showLookupDialog(
-                  widget.meta['format'], widget.meta['name'], (value) {
-                setState(() {
-                  _controller.text = value;
-                  widget.config[widget.meta['name']] = value;
-                  //print('Selected: $value');
-                });
-                widget.onChanged();
-              });*/
-            },
-            child: const Text("..."))
+                      setState(() {
+                        _controller.text = res.code();
+                        widget.config[widget.meta['name']] = res.code();
+                        //print('Selected: $value');
+                      });
+                    }
+                  });
+                },
+                child: const Text("..."))
             : const Text(""),
       ]),
     );
   }
 
-  Future<void> _showLookupDialog(String text, String lookupParameter, Function(String) onLookupAccept) async {
+  Future<void> _showLookupDialog(String text, String lookupParameter,
+      Function(String) onLookupAccept) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: true, // user must tap button!
@@ -157,6 +188,35 @@ class UnitConfigStringState extends State<UnitConfigString>
                     //print("$lookupParameter = $lookupSelectedItem");
                     //widget.config[lookupParameter] = lookupSelectedItem;
                     onLookupAccept(lookupSelectedItem);
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> showOptionsDialog(String text, List<String> values,
+      List<String> valuesNames, Function(String) onLookupAccept) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button!
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(text),
+              content: Text("ComboBox"),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    //print("$lookupParameter = $lookupSelectedItem");
+                    //widget.config[lookupParameter] = lookupSelectedItem;
+                    onLookupAccept("selected_item");
                     Navigator.of(context).pop();
                   },
                 ),
