@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/protocol/dataitem/data_item_list.dart';
+import 'package:gazer_client/core/protocol/unit/unit_items_values.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
@@ -46,6 +47,9 @@ class MapItemUnitTable01 extends MapItem {
         .client(connection)
         .unitItemsValues(getDataSource())
         .then((value) {
+      value.items.sort((a, b) {
+        return a.name.compareTo(b.name);
+      });
       for (var di in value.items) {
         if (di.name.contains("/.service")) {
           continue;
