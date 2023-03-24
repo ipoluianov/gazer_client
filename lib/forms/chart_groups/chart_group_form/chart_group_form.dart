@@ -133,6 +133,10 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
         lastLoadedResource = resourceId;
         loading = false;
         loaded = true;
+        if (widget.arg.edit) {
+          widget.arg.edit = false;
+          _settings.setEditing(true);
+        }
       });
     }
   }

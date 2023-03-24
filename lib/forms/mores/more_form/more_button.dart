@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/protocol/unit_type/unit_type_list.dart';
 import 'package:flutter/material.dart';
 import 'package:gazer_client/widgets/borders/border_01_item.dart';
@@ -10,7 +11,8 @@ class MoreButton extends StatefulWidget {
   final String name;
   final Icon img;
   final int index;
-  const MoreButton(this.onClicked, this.name, this.img, this.index, {Key? key}) : super(key: key);
+  const MoreButton(this.onClicked, this.name, this.img, this.index, {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -69,7 +71,7 @@ class MoreButtonState extends State<MoreButton> with TickerProviderStateMixin {
             gotoUnit();
           },
           child: Container(
-            color: Colors.black26,
+            // color: Colors.black26,
             child: Container(
               padding: const EdgeInsets.all(10),
               width: 200,
@@ -85,7 +87,8 @@ class MoreButtonState extends State<MoreButton> with TickerProviderStateMixin {
                         width: 48,
                         height: 48,
                         child: ColorFiltered(
-                          colorFilter: const ColorFilter.mode(Colors.orange, BlendMode.srcATop),
+                          colorFilter: ColorFilter.mode(
+                              DesignColors.fore(), BlendMode.srcATop),
                           child: widget.img,
                         ),
                       ),
@@ -96,6 +99,7 @@ class MoreButtonState extends State<MoreButton> with TickerProviderStateMixin {
                             widget.name,
                             overflow: TextOverflow.fade,
                             textAlign: TextAlign.center,
+                            style: TextStyle(color: DesignColors.fore()),
                           ),
                         ),
                       ),

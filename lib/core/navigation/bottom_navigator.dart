@@ -5,6 +5,7 @@ import 'package:gazer_client/widgets/borders/border_01_item.dart';
 import 'package:gazer_client/widgets/borders/border_03_item_details.dart';
 
 import '../design.dart';
+import 'resources_form_arguments_factory.dart';
 import 'route_generator.dart';
 
 class BottomNavigator extends StatelessWidget {
@@ -99,31 +100,7 @@ class BottomNavigator extends StatelessWidget {
                   Navigator.pushNamed(
                     context,
                     "/chart_groups",
-                    arguments: ResourcesFormArgument(
-                      Repository().lastSelectedConnection,
-                      "chart_group",
-                      "Chart Group",
-                      "Chart Groups",
-                      Icons.stacked_line_chart,
-                      true,
-                      false,
-                      "",
-                      "",
-                      (context, res) {
-                        Navigator.of(context)
-                            .pushNamed(
-                          "/chart_group",
-                          arguments: ChartGroupFormArgument(
-                            Repository().lastSelectedConnection,
-                            res.id,
-                          ),
-                        )
-                            .then((value) {
-                          //load();
-                        });
-                      },
-                      (context, res) {},
-                    ),
+                    arguments: buildResourcesFormArgumentCharts(),
                   );
                 })
               : Container(),
@@ -134,32 +111,7 @@ class BottomNavigator extends StatelessWidget {
                   Navigator.pushNamed(
                     context,
                     "/maps",
-                    arguments: ResourcesFormArgument(
-                      Repository().lastSelectedConnection,
-                      "map",
-                      "Map",
-                      "Maps",
-                      Icons.layers,
-                      true,
-                      false,
-                      "",
-                      "",
-                      (context, res) {
-                        Navigator.of(context)
-                            .pushNamed(
-                          "/map",
-                          arguments: MapFormArgument(
-                            Repository().lastSelectedConnection,
-                            res.id,
-                            true,
-                          ),
-                        )
-                            .then((value) {
-                          //load();
-                        });
-                      },
-                      (context, res) {},
-                    ),
+                    arguments: buildResourcesFormArgumentMaps(),
                   );
                 })
               : Container(),

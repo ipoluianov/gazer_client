@@ -70,6 +70,15 @@ class ResourcesFormSt extends State<ResourcesForm> {
     loadFolders();
   }
 
+  Future<void> processOnCreated(ResAddResponse value) async {
+    Future.delayed(const Duration(milliseconds: 700)).then((v) {
+      if (widget.arg.onCreated != null) {
+        var resp = value;
+        widget.arg.onCreated!(context, resp.id);
+      }
+    });
+  }
+
   void loadFolders() {
     if (loadingFolders) {
       return;
@@ -77,7 +86,7 @@ class ResourcesFormSt extends State<ResourcesForm> {
     loadingFolders = true;
     Repository()
         .client(widget.arg.connection)
-        .resList(widget.arg.type + "_folder", "", 0, 10000)
+        .resList("${widget.arg.type}_folder", "", 0, 10000)
         .then((value) {
       loadingFolders = false;
       if (mounted) {
@@ -497,13 +506,8 @@ class ResourcesFormSt extends State<ResourcesForm> {
                 widget.arg.typeNamePlural))
         .then((value) {
       if (value != null) {
-        if (widget.arg.onCreated != null) {
-          Navigator.of(context).popUntil((route) => route.isFirst);
-          Navigator.of(context).pop();
-          var resp = value as ResAddResponse;
-          widget.arg.onCreated!(context, resp.id);
-        }
         load();
+        processOnCreated(value as ResAddResponse);
       }
     });
   }
@@ -519,7 +523,7 @@ class ResourcesFormSt extends State<ResourcesForm> {
         return Scaffold(
           appBar: TitleBar(
             widget.arg.connection,
-            widget.arg.typeNamePlural + " " + fullFolderName(),
+            "${widget.arg.typeNamePlural} ${fullFolderName()}",
             actions: <Widget>[
               buildActionButton(
                   context, Icons.add, "Add ${widget.arg.typeName}", () {

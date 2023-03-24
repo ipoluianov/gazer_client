@@ -91,7 +91,7 @@ class MapFormSt extends State<MapForm> {
     map.initMapInstance(widget.arg.connection);
     map.instance.loadFromResource(widget.arg.id, {}).then((value) {
       if (widget.arg.edit) {
-        // TODO: edit mode
+        widget.arg.edit = false;
         openEditor();
       }
     });

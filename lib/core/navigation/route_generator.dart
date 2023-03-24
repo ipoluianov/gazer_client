@@ -406,7 +406,8 @@ class ChartGroupsFormArgument {
 class ChartGroupFormArgument {
   Connection connection;
   String id;
-  ChartGroupFormArgument(this.connection, this.id);
+  bool edit;
+  ChartGroupFormArgument(this.connection, this.id, this.edit);
 }
 
 class ChartGroupAddFormArgument {

@@ -146,7 +146,7 @@ class UnitAddFormSt extends State<UnitAddForm> {
           child: Row(children: [
             ColorFiltered(
               colorFilter:
-                  const ColorFilter.mode(Colors.orange, BlendMode.srcATop),
+                  ColorFilter.mode(DesignColors.fore(), BlendMode.srcATop),
               child: Image.memory(
                 _bytesImage,
                 width: 24,

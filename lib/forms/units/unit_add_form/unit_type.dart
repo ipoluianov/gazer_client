@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/protocol/unit_type/unit_type_list.dart';
 import 'package:flutter/material.dart';
 import 'package:gazer_client/widgets/borders/border_01_item.dart';
@@ -87,8 +88,8 @@ class UnitTypeState extends State<UnitType> with TickerProviderStateMixin {
                         width: 48,
                         height: 48,
                         child: ColorFiltered(
-                          colorFilter: const ColorFilter.mode(
-                              Colors.orange, BlendMode.srcATop),
+                          colorFilter: ColorFilter.mode(
+                              DesignColors.fore(), BlendMode.srcATop),
                           child: Image.memory(_bytesImage),
                         ),
                       ),
