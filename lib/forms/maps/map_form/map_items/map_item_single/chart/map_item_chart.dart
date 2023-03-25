@@ -103,9 +103,9 @@ class MapItemChart extends MapItemSingle {
 
     currentChartColor = chartColor;
 
-    lastSeconds = getDouble("period");
-    if (lastSeconds < 1) {
-      lastSeconds = 1;
+    lastSeconds = getDouble("span");
+    if (lastSeconds < 5) {
+      lastSeconds = 5;
     }
     if (lastSeconds > 86400 * 365) {
       lastSeconds > 86400 * 365;
@@ -160,7 +160,7 @@ class MapItemChart extends MapItemSingle {
     groups.addAll(super.propGroupsOfItem());
     {
       List<MapItemPropItem> props = [];
-      props.add(MapItemPropItem("", "period", "Period, sec", "double", "300"));
+      props.add(MapItemPropItem("", "span", "Span, sec", "double", "300"));
       props.add(MapItemPropItem(
           "", "chart_color", "Chart Color", "color", "FF0EC35E"));
       props.add(MapItemPropItem(
