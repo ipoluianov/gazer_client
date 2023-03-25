@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:gazer_client/forms/maps/map_form/main/map_item.dart';
-import 'package:gazer_client/forms/maps/map_item_properties_form/styles.dart';
 
 class MapItemPropMultiline extends StatefulWidget {
   final IPropContainer item;
@@ -80,7 +78,7 @@ class MapItemPropMultilineSt extends State<MapItemPropMultiline> {
             child: Center(
               child: Text(
                 text,
-                style: TextStyle(color: Colors.black),
+                style: const TextStyle(color: Colors.black),
               ),
             ),
           ),

@@ -50,14 +50,14 @@ class MapItemPropScaleFitSt extends State<MapItemPropScaleFit> {
         onPressed: () {
           widget.item.set(widget.propItem.name, value);
         },
+        style: OutlinedButton.styleFrom(
+          backgroundColor: colorOfButton(value),
+        ),
         child: Text(
           value,
           style: TextStyle(
             color: colorOfButtonText(value),
           ),
-        ),
-        style: OutlinedButton.styleFrom(
-          backgroundColor: colorOfButton(value),
         ),
       ),
     );

@@ -45,14 +45,14 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
       Container(
         width: 24,
         height: 24,
-        margin: EdgeInsets.only(left: 3),
+        margin: const EdgeInsets.only(left: 3),
         decoration: BoxDecoration(
             color: colorFromHex(widget.item.get(widget.propItem.name)) ??
                 Colors.transparent,
             border: Border.all(color: Colors.white30, width: 1)),
       ),
       Container(
-        padding: EdgeInsets.only(left: 3),
+        padding: const EdgeInsets.only(left: 3),
         child: OutlinedButton(
           onPressed: () {
             setCurrentColor("");
@@ -118,7 +118,7 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
             child: Center(
               child: Text(
                 colorToHex(color),
-                style: TextStyle(color: Colors.black),
+                style: const TextStyle(color: Colors.black),
               ),
             ),
           ),
@@ -158,36 +158,34 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
   }
 
   Widget colorPickerPalette(BuildContext context, Function setState) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: EdgeInsets.all(10),
-                child: SizedBox(
-                  width: 200,
-                  height: 50,
-                  child: Container(
-                    color: pickerColor,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: SizedBox(
+                width: 200,
+                height: 50,
+                child: Container(
+                  color: pickerColor,
                 ),
               ),
-            ],
-          ),
-          Row(
-            children: colorsByColumn(0, setState),
-          ),
-          Row(
-            children: colorsByColumn(1, setState),
-          ),
-          Row(
-            children: colorsByColumn(2, setState),
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+        Row(
+          children: colorsByColumn(0, setState),
+        ),
+        Row(
+          children: colorsByColumn(1, setState),
+        ),
+        Row(
+          children: colorsByColumn(2, setState),
+        ),
+      ],
     );
   }
 
@@ -215,7 +213,6 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
                       colorPickerCurrentTypeIndex = 0;
                     });
                   },
-                  child: const Text("Palette"),
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(
                         colorPickerCurrentTypeIndex == 0
@@ -226,6 +223,7 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
                             ? Colors.white
                             : Colors.blueAccent),
                   ),
+                  child: const Text("Palette"),
                 ),
               ),
               Expanded(
@@ -235,7 +233,6 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
                       colorPickerCurrentTypeIndex = 1;
                     });
                   },
-                  child: const Text("Free"),
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(
                         colorPickerCurrentTypeIndex == 1
@@ -246,6 +243,7 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
                             ? Colors.white
                             : Colors.blueAccent),
                   ),
+                  child: const Text("Free"),
                 ),
               ),
             ],

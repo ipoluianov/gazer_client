@@ -27,25 +27,22 @@ class MapItemPropTextSt extends State<MapItemPropText> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      //constraints: const BoxConstraints(minWidth: 100, maxWidth: 250),
-      child: Row(
-        children: [
-          Expanded(
-            child: SizedBox(
-              height: 30,
-              child: TextField(
-                controller: txtController,
-                decoration: textInputDecoration(),
-                onChanged: (text) {
-                  widget.item.set(widget.propItem.name, text);
-                  //widget.onChanged();
-                },
-              ),
+    return Row(
+      children: [
+        Expanded(
+          child: SizedBox(
+            height: 30,
+            child: TextField(
+              controller: txtController,
+              decoration: textInputDecoration(),
+              onChanged: (text) {
+                widget.item.set(widget.propItem.name, text);
+                //widget.onChanged();
+              },
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

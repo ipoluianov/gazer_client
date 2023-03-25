@@ -40,14 +40,5 @@ class MapItemPropBoolSt extends State<MapItemPropBool> {
         ),
       ],
     );
-    return TextField(
-      controller: txtController,
-      decoration: InputDecoration(
-        label: Text(widget.propItem.displayName),
-      ),
-      onChanged: (value) {
-        widget.item.set(widget.propItem.name, value);
-      },
-    );
   }
 }

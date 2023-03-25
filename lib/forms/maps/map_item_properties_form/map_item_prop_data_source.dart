@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/forms/utilities/lookup_form/lookup_form.dart';
 import 'package:gazer_client/forms/maps/map_form/main/map_item.dart';
