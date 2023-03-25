@@ -10,8 +10,9 @@ import 'package:gazer_client/widgets/time_chart/time_chart_settings_area.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_settings_series.dart';
 
 import '../../../main/map_item.dart';
+import '../map_item_single.dart';
 
-class MapItemChart extends MapItem {
+class MapItemChart extends MapItemSingle {
   static const String sType = "chart.01";
   static const String sName = "Chart.01";
   @override
@@ -156,6 +157,7 @@ class MapItemChart extends MapItem {
   @override
   List<MapItemPropGroup> propGroupsOfItem() {
     List<MapItemPropGroup> groups = [];
+    groups.addAll(super.propGroupsOfItem());
     {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem("", "period", "Period, sec", "double", "300"));
@@ -163,7 +165,7 @@ class MapItemChart extends MapItem {
           "", "chart_color", "Chart Color", "color", "FF0EC35E"));
       props.add(MapItemPropItem(
           "", "show_time_scale", "Show Time Scale", "bool", "0"));
-      groups.add(MapItemPropGroup("Text", true, props));
+      groups.add(MapItemPropGroup("Chart", true, props));
     }
     return groups;
   }

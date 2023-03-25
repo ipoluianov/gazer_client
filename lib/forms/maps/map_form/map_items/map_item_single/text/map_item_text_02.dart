@@ -10,8 +10,9 @@ import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
 import '../../../main/map_item.dart';
+import '../map_item_single.dart';
 
-class MapItemText02 extends MapItem {
+class MapItemText02 extends MapItemSingle {
   static const String sType = "text.02";
   static const String sName = "Text.02";
   @override
@@ -140,6 +141,7 @@ class MapItemText02 extends MapItem {
   @override
   List<MapItemPropGroup> propGroupsOfItem() {
     List<MapItemPropGroup> groups = [];
+    groups.addAll(super.propGroupsOfItem());
     {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem(

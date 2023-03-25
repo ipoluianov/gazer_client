@@ -26,7 +26,7 @@ class MapItemText extends MapItemSingle {
 
   @override
   void setDefaultsForItem() {
-    super.setDefaults();
+    //super.setDefaults();
     setDouble("w", 100);
     setDouble("h", 40);
   }
@@ -116,6 +116,7 @@ class MapItemText extends MapItemSingle {
   @override
   List<MapItemPropGroup> propGroupsOfItem() {
     List<MapItemPropGroup> groups = [];
+    groups.addAll(super.propGroupsOfItem());
     {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem("", "text", "Text", "text", "Text"));
@@ -127,7 +128,6 @@ class MapItemText extends MapItemSingle {
       props.add(MapItemPropItem("", "suffix", "Suffix", "text", ""));
       groups.add(MapItemPropGroup("Text", true, props));
     }
-    groups.addAll(super.propGroupsOfItem());
     return groups;
   }
 
