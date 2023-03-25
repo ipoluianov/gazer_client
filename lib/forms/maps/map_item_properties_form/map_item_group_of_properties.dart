@@ -8,6 +8,7 @@ import 'package:expandable/expandable.dart';
 import 'map_item_prop_actions.dart';
 import 'map_item_prop_color.dart';
 import 'map_item_prop_double.dart';
+import 'map_item_prop_halign.dart';
 import 'map_item_prop_image.dart';
 import 'map_item_prop_multiline.dart';
 import 'map_item_prop_scale_fit.dart';
@@ -75,6 +76,9 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
     }
     if (propItem.type == "actions") {
       propWidget = MapItemPropActions(item, propItem, key: key);
+    }
+    if (propItem.type == "halign") {
+      propWidget = MapItemPropHAlign(item, propItem, key: key);
     }
 
     return Container(

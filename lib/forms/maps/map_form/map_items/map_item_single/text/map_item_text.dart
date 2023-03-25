@@ -39,6 +39,7 @@ class MapItemText extends MapItemSingle {
     var text = get("text");
     var prefix = get("prefix");
     var suffix = get("suffix");
+    var hAlign = getTextAlign("h_align");
 
     if (hasDataSource()) {
       var value = dataSourceValue();
@@ -87,7 +88,7 @@ class MapItemText extends MapItemSingle {
         lastValue,
         getColor("text_color"),
         TextVAlign.middle,
-        TextAlign.center);
+        hAlign);
     drawPost(canvas, size);
   }
 
@@ -126,6 +127,7 @@ class MapItemText extends MapItemSingle {
       props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
       props.add(MapItemPropItem("", "prefix", "Prefix", "text", ""));
       props.add(MapItemPropItem("", "suffix", "Suffix", "text", ""));
+      props.add(MapItemPropItem("", "h_align", "hAlign", "halign", "center"));
       groups.add(MapItemPropGroup("Text", true, props));
     }
     return groups;

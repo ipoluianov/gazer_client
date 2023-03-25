@@ -342,6 +342,21 @@ abstract class MapItem extends IPropContainer {
     return 0;
   }
 
+  TextAlign getTextAlign(String name) {
+    TextAlign result = TextAlign.center;
+    String val = get(name);
+    if (val == "left") {
+      result = TextAlign.left;
+    }
+    if (val == "center") {
+      result = TextAlign.center;
+    }
+    if (val == "right") {
+      result = TextAlign.right;
+    }
+    return result;
+  }
+
   bool getBool(String name) {
     var val = get(name);
     return val == "1";
