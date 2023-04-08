@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:base32/base32.dart';
 
 class XchgNetworkHost {
@@ -89,6 +91,27 @@ class XchgNetwork {
         'initial_points': ranges,
         'ranges': ranges,
       };
+
+  String getRandomNode() {
+    int totalCount = 0;
+    for (var range in ranges) {
+      for (var _ in range.hosts) {
+        totalCount++;
+      }
+    }
+    Random rnd = Random(DateTime.now().microsecondsSinceEpoch);
+    int randomNumber = rnd.nextInt(totalCount - 1);
+    int counter = 0;
+    for (var range in ranges) {
+      for (var node in range.hosts) {
+        if (counter == randomNumber) {
+          return node.address;
+        }
+        counter++;
+      }
+    }
+    return "";
+  }
 
   List<String> getNodesAddressesByAddress(String address) {
     List<String> result = [];

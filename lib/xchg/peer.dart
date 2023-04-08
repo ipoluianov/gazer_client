@@ -45,6 +45,8 @@ class Peer {
   late Timer _timer;
   bool useLocalRouter = false;
 
+  Map<String, String> addressByName = {};
+
   Peer(AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>? privKey,
       this.useLocalRouter) {
     print("PEER CREATED! local: ${useLocalRouter}");
@@ -202,6 +204,14 @@ class Peer {
   }
 
   String remotePeerTransport(String address) {
+    if (!address.startsWith("#")) {
+      if (addressByName.containsKey(address)) {
+        address = addressByName[address]!;
+      }
+    }
+    if (!address.startsWith("#")) {
+      return "";
+    }
     RemotePeer? remotePeer;
     for (RemotePeer peer in remotePeers.values) {
       if (peer.remoteAddress == address) {
@@ -379,6 +389,34 @@ class Peer {
     }
   }
 
+  Future<String> getAddressByName(String name) async {
+    if (network != null) {
+      Map<String, int> responses = {};
+      const int requestCount = 3;
+      for (int i = 0; i < requestCount; i++) {
+        String node = network!.getRandomNode();
+        String response = await httpGet("http://$node/api/ns?name=$name", 1000);
+        if (response.startsWith("#") && response.length == 49) {
+          int? counter = responses[response];
+          if (counter == null) {
+            responses[response] = 1;
+          } else {
+            responses[response] = counter + 1;
+          }
+        }
+      }
+
+      for (var resp in responses.keys) {
+        int count = responses[resp]!;
+        if (count >= requestCount / 2 + 1) {
+          return resp;
+        }
+      }
+      throw "no consensus";
+    }
+    throw "no xchg network";
+  }
+
   Future<CallResult> call(String remoteAddress, String authData,
       String function, Uint8List data) async {
     RemotePeer? remotePeer;
@@ -387,6 +425,27 @@ class Peer {
 
     // Update network file
     checkNetwork();
+
+    if (!remoteAddress.startsWith("#")) {
+      if (!addressByName.containsKey(remoteAddress)) {
+        try {
+          String addressFromNetwork = await getAddressByName(remoteAddress);
+          addressByName[remoteAddress] = addressFromNetwork;
+          remoteAddress = addressFromNetwork;
+        } catch (ex) {
+          return CallResult.createError("cannot resolve name: $ex");
+        }
+      } else {
+        var addr = addressByName[remoteAddress];
+        if (addr != null) {
+          remoteAddress = addr;
+        }
+      }
+    }
+
+    if (remoteAddress.length != 49 || !remoteAddress.startsWith("#")) {
+      return CallResult.createError("wrong address format");
+    }
 
     try {
       // Waiting for socket
