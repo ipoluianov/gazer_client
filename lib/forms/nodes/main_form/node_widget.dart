@@ -25,7 +25,11 @@ class NodeWidgetSt extends State<NodeWidget> {
   String nodeName = "";
   String status = "";
   bool errorExists = false;
-  late Timer _timer;
+
+  bool timerFastMode_ = true;
+  late Timer _timerFast;
+  int _timerFastCounter = 0;
+  late Timer _timerSlow;
 
   @override
   void initState() {
@@ -38,16 +42,30 @@ class NodeWidgetSt extends State<NodeWidget> {
         false; // Reset info in connection
     updateNodeInfo();
 
-    _timer = Timer.periodic(const Duration(milliseconds: 10000), (timer) {
+    _timerSlow = Timer.periodic(const Duration(milliseconds: 10000), (timer) {
+      if (timerFastMode_) return;
+
       if (errorExists) {
         updateNodeInfo();
+      }
+    });
+    _timerFast = Timer.periodic(const Duration(milliseconds: 1000), (timer) {
+      if (!timerFastMode_) return;
+
+      if (errorExists) {
+        updateNodeInfo();
+        _timerFastCounter++;
+        if (_timerFastCounter > 5) {
+          timerFastMode_ = false;
+        }
       }
     });
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timerSlow.cancel();
+    _timerFast.cancel();
     super.dispose();
   }
 
