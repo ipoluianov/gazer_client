@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'package:base32/base32.dart';
-import 'package:gazer_client/xchg/udp_address.dart';
 import 'package:gazer_client/xchg/utils.dart';
 
 class Transaction {
@@ -20,7 +19,6 @@ class Transaction {
   Uint8List result = Uint8List(0);
 
   // Runtime
-  UdpAddress? srcUdpAddr;
   String srcRouterAddr = "";
   String transportType = "";
 

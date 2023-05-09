@@ -7,7 +7,7 @@ import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:gazer_client/xchg/network.dart';
 import 'package:gazer_client/xchg/remote_peer.dart';
-import 'package:gazer_client/xchg/request_udp.dart';
+import 'package:gazer_client/xchg/frame_writer.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 
@@ -15,7 +15,6 @@ import 'network_container.dart';
 import 'rsa.dart';
 import 'session.dart';
 import 'transaction.dart';
-import 'udp_address.dart';
 import 'utils.dart';
 
 class XchgServerProcessor {}
@@ -29,12 +28,6 @@ class Peer {
   XchgNetwork? network;
 
   XchgServerProcessor? processor;
-
-  static int udpStartPort = 42000;
-  static int udpEndPort = 42031;
-
-  bool currentUdpPortTrying = false;
-  bool currentUdpPortValid = false;
 
   // Client
   Map<String, RemotePeer> remotePeers = {};
@@ -114,7 +107,7 @@ class Peer {
             int frameLen = tempBuf.buffer.asUint32List(0)[0];
             if (offset + frameLen <= res.length) {
               Uint8List frame = res.sublist(offset, offset + frameLen);
-              processFrame(null, host, frame);
+              processFrame(host, frame);
             } else {
               break;
             }
@@ -226,8 +219,7 @@ class Peer {
     return "peer not found";
   }
 
-  Future<void> processFrame(
-      UdpAddress? sourceAddress, String router, Uint8List frame) async {
+  Future<void> processFrame(String router, Uint8List frame) async {
     // Min size of frame is 128 bytes
     if (frame.length < 128) {
       return;
@@ -236,16 +228,16 @@ class Peer {
     int frameType = frame[8];
     switch (frameType) {
       case 0x10:
-        processFrame10(sourceAddress, frame);
+        processFrame10(frame);
         break;
       case 0x11:
-        processFrame11(sourceAddress, router, frame);
+        processFrame11(router, frame);
         break;
       case 0x20:
-        processFrame20(sourceAddress, frame);
+        processFrame20(frame);
         break;
       case 0x21:
-        processFrame21(sourceAddress, frame);
+        processFrame21(frame);
         break;
       default:
     }
@@ -255,7 +247,7 @@ class Peer {
 // Incoming Call - Server Role
 // ----------------------------------------
 
-  void processFrame10(UdpAddress? sourceAddress, Uint8List frame) {
+  void processFrame10(Uint8List frame) {
     Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
 
     List<String> transactionsToRemove = [];
@@ -276,7 +268,7 @@ class Peer {
         Transaction(0, "", "", 0, 0, 0, 0, Uint8List(0));
 
     String incomingTransactionCode =
-        sourceAddress.toString() + "-" + transaction.transactionId.toString();
+        transaction.srcAddress + "-" + transaction.transactionId.toString();
     if (incomingTransactions.containsKey(incomingTransactionCode)) {
       incomingTransaction = incomingTransactions[incomingTransactionCode]!;
     } else {
@@ -314,17 +306,11 @@ class Peer {
     }
   }
 
-  void processFrame11(
-      UdpAddress? sourceAddress, String router, Uint8List frame) {
+  void processFrame11(String router, Uint8List frame) {
     //print("processFrame11");
     Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
 
-    if (sourceAddress != null) {
-      transaction.transportType =
-          "via UDP ${sourceAddress.address.address}:${sourceAddress.port}";
-    } else {
-      transaction.transportType = "HTTP $router";
-    }
+    transaction.transportType = "HTTP $router";
 
     RemotePeer? remotePeer;
     for (RemotePeer peer in remotePeers.values) {
@@ -334,14 +320,13 @@ class Peer {
       }
     }
     if (remotePeer != null) {
-      transaction.srcUdpAddr = sourceAddress;
       transaction.srcRouterAddr = router;
       remotePeer.processFrame(transaction);
     }
   }
 
   // ARP LAN request
-  void processFrame20(UdpAddress? sourceAddress, Uint8List frame) {
+  void processFrame20(Uint8List frame) {
     String localAddress = addressForPublicKey(keyPair.publicKey);
     Uint8List nonce = frame.sublist(8, 8 + 16);
     Uint8List nonceHash = Uint8List.fromList(sha256.convert(nonce).bytes);
@@ -358,11 +343,11 @@ class Peer {
     response.addAll(nonce);
     response.addAll(signature);
     response.addAll(publicKeyBS);
-    sendFrame(sourceAddress, [response], this);
+    sendFrame([response], this, false);
   }
 
   // ARP LAN response
-  void processFrame21(UdpAddress? sourceAddress, Uint8List frame) {
+  void processFrame21(Uint8List frame) {
     try {
       Uint8List receivedPublicKeyBS = frame.sublist(128 + 16 + 256);
       var receivedPublicKey = decodePublicKeyFromPKIX(receivedPublicKeyBS);
@@ -370,7 +355,6 @@ class Peer {
       for (var peer in remotePeers.values) {
         if (peer.remoteAddress == receivedAddress) {
           peer.setRemotePublicKey(
-              sourceAddress,
               receivedPublicKey,
               frame.sublist(128, 128 + 16),
               frame.sublist(128 + 16, 128 + 16 + 256));
@@ -422,6 +406,8 @@ class Peer {
     RemotePeer? remotePeer;
     CallResult? res;
     res = CallResult();
+
+    print("Call $remoteAddress");
 
     // Update network file
     checkNetwork();

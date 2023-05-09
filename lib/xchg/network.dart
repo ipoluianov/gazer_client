@@ -138,6 +138,8 @@ class XchgNetwork {
       }
     }
 
+    result.addAll(getLocalNodes());
+
     if (preferredRange != null) {
       for (var host in preferredRange.hosts) {
         result.add(host.address);
@@ -145,5 +147,17 @@ class XchgNetwork {
     }
 
     return result;
+  }
+
+  List<String> getLocalNodes() {
+    List<String> result = [];
+    result.add("localhost:42001");
+    result.add("localhost:42002");
+    //result.add("localhost:42003");
+    return result;
+  }
+
+  bool isLocalNode(String nodeAddress) {
+    return nodeAddress.contains("localhost");
   }
 }
