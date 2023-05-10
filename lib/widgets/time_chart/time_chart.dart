@@ -14,6 +14,7 @@ import 'package:gazer_client/widgets/time_chart/time_chart_settings.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_settings_area.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_settings_series.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TimeChart extends StatefulWidget {
   final Connection conn;
@@ -44,6 +45,11 @@ class TimeChartState extends State<TimeChart> with TickerProviderStateMixin {
   void initState() {
     requestHistory();
     setUpdateTimePeriodMs(100);
+    SharedPreferences.getInstance().then((sharedPref) {
+      dropdownValue =
+          sharedPref.getString("time_chart_default_last_period") ?? "5min";
+    });
+
     super.initState();
   }
 
@@ -233,6 +239,12 @@ class TimeChartState extends State<TimeChart> with TickerProviderStateMixin {
             widget._settings.setFixedHorScale(false);
             widget._settings.resetToDefaultDisplayRange();
           });
+
+          SharedPreferences.getInstance().then((sharedPref) {
+            sharedPref.setString(
+                "time_chart_default_last_period", dropdownValue);
+          });
+
           widget.onChanged();
         },
         child: SizedBox(
@@ -300,12 +312,12 @@ class TimeChartState extends State<TimeChart> with TickerProviderStateMixin {
       builder: (context, constraints) {
         List<Widget> buttons = [
           buildTimeButton("5min"),
+          buildTimeButton("30min"),
           buildTimeButton("60min"),
+          buildTimeButton("3hours"),
           buildTimeButton("12hours"),
           buildTimeButton("24hours"),
           buildTimeButton("7days"),
-          buildTimeButton("30days"),
-          buildTimeButton("365days"),
         ];
 
         int countOfButtons = (constraints.maxWidth / 120).round();

@@ -436,8 +436,10 @@ class MapFormSt extends State<MapForm> {
                     });
                   },
                   onPointerSignal: (pointerSignal) {
-                    print("Listener::onPointerSignal");
+                    // print("Listener::onPointerSignal");
                     if (pointerSignal is PointerScrollEvent) {
+                      print(
+                          "----------------- Listener::onPointerSignal ${pointerSignal.scrollDelta}");
                       map.scroll(pointerSignal.scrollDelta,
                           pointerSignal.localPosition);
                     }

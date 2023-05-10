@@ -21,10 +21,7 @@ Future<void> sendFrame(
           //print("REMOTE ROUTER");
         }
         for (var addr in nodes) {
-          if (addr.contains("x01")) {
-            print("---------------- Address: $addr");
-          }
-          await peer.httpCall(addr, "w", frame).catchError((err) {
+          peer.httpCall(addr, "w", frame).catchError((err) {
             print("write error: $err");
           });
           //break;

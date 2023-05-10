@@ -1,12 +1,7 @@
-import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:gazer_client/core/gazer_style.dart';
-import 'package:gazer_client/core/protocol/resource/resource_list.dart';
-import 'package:gazer_client/core/protocol/unit/unit_state_all.dart';
-import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
 import 'map_item_add_form.dart';
@@ -16,7 +11,8 @@ class MapItemCard extends StatefulWidget {
   final MapItemAddFormItem mapItem;
   final Function onNavigate;
 
-  const MapItemCard(this.conn, this.mapItem, this.onNavigate, {Key? key}) : super(key: key);
+  const MapItemCard(this.conn, this.mapItem, this.onNavigate, {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -55,7 +51,7 @@ class MapItemCardState extends State<MapItemCard> {
     if (_bytesImage.isNotEmpty) {
       return Image.memory(_bytesImage, fit: BoxFit.cover);
     }
-    return Container(color: Colors.red.withOpacity(0.2));
+    return Container(color: Colors.white.withOpacity(0.2));
   }
 
   @override
@@ -105,7 +101,7 @@ class MapItemCardState extends State<MapItemCard> {
             ),
             height: 200,
             decoration: BoxDecoration(
-              color: hover ? Colors.black54 : Colors.transparent,
+              color: hover ? Colors.black54 : Colors.white.withOpacity(0.05),
             ),
             child: Stack(
               fit: StackFit.expand,
@@ -128,10 +124,12 @@ class MapItemCardState extends State<MapItemCard> {
                               icon,
                               Expanded(
                                 child: Container(
-                                  padding: const EdgeInsets.only(left: 10, top: 5, bottom: 5),
+                                  padding: const EdgeInsets.only(
+                                      left: 10, top: 5, bottom: 5),
                                   color: Colors.black26,
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         widget.mapItem.name,

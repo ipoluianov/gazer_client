@@ -883,11 +883,12 @@ class MapView {
     autoZoom = false;
 
     var newZoom = instance.zoom;
-    var pointOfChange = 20.0;
+    /*var pointOfChange = 20.0;
     var distance = (offset.dy / pointOfChange);
     distance = -distance / 2;
     distance += 1;
-    newZoom *= distance;
+    newZoom *= distance;*/
+    newZoom = newZoom - (offset.dy / 200) * newZoom;
 
     setTargetZoom(position.dx, position.dy, newZoom);
   }
