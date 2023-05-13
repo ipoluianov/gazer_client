@@ -25,7 +25,10 @@ class ChartGroupDataItemsState extends State<ChartGroupDataItems> {
   List<DataItemsGroup> _groups = [];
 
   void load() {
-    Repository().client(widget.connection).serviceLookup("data-item", "").then((value) {
+    Repository()
+        .client(widget.connection)
+        .serviceLookup("data-item", "")
+        .then((value) {
       List<DataItemsGroup> groups = [];
       Map<String, DataItemsGroup> groupsMap = {};
       for (var item in value.result.rows) {
@@ -64,17 +67,14 @@ class ChartGroupDataItemsState extends State<ChartGroupDataItems> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(minWidth: 100, maxWidth: 265),
-      color: Colors.blueAccent.withOpacity(0.1),
-      padding: const EdgeInsets.all(0),
-      margin: const EdgeInsets.only(bottom: 3),
+      margin: const EdgeInsets.only(bottom: 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: _groups.map((e) {
           return Container(
             margin: const EdgeInsets.only(bottom: 6),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 MouseRegion(
                   cursor: SystemMouseCursors.click,
@@ -85,34 +85,38 @@ class ChartGroupDataItemsState extends State<ChartGroupDataItems> {
                       });
                     },
                     child: Container(
-                      color: Colors.black,
+                      color: Colors.blue.withOpacity(0.5),
                       child: Row(
                         children: [
-                          const Icon(Icons.blur_on,),
+                          const Icon(
+                            Icons.blur_on,
+                          ),
                           Expanded(
                             child: Draggable<DataItemsObject>(
-                              data: DataItemsObject(e.name, e.name, DataItemsObjectType.unit),
+                              data: DataItemsObject(
+                                  e.name, e.name, DataItemsObjectType.unit),
                               feedback: Container(
                                 color: Colors.deepOrange,
                                 height: 30,
                                 width: 200,
-                                child: const Icon(Icons.directions_run),
+                                child: const Icon(Icons.data_object),
                               ),
                               child: Container(
-                                color: Colors.black26,
-                                padding: EdgeInsets.all(6),
-                                margin: EdgeInsets.all(3),
+                                padding: const EdgeInsets.all(6),
+                                margin: const EdgeInsets.all(3),
                                 child: Text(
                                   e.displayName,
                                   style: const TextStyle(
                                     fontSize: 16,
-                                    color: Colors.green,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                          e.expanded ? const Icon(Icons.keyboard_arrow_up_outlined) : const Icon(Icons.keyboard_arrow_down_outlined),
+                          e.expanded
+                              ? const Icon(Icons.keyboard_arrow_up_outlined)
+                              : const Icon(Icons.keyboard_arrow_down_outlined),
                         ],
                       ),
                     ),
@@ -124,23 +128,49 @@ class ChartGroupDataItemsState extends State<ChartGroupDataItems> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: e.items.map((item) {
                             return Draggable<DataItemsObject>(
-                              data: DataItemsObject(item.fullName, item.name, DataItemsObjectType.dataItem),
+                              data: DataItemsObject(item.fullName, item.name,
+                                  DataItemsObjectType.dataItem),
                               feedback: Container(
-                                color: Colors.deepOrange,
-                                height: 30,
+                                //height: 30,
+                                padding: const EdgeInsets.all(6),
                                 width: 200,
-                                child: const Icon(Icons.directions_run),
+                                decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    border: Border.all(
+                                      color: Colors.green,
+                                    )),
+                                child: Text(
+                                  item.name,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontFamily: "Roboto",
+                                    fontWeight: FontWeight.normal,
+                                    fontStyle: FontStyle.normal,
+                                    decoration: TextDecoration.none,
+                                  ),
+                                ),
                               ),
                               child: MouseRegion(
-                                cursor: SystemMouseCursors.move,
+                                cursor: SystemMouseCursors.click,
                                 child: Container(
-                                  color: Colors.black38,
-                                  margin: const EdgeInsets.all(3),
-                                  padding: const EdgeInsets.all(3),
+                                  //color: Colors.red,
+                                  margin: const EdgeInsets.all(1),
+                                  padding: const EdgeInsets.only(
+                                    top: 6,
+                                    bottom: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                          color: Colors.blue.withOpacity(0.3)),
+                                    ),
+                                  ),
                                   child: Text(
                                     item.name,
                                     style: const TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 16,
                                     ),
                                   ),
                                 ),
@@ -180,7 +210,4 @@ class DataItemsObject {
   DataItemsObject(this.name, this.displayName, this.type);
 }
 
-enum DataItemsObjectType {
-  dataItem,
-  unit
-}
+enum DataItemsObjectType { dataItem, unit }

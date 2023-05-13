@@ -28,7 +28,7 @@ class MapItemPropFontFamilySt extends State<MapItemPropFontFamily> {
       String data, String name, IconData iconData, Color color) {
     return Container(
       width: 120,
-      height: 30,
+      height: 40,
       margin: const EdgeInsets.all(2),
       padding: EdgeInsets.zero,
       child: OutlinedButton(
@@ -36,7 +36,8 @@ class MapItemPropFontFamilySt extends State<MapItemPropFontFamily> {
           widget.item.set(widget.propItem.name, data);
         },
         child: Text(
-          data,
+          name,
+          textAlign: TextAlign.center,
           style: TextStyle(color: color),
         ),
       ),

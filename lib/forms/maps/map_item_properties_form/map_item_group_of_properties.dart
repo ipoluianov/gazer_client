@@ -95,12 +95,15 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
       padding: const EdgeInsets.all(3),
       //margin: const EdgeInsets.only(bottom: 3, top: 3),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             propItem.displayName,
+            textAlign: TextAlign.left,
             style: const TextStyle(
-              fontSize: 12,
+              fontSize: 16,
+              decoration: TextDecoration.none,
+              color: Colors.blue,
             ),
           ),
           Padding(
@@ -164,7 +167,12 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text(widget.propGroup.name),
+                        child: Text(
+                          widget.propGroup.name,
+                          style: const TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
                       expanded
                           ? const Icon(Icons.keyboard_arrow_up_outlined)
