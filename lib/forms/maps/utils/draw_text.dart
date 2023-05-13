@@ -94,7 +94,7 @@ MapItemPropGroup textAppearanceGroup() {
   List<MapItemPropItem> props = [];
   props.add(MapItemPropItem(
       "", "font_family", "Font Family", "font_family", "Roboto"));
-  props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
+  props.add(MapItemPropItem("", "font_size", "Font Size", "font_size", "20"));
   props.add(
       MapItemPropItem("", "font_weight", "Font Weight", "font_weight", "400"));
   props.add(

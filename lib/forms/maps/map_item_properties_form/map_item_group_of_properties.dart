@@ -9,6 +9,7 @@ import 'map_item_prop_actions.dart';
 import 'map_item_prop_color.dart';
 import 'map_item_prop_double.dart';
 import 'map_item_prop_font_family.dart';
+import 'map_item_prop_font_size.dart';
 import 'map_item_prop_font_weight.dart';
 import 'map_item_prop_halign.dart';
 import 'map_item_prop_image.dart';
@@ -87,6 +88,9 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
     }
     if (propItem.type == "font_weight") {
       propWidget = MapItemPropFontWeight(item, propItem, key: key);
+    }
+    if (propItem.type == "font_size") {
+      propWidget = MapItemPropFontSize(item, propItem, key: key);
     }
 
     return Container(

@@ -9,7 +9,7 @@ InputDecoration textInputDecoration() {
     enabledBorder: OutlineInputBorder(
       borderSide: BorderSide(color: Colors.transparent),
     ),
-    fillColor: Colors.black45,
+    fillColor: Colors.black,
     filled: true,
     hoverColor: Colors.black12,
     constraints: BoxConstraints(maxHeight: 30),
