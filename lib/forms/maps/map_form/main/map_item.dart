@@ -666,49 +666,6 @@ abstract class MapItem extends IPropContainer {
   Connection getConnection() {
     return connection;
   }
-
-  Size drawText(
-      Canvas canvas,
-      double x,
-      double y,
-      double width,
-      double height,
-      String text,
-      double size,
-      Color color,
-      TextVAlign vAlign,
-      TextAlign align) {
-    canvas.save();
-    var textSpan = TextSpan(
-      text: text,
-      style: TextStyle(
-        color: color,
-        fontSize: size,
-      ),
-    );
-    final textPainter = TextPainter(
-        text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
-    textPainter.layout(
-      minWidth: width,
-      maxWidth: width,
-    );
-    double yOffset = y;
-    if (vAlign == TextVAlign.middle) {
-      yOffset = y + (height / 2) - (textPainter.height / 2);
-    }
-    if (vAlign == TextVAlign.bottom) {
-      yOffset = y + (height - textPainter.height);
-    }
-    textPainter.paint(canvas, Offset(x, yOffset));
-    canvas.restore();
-    return Size(textPainter.maxIntrinsicWidth, textPainter.height);
-  }
-}
-
-enum TextVAlign {
-  top,
-  middle,
-  bottom,
 }
 
 class ActionPoint {

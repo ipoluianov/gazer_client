@@ -47,24 +47,27 @@ class MapItemPropDataSourceSt extends State<MapItemPropDataSource> {
             },
           ),
         ),
-        OutlinedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, "/lookup",
-                      arguments: LookupFormArgument(
-                          Repository().lastSelectedConnection,
-                          "Select source item",
-                          "data-item"))
-                  .then((value) {
-                if (value != null) {
-                  var res = value as LookupFormResult;
-                  setState(() {
-                    txtController.text = res.field("name");
-                    widget.item.set(widget.propItem.name, res.field("name"));
-                  });
-                }
-              });
-            },
-            child: const Text("...")),
+        IconButton(
+          icon: const Icon(Icons.more_horiz),
+          color: Colors.white.withOpacity(0.5),
+          onPressed: () {
+            Navigator.pushNamed(context, "/lookup",
+                    arguments: LookupFormArgument(
+                        Repository().lastSelectedConnection,
+                        "Select source item",
+                        "data-item"))
+                .then((value) {
+              if (value != null) {
+                var res = value as LookupFormResult;
+                setState(() {
+                  txtController.text = res.field("name");
+                  widget.item.set(widget.propItem.name, res.field("name"));
+                });
+              }
+            });
+          },
+          //child: const Text("..."),
+        ),
       ]),
     );
   }

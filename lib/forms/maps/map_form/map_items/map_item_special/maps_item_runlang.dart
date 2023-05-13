@@ -10,6 +10,7 @@ import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
 import '../../../../../runlang/program.dart';
+import '../../../utils/draw_text.dart';
 import '../../main/map_item.dart';
 
 class MapItemRunlang extends MapItem {
@@ -53,16 +54,19 @@ fn draw(vv) {
       return [];
     }
     drawText(
-        currentCanvas,
-        getDoubleZ("x"),
-        getDoubleZ("y"),
-        getDoubleZ("w"),
-        getDoubleZ("h"),
-        args[0].toString(),
-        24,
-        getColor("text_color"),
-        TextVAlign.middle,
-        TextAlign.center);
+      currentCanvas,
+      getDoubleZ("x"),
+      getDoubleZ("y"),
+      getDoubleZ("w"),
+      getDoubleZ("h"),
+      args[0].toString(),
+      24,
+      getColor("text_color"),
+      TextVAlign.middle,
+      TextAlign.center,
+      null,
+      0,
+    );
     return [];
   }
 
@@ -78,16 +82,19 @@ fn draw(vv) {
       runlangProgram(canvas, size, parentMaps);
     } catch (ex) {
       drawText(
-          canvas,
-          getDoubleZ("x"),
-          getDoubleZ("y"),
-          getDoubleZ("w"),
-          getDoubleZ("h"),
-          ex.toString(),
-          24,
-          getColor("text_color"),
-          TextVAlign.middle,
-          TextAlign.center);
+        canvas,
+        getDoubleZ("x"),
+        getDoubleZ("y"),
+        getDoubleZ("w"),
+        getDoubleZ("h"),
+        ex.toString(),
+        24,
+        getColor("text_color"),
+        TextVAlign.middle,
+        TextAlign.center,
+        null,
+        0,
+      );
     }
   }
 

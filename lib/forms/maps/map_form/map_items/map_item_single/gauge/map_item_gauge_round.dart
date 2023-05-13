@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
+import '../../../../utils/draw_text.dart';
 import '../../../main/map_item.dart';
 import '../map_item_single.dart';
 
@@ -123,16 +124,19 @@ class MapItemGaugeRound extends MapItemSingle {
     text = text.replaceAll("[nl]", "\n");
 
     drawText(
-        canvas,
-        getDoubleZ("x"),
-        getDoubleZ("y"),
-        getDoubleZ("w"),
-        getDoubleZ("h"),
-        text,
-        getDoubleZ("font_size"),
-        color,
-        TextVAlign.middle,
-        TextAlign.center);
+      canvas,
+      getDoubleZ("x"),
+      getDoubleZ("y"),
+      getDoubleZ("w"),
+      getDoubleZ("h"),
+      text,
+      getDoubleZ("font_size"),
+      color,
+      TextVAlign.middle,
+      TextAlign.center,
+      null,
+      0,
+    );
 
     drawAnimatedCircles(canvas);
 

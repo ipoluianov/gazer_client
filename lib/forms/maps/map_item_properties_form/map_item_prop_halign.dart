@@ -17,32 +17,52 @@ class MapItemPropHAlign extends StatefulWidget {
 
 class MapItemPropHAlignSt extends State<MapItemPropHAlign> {
   late String value;
-  TextEditingController txtController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     value = widget.item.get(widget.propItem.name);
-    txtController.text = value;
   }
 
+  Widget buildAlignButton(String data, IconData iconData, Color color) {
+    return Container(
+      padding: const EdgeInsets.only(left: 1),
+      child: IconButton(
+        icon: Icon(iconData),
+        color: color,
+        onPressed: () {
+          widget.item.set(widget.propItem.name, data);
+        },
+        //child: const Text("..."),
+      ),
+    );
+  }
+
+//
   @override
   Widget build(BuildContext context) {
+    Color colActive = Colors.amber;
+    Color colReg = Colors.white.withOpacity(0.5);
     return Row(
       children: [
-        Expanded(
-          child: SizedBox(
-            height: 30,
-            child: TextField(
-              controller: txtController,
-              decoration: textInputDecoration(),
-              onChanged: (text) {
-                widget.item.set(widget.propItem.name, text);
-                //widget.onChanged();
-              },
-            ),
-          ),
-        ),
+        buildAlignButton(
+            "left",
+            Icons.format_align_left,
+            widget.item.get(widget.propItem.name) == "left"
+                ? colActive
+                : colReg),
+        buildAlignButton(
+            "center",
+            Icons.format_align_center,
+            widget.item.get(widget.propItem.name) == "center"
+                ? colActive
+                : colReg),
+        buildAlignButton(
+            "right",
+            Icons.format_align_right,
+            widget.item.get(widget.propItem.name) == "right"
+                ? colActive
+                : colReg),
       ],
     );
   }

@@ -4,6 +4,7 @@ import 'package:gazer_client/core/protocol/unit/unit_items_values.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
+import '../../../utils/draw_text.dart';
 import '../../main/map_item.dart';
 
 class MapItemUnitTable01 extends MapItem {
@@ -100,16 +101,19 @@ class MapItemUnitTable01 extends MapItem {
     Size textSize = const Size(0, 0);
 
     textSize = drawText(
-        canvas,
-        getDoubleZ("x") + padding,
-        getDoubleZ("y") + yOffset,
-        getDoubleZ("w") - padding * 2,
-        getDoubleZ("h"),
-        unitDisplayName,
-        fontSizeScaled * 2,
-        getColor("name_color"),
-        TextVAlign.top,
-        TextAlign.left);
+      canvas,
+      getDoubleZ("x") + padding,
+      getDoubleZ("y") + yOffset,
+      getDoubleZ("w") - padding * 2,
+      getDoubleZ("h"),
+      unitDisplayName,
+      fontSizeScaled * 2,
+      getColor("name_color"),
+      TextVAlign.top,
+      TextAlign.left,
+      null,
+      0,
+    );
     yOffset += textSize.height;
 
     var lineHeight = z(2);
@@ -151,16 +155,19 @@ class MapItemUnitTable01 extends MapItem {
               TextAlign.left);
 
           drawText(
-              canvas,
-              getDoubleZ("x") + padding,
-              getDoubleZ("y") + yOffset,
-              getDoubleZ("w") - padding * 2,
-              getDoubleZ("h"),
-              itemName,
-              fontSizeScaled,
-              getColor("name_color"),
-              TextVAlign.top,
-              TextAlign.left);
+            canvas,
+            getDoubleZ("x") + padding,
+            getDoubleZ("y") + yOffset,
+            getDoubleZ("w") - padding * 2,
+            getDoubleZ("h"),
+            itemName,
+            fontSizeScaled,
+            getColor("name_color"),
+            TextVAlign.top,
+            TextAlign.left,
+            null,
+            0,
+          );
 
           drawValueAndUOM(
               canvas,

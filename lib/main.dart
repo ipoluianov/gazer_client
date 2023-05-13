@@ -13,6 +13,7 @@ void main() {
       theme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.blue,
+        fontFamily: "Roboto",
         textTheme: TextTheme(
           bodySmall: TextStyle(fontWeight: fontWeight),
           bodyLarge: TextStyle(fontWeight: fontWeight),

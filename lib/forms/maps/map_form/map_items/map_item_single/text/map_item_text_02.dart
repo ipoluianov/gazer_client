@@ -9,6 +9,7 @@ import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
+import '../../../../utils/draw_text.dart';
 import '../../../main/map_item.dart';
 import '../map_item_single.dart';
 
@@ -61,16 +62,19 @@ class MapItemText02 extends MapItemSingle {
     var padding = z(10);
 
     drawText(
-        canvas,
-        getDoubleZ("x") + padding,
-        getDoubleZ("y"),
-        getDoubleZ("w") - padding * 2,
-        getDoubleZ("h"),
-        itemName,
-        lastValue,
-        getColor("name_color"),
-        TextVAlign.middle,
-        TextAlign.left);
+      canvas,
+      getDoubleZ("x") + padding,
+      getDoubleZ("y"),
+      getDoubleZ("w") - padding * 2,
+      getDoubleZ("h"),
+      itemName,
+      lastValue,
+      getColor("name_color"),
+      TextVAlign.middle,
+      TextAlign.left,
+      null,
+      0,
+    );
 
     drawValueAndUOM(
         canvas,
