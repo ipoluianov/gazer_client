@@ -8,6 +8,8 @@ import 'package:expandable/expandable.dart';
 import 'map_item_prop_actions.dart';
 import 'map_item_prop_color.dart';
 import 'map_item_prop_double.dart';
+import 'map_item_prop_font_family.dart';
+import 'map_item_prop_font_weight.dart';
 import 'map_item_prop_halign.dart';
 import 'map_item_prop_image.dart';
 import 'map_item_prop_multiline.dart';
@@ -80,12 +82,18 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
     if (propItem.type == "halign") {
       propWidget = MapItemPropHAlign(item, propItem, key: key);
     }
+    if (propItem.type == "font_family") {
+      propWidget = MapItemPropFontFamily(item, propItem, key: key);
+    }
+    if (propItem.type == "font_weight") {
+      propWidget = MapItemPropFontWeight(item, propItem, key: key);
+    }
 
     return Container(
       constraints: const BoxConstraints(minWidth: 100, maxWidth: 265),
       color: Colors.blueAccent.withOpacity(0.1),
-      padding: const EdgeInsets.all(0),
-      margin: const EdgeInsets.only(bottom: 3),
+      padding: const EdgeInsets.all(3),
+      //margin: const EdgeInsets.only(bottom: 3, top: 3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -96,7 +104,7 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(top: (3)),
+            padding: const EdgeInsets.only(top: 5),
             child: propWidget,
           ),
         ],

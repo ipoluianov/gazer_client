@@ -6,6 +6,7 @@ import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:intl/intl.dart' as international;
 
 import '../../../../../runlang/program.dart';
+import '../../../utils/draw_text.dart';
 import '../../main/map_item.dart';
 
 class MapItemItem extends MapItem {
@@ -341,16 +342,19 @@ class MapItemItem extends MapItem {
       return [];
     }
     drawText(
-        currentCanvas,
-        0,
-        0,
-        getDoubleZ("w"),
-        getDoubleZ("h"),
-        args[0].toString(),
-        args[1],
-        colorFromHex(args[2]),
-        TextVAlign.middle,
-        TextAlign.center);
+      currentCanvas,
+      0,
+      0,
+      getDoubleZ("w"),
+      getDoubleZ("h"),
+      args[0].toString(),
+      args[1],
+      colorFromHex(args[2]),
+      TextVAlign.middle,
+      TextAlign.center,
+      null,
+      0,
+    );
     return [];
   }
 }

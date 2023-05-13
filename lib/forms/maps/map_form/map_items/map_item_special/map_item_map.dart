@@ -8,6 +8,7 @@ import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
 import 'package:gazer_client/core/tools/hex_colors.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
+import '../../../utils/draw_text.dart';
 import '../../main/map_item.dart';
 
 class MapItemMap extends MapItem {
@@ -255,16 +256,19 @@ class MapItemMap extends MapItem {
               ..color = Colors.red
               ..style = PaintingStyle.fill);
         drawText(
-            canvas,
-            getDoubleZ("x"),
-            getDoubleZ("y"),
-            getDoubleZ("w"),
-            getDoubleZ("h"),
-            loadingError,
-            z(20),
-            Colors.yellowAccent,
-            TextVAlign.middle,
-            TextAlign.center);
+          canvas,
+          getDoubleZ("x"),
+          getDoubleZ("y"),
+          getDoubleZ("w"),
+          getDoubleZ("h"),
+          loadingError,
+          z(20),
+          Colors.yellowAccent,
+          TextVAlign.middle,
+          TextAlign.center,
+          null,
+          0,
+        );
       }
 
       if (needToTranslate) {

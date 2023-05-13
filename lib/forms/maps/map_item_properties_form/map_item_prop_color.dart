@@ -29,50 +29,57 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      Expanded(
-        child: TextField(
-          controller: txtController,
-          decoration: textInputDecoration(),
-          onChanged: (text) {
-            setState(() {
-              widget.item.set(widget.propItem.name, text);
-            });
-            //widget.onChanged();
-          },
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: txtController,
+            decoration: textInputDecoration(),
+            onChanged: (text) {
+              setState(() {
+                widget.item.set(widget.propItem.name, text);
+              });
+              //widget.onChanged();
+            },
+          ),
         ),
-      ),
-      Container(
-        width: 24,
-        height: 24,
-        margin: const EdgeInsets.only(left: 3),
-        decoration: BoxDecoration(
-            color: colorFromHex(widget.item.get(widget.propItem.name)) ??
-                Colors.transparent,
-            border: Border.all(color: Colors.white30, width: 1)),
-      ),
-      Container(
-        padding: const EdgeInsets.only(left: 3),
-        child: OutlinedButton(
-          onPressed: () {
-            setCurrentColor("");
-          },
-          child: const Text("X"),
+        Container(
+          width: 24,
+          height: 24,
+          margin: const EdgeInsets.only(left: 3),
+          decoration: BoxDecoration(
+              color: colorFromHex(widget.item.get(widget.propItem.name)) ??
+                  Colors.transparent,
+              border: Border.all(color: Colors.white30, width: 1)),
         ),
-      ),
-      Container(
-        padding: const EdgeInsets.only(left: 1),
-        child: OutlinedButton(
-          onPressed: () {
-            originalColorBeforeDialog = widget.item.get(widget.propItem.name);
-            pickerColor =
-                colorFromHex(originalColorBeforeDialog) ?? Colors.blueAccent;
-            showColorDialog("Select color");
-          },
-          child: const Text("..."),
+        Container(
+          padding: const EdgeInsets.only(left: 1),
+          child: IconButton(
+            icon: const Icon(Icons.more_horiz),
+            color: Colors.white.withOpacity(0.5),
+            onPressed: () {
+              originalColorBeforeDialog = widget.item.get(widget.propItem.name);
+              pickerColor =
+                  colorFromHex(originalColorBeforeDialog) ?? Colors.blueAccent;
+              showColorDialog("Select color");
+            },
+            //child: const Text("..."),
+          ),
         ),
-      ),
-    ]);
+        Container(
+          //width: 30,
+          //padding: const EdgeInsets.only(left: 0),
+          child: IconButton(
+            icon: const Icon(Icons.clear),
+            color: Colors.white.withOpacity(0.5),
+            onPressed: () {
+              setCurrentColor("");
+            },
+            //child: const Text("X"),
+          ),
+        ),
+      ],
+    );
   }
 
   Color pickerColor = const Color(0x00000000);

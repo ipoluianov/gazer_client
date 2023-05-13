@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
+import '../../../../utils/draw_text.dart';
 import '../../../main/map_item.dart';
 
 class MapItemErrorIndicator extends MapItem {
@@ -62,16 +63,19 @@ class MapItemErrorIndicator extends MapItem {
     }
 
     drawText(
-        canvas,
-        getDoubleZ("x") + indicatorWidth,
-        getDoubleZ("y"),
-        getDoubleZ("w") - indicatorWidth,
-        getDoubleZ("h"),
-        text,
-        lastValue,
-        textColor,
-        TextVAlign.middle,
-        TextAlign.left);
+      canvas,
+      getDoubleZ("x") + indicatorWidth,
+      getDoubleZ("y"),
+      getDoubleZ("w") - indicatorWidth,
+      getDoubleZ("h"),
+      text,
+      lastValue,
+      textColor,
+      TextVAlign.middle,
+      TextAlign.left,
+      null,
+      0,
+    );
 
     var indicatorColor = getColor("regular_color");
     if (isError) {

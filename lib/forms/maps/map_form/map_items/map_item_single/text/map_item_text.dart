@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/maps/map_form/map_items/map_item_single/map_item_single.dart';
 
+import '../../../../utils/draw_text.dart';
 import '../../../main/map_item.dart';
 
 class MapItemText extends MapItemSingle {
@@ -58,6 +59,13 @@ class MapItemText extends MapItemSingle {
     text = text.replaceAll("[uom]", dataSourceValue().uom);
     lastValue = targetValue;
 
+    var fontFamily = get("font_family");
+    int? fontWeightN = int.tryParse(get("font_weight"));
+    int fontWeight = 400;
+    if (fontWeightN != null) {
+      fontWeight = fontWeightN;
+    }
+
     if (isReplacer) {
       canvas.drawRect(
           Rect.fromLTWH(
@@ -66,29 +74,35 @@ class MapItemText extends MapItemSingle {
             ..color = Colors.black54
             ..style = PaintingStyle.fill);
       drawText(
-          canvas,
-          getDoubleZ("x"),
-          getDoubleZ("y"),
-          getDoubleZ("w"),
-          z(60),
-          "replaced by a text element\r\nplease update your software\r\n[$replaceType]",
-          z(14),
-          Colors.red,
-          TextVAlign.middle,
-          TextAlign.center);
-    }
-
-    drawText(
         canvas,
         getDoubleZ("x"),
         getDoubleZ("y"),
         getDoubleZ("w"),
-        getDoubleZ("h"),
-        text,
-        lastValue,
-        getColor("text_color"),
+        z(60),
+        "replaced by a text element\r\nplease update your software\r\n[$replaceType]",
+        z(14),
+        Colors.red,
         TextVAlign.middle,
-        hAlign);
+        TextAlign.center,
+        fontFamily,
+        fontWeight,
+      );
+    }
+
+    drawText(
+      canvas,
+      getDoubleZ("x"),
+      getDoubleZ("y"),
+      getDoubleZ("w"),
+      getDoubleZ("h"),
+      text,
+      lastValue,
+      getColor("text_color"),
+      TextVAlign.middle,
+      hAlign,
+      fontFamily,
+      fontWeight,
+    );
     drawPost(canvas, size);
   }
 
@@ -121,15 +135,11 @@ class MapItemText extends MapItemSingle {
     {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem("", "text", "Text", "text", "Text"));
-
-      props.add(
-          MapItemPropItem("", "text_color", "Text Color", "color", "FF00EFFF"));
-      props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
       props.add(MapItemPropItem("", "prefix", "Prefix", "text", ""));
       props.add(MapItemPropItem("", "suffix", "Suffix", "text", ""));
-      props.add(MapItemPropItem("", "h_align", "hAlign", "halign", "center"));
       groups.add(MapItemPropGroup("Text", true, props));
     }
+    groups.add(textAppearanceGroup());
     return groups;
   }
 
