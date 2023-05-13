@@ -54,13 +54,17 @@ class MapItemPropImageSt extends State<MapItemPropImage> {
           onPressed: () {
             FilePicker.platform.pickFiles().then((value) {
               if (value != null) {
-                File file = File(value.files.first.name);
-                file.readAsBytes().then((value) {
-                  widget.item.set(widget.propItem.name, base64Encode(value));
-                  setState(() {
-                    imageBytes = value;
+                if (value.files.first.path != null) {
+                  File file = File(value.files.first.path!);
+                  file.readAsBytes().then((value) {
+                    widget.item.set(widget.propItem.name, base64Encode(value));
+                    setState(() {
+                      imageBytes = value;
+                    });
+                  }).catchError((err) {
+                    print("Error loading file $err");
                   });
-                });
+                }
               } else {
                 // User canceled the picker
               }

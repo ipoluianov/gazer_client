@@ -102,3 +102,46 @@ MapItemPropGroup textAppearanceGroup() {
   props.add(MapItemPropItem("", "h_align", "Hor Align", "halign", "center"));
   return MapItemPropGroup("Text Appearance", true, props);
 }
+
+MapItemPropGroup borderGroup() {
+  List<MapItemPropItem> props = [];
+  props.add(
+      MapItemPropItem("", "border_color", "Border Color", "color", "FF00EFFF"));
+  props.add(MapItemPropItem("", "border_width", "Border Width", "double", "1"));
+  props.add(MapItemPropItem(
+      "", "border_corner_radius", "Border Corner Radius", "double", "0"));
+  return MapItemPropGroup("Border", true, props);
+}
+
+MapItemPropGroup backgroundGroup() {
+  List<MapItemPropItem> props = [];
+  props.add(
+      MapItemPropItem("", "back_color", "Background Color", "color", "000000"));
+  props.add(MapItemPropItem("", "back_img", "Background Image", "image", ""));
+  props.add(MapItemPropItem("", "back_img_scale_fit",
+      "Background Image Scale Fit", "scale_fit", "contain"));
+  return MapItemPropGroup("Border", true, props);
+}
+
+class TextAppearance {
+  String fontFamily;
+  double fontSize;
+  int fontWeight;
+  Color textColor;
+  TextAlign hAlign;
+  TextAppearance(this.fontFamily, this.fontSize, this.fontWeight,
+      this.textColor, this.hAlign);
+}
+
+TextAppearance getTextAppearance(MapItem mapItem) {
+  var hAlign = mapItem.getTextAlign("h_align");
+  var fontSize = mapItem.getDoubleZ("font_size");
+  var fontFamily = mapItem.get("font_family");
+  int? fontWeightN = int.tryParse(mapItem.get("font_weight"));
+  int fontWeight = 400;
+  if (fontWeightN != null) {
+    fontWeight = fontWeightN;
+  }
+  var textColor = mapItem.getColor("text_color");
+  return TextAppearance(fontFamily, fontSize, fontWeight, textColor, hAlign);
+}

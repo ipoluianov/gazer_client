@@ -13,10 +13,10 @@ class MapItemText extends MapItemSingle {
     return sType;
   }
 
-  double realValue = 0.0;
-  double targetValue = 0.0;
-  double lastValue = 0.0;
-  double aniCounter = 0.0;
+  //double realValue = 0.0;
+  //double targetValue = 0.0;
+  //double lastValue = 0.0;
+  //double aniCounter = 0.0;
 
   bool isReplacer = false;
   String replaceType = "";
@@ -32,62 +32,51 @@ class MapItemText extends MapItemSingle {
     setDouble("h", 40);
   }
 
+  void drawReplacer(Canvas canvas, Size size, List<String> parentMaps) {
+    canvas.drawRect(
+        Rect.fromLTWH(getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), z(60)),
+        Paint()
+          ..color = Colors.black54
+          ..style = PaintingStyle.fill);
+    drawText(
+      canvas,
+      getDoubleZ("x"),
+      getDoubleZ("y"),
+      getDoubleZ("w"),
+      z(60),
+      "replaced by a text element\r\nplease update your software\r\n[$replaceType]",
+      z(14),
+      Colors.red,
+      TextVAlign.middle,
+      TextAlign.center,
+      null,
+      400,
+    );
+  }
+
   @override
   void draw(Canvas canvas, Size size, List<String> parentMaps) {
     drawPre(canvas, size);
-    Color color = Colors.green;
 
     var text = get("text");
     var prefix = get("prefix");
     var suffix = get("suffix");
-    var hAlign = getTextAlign("h_align");
 
     if (hasDataSource()) {
       var value = dataSourceValue();
       text = value.value;
-
-      double? valueAsDouble = double.tryParse(value.value);
-      if (valueAsDouble != null) {
-        realValue = valueAsDouble;
-      }
     }
 
-    targetValue = getDoubleZ("font_size");
     text = prefix + text + suffix;
     text = text.replaceAll("[nl]", "\n");
     text = text.replaceAll("[name]", dataSourceValue().displayName);
     text = text.replaceAll("[uom]", dataSourceValue().uom);
-    lastValue = targetValue;
-
-    var fontFamily = get("font_family");
-    int? fontWeightN = int.tryParse(get("font_weight"));
-    int fontWeight = 400;
-    if (fontWeightN != null) {
-      fontWeight = fontWeightN;
-    }
 
     if (isReplacer) {
-      canvas.drawRect(
-          Rect.fromLTWH(
-              getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), z(60)),
-          Paint()
-            ..color = Colors.black54
-            ..style = PaintingStyle.fill);
-      drawText(
-        canvas,
-        getDoubleZ("x"),
-        getDoubleZ("y"),
-        getDoubleZ("w"),
-        z(60),
-        "replaced by a text element\r\nplease update your software\r\n[$replaceType]",
-        z(14),
-        Colors.red,
-        TextVAlign.middle,
-        TextAlign.center,
-        fontFamily,
-        fontWeight,
-      );
+      drawReplacer(canvas, size, parentMaps);
     }
+
+    var txtProps = getTextAppearance(this);
 
     drawText(
       canvas,
@@ -96,37 +85,15 @@ class MapItemText extends MapItemSingle {
       getDoubleZ("w"),
       getDoubleZ("h"),
       text,
-      lastValue,
-      getColor("text_color"),
+      txtProps.fontSize,
+      txtProps.textColor,
       TextVAlign.middle,
-      hAlign,
-      fontFamily,
-      fontWeight,
+      txtProps.hAlign,
+      txtProps.fontFamily,
+      txtProps.fontWeight,
     );
     drawPost(canvas, size);
   }
-
-  /*void drawText(Canvas canvas, double x, double y, double width, double height,
-      String text, double size, Color color, TextAlign align) {
-    canvas.save();
-    var textSpan = TextSpan(
-      text: text,
-      style: TextStyle(
-        color: color,
-        fontSize: size,
-      ),
-    );
-    final textPainter = TextPainter(
-        text: textSpan, textDirection: TextDirection.ltr, textAlign: align);
-    textPainter.layout(
-      minWidth: width,
-      maxWidth: width,
-    );
-    textPainter.paint(
-        canvas, Offset(x, y + (height / 2) - (textPainter.height / 2)));
-    //textPainter.paint(canvas, Offset(x, y));
-    canvas.restore();
-  }*/
 
   @override
   List<MapItemPropGroup> propGroupsOfItem() {
@@ -140,21 +107,14 @@ class MapItemText extends MapItemSingle {
       groups.add(MapItemPropGroup("Text", true, props));
     }
     groups.add(textAppearanceGroup());
+    groups.add(borderGroup());
+    groups.add(backgroundGroup());
     return groups;
   }
 
   @override
-  void tick() {
-    var diff = targetValue - lastValue;
-    lastValue += diff / 2;
-    if ((lastValue - targetValue).abs() < 0.1) {
-      lastValue = targetValue;
-    }
-  }
+  void tick() {}
 
   @override
-  void resetToEndOfAnimation() {
-    targetValue = getDoubleZ("font_size");
-    lastValue = targetValue;
-  }
+  void resetToEndOfAnimation() {}
 }

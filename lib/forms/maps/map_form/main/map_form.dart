@@ -159,23 +159,42 @@ class MapFormSt extends State<MapForm> {
       Map<String, dynamic> j = map.instance.toJson();
       String jsonString = String.fromCharCodes(encoder.convert(j));
       var listOfBytes = jsonString.codeUnits;
-      int step = 100000;
+      int step = 50000;
       for (int offset = 0; offset < listOfBytes.length; offset += step) {
-        var currentStep = step;
-        if (offset + currentStep > listOfBytes.length) {
-          currentStep = listOfBytes.length - offset;
-        }
-        await Repository().client(widget.arg.connection).resSet(
-            widget.arg.id,
-            "",
-            offset,
-            Uint8List.fromList(
-                listOfBytes.sublist(offset, offset + currentStep)));
+        bool savePartComplete = false;
+        String errorPartText = "";
 
-        if (listOfBytes.isNotEmpty) {
-          setState(() {
-            savingProgress = (offset + currentStep) / listOfBytes.length;
-          });
+        for (int iteration = 0; iteration < 10; iteration++) {
+          var currentStep = step;
+
+          if (offset + currentStep > listOfBytes.length) {
+            currentStep = listOfBytes.length - offset;
+          }
+
+          try {
+            await Repository().client(widget.arg.connection).resSet(
+                widget.arg.id,
+                "",
+                offset,
+                Uint8List.fromList(
+                    listOfBytes.sublist(offset, offset + currentStep)));
+            if (listOfBytes.isNotEmpty) {
+              setState(() {
+                savingProgress = (offset + currentStep) / listOfBytes.length;
+              });
+            }
+            savePartComplete = true;
+          } catch (err) {
+            errorPartText = err.toString();
+          }
+
+          if (savePartComplete) {
+            break;
+          }
+        }
+
+        if (!savePartComplete) {
+          throw errorPartText;
         }
       }
     } catch (err) {

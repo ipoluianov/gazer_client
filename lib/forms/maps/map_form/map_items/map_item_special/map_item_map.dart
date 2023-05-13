@@ -87,28 +87,42 @@ class MapItemMap extends MapItem {
     List<int> result = [];
 
     loadingProgress = 0;
-    try {
-      for (int offset = 0; offset < 100 * 1000000; offset += step) {
-        //print("loading res offset $offset");
-        var value = await Repository()
-            .client(connection)
-            .fetch<ResGetRequest, ResGetResponse>(
-              'resource_get',
-              ResGetRequest(resourceId, offset, step),
-              (Map<String, dynamic> json) => ResGetResponse.fromJson(json),
-            );
-        if (value.content.isEmpty) {
+    for (int offset = 0; offset < 100 * 1000000; offset += step) {
+      var partLoaded = false;
+      String partErrorText = "";
+      for (int iteration = 0; iteration < 10; iteration++) {
+        try {
+          //print("loading res offset $offset");
+          var value = await Repository()
+              .client(connection)
+              .fetch<ResGetRequest, ResGetResponse>(
+                'resource_get',
+                ResGetRequest(resourceId, offset, step),
+                (Map<String, dynamic> json) => ResGetResponse.fromJson(json),
+              );
+          if (value.content.isEmpty) {
+            break;
+          }
+          nameOfMap = value.name;
+          result.addAll(value.content.toList());
+          if (value.size > 0) {
+            loadingProgress = result.length / value.size;
+          }
+          partLoaded = true;
+        } catch (loadingErr) {
+          print("loading error");
+          partErrorText = loadingErr.toString();
+        }
+
+        if (partLoaded) {
           break;
         }
-        nameOfMap = value.name;
-        result.addAll(value.content.toList());
-        if (value.size > 0) {
-          loadingProgress = result.length / value.size;
-        }
       }
-    } catch (loadingErr) {
-      print("loading error");
-      loadingError = loadingErr.toString();
+
+      if (!partLoaded) {
+        loadingError = partErrorText;
+        break;
+      }
     }
     loadingProgress = 1;
 
