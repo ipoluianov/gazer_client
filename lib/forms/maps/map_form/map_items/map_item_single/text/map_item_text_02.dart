@@ -157,6 +157,9 @@ class MapItemText02 extends MapItemSingle {
       props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
       groups.add(MapItemPropGroup("Text", true, props));
     }
+    groups.add(borderGroup());
+    groups.add(backgroundGroup());
+
     return groups;
   }
 

@@ -96,10 +96,52 @@ class ChartGroupDataItemsState extends State<ChartGroupDataItems> {
                               data: DataItemsObject(
                                   e.name, e.name, DataItemsObjectType.unit),
                               feedback: Container(
-                                color: Colors.deepOrange,
-                                height: 30,
+                                // height: 30,
+                                padding: const EdgeInsets.all(6),
                                 width: 200,
-                                child: const Icon(Icons.data_object),
+                                decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    border: Border.all(
+                                      color: Colors.green,
+                                    )),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Text(
+                                      e.displayName,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontFamily: "Roboto",
+                                        fontWeight: FontWeight.normal,
+                                        fontStyle: FontStyle.normal,
+                                        decoration: TextDecoration.none,
+                                      ),
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: e.items.map<Widget>(
+                                        (item) {
+                                          return Text(
+                                            item.fullName,
+                                            textAlign: TextAlign.left,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16,
+                                              fontFamily: "Roboto",
+                                              fontWeight: FontWeight.normal,
+                                              fontStyle: FontStyle.normal,
+                                              decoration: TextDecoration.none,
+                                            ),
+                                          );
+                                        },
+                                      ).toList(),
+                                    ),
+                                  ],
+                                ),
                               ),
                               child: Container(
                                 padding: const EdgeInsets.all(6),
