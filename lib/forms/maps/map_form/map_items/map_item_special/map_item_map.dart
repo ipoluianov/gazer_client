@@ -295,8 +295,8 @@ class MapItemMap extends MapItem {
       }
     }
 
-    drawPost(canvas, size);
     canvas.restore();
+    drawPost(canvas, size);
   }
 
   Rect lastBackgroundRect = Rect.zero;

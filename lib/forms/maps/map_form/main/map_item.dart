@@ -11,6 +11,7 @@ import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
 import 'package:gazer_client/core/tools/hex_colors.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/chart_groups/chart_group_form/chart_group_data_items.dart';
+import 'package:gazer_client/forms/maps/utils/draw_text.dart';
 import 'package:gazer_client/widgets/confirmation_dialog/confirmation_dialog.dart';
 
 import '../../../../runlang/program.dart';
@@ -558,18 +559,18 @@ abstract class MapItem extends IPropContainer {
 
     if (type() == "map") {
       {
-        List<MapItemPropItem> props = [];
         if (isRoot) {
+          List<MapItemPropItem> props = [];
           props.add(MapItemPropItem("", "w", "Width", "double", "950"));
           props.add(MapItemPropItem("", "h", "Height", "double", "500"));
-          /*props.add(MapItemPropItem("", "back_color", "Background Color", "color", "000000"));
-          props.add(MapItemPropItem("", "back_img", "Background Image", "image", ""));
-          props.add(MapItemPropItem("", "back_img_scale_fit", "Background Image Scale Fit", "scale_fit", "contain"));
-          props.add(MapItemPropItem("", "border_corner_radius", "Border Corner Radius", "double", "0"));*/
+          pageMain.groups.add(MapItemPropGroup("Geometry", true, props));
+          pageMain.groups.add(borderGroup());
+          pageMain.groups.add(backgroundGroup());
         } else {
+          List<MapItemPropItem> props = [];
           props.addAll(propListForInnerMap());
+          pageMain.groups.add(MapItemPropGroup("Geometry", true, props));
         }
-        pageMain.groups.add(MapItemPropGroup("Geometry", true, props));
       }
     } else {
       /*{
