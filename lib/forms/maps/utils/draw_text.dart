@@ -103,11 +103,13 @@ MapItemPropGroup textAppearanceGroup() {
   return MapItemPropGroup("Text Appearance", true, props);
 }
 
-MapItemPropGroup borderGroup() {
+MapItemPropGroup borderGroup({borderWidthDefault}) {
+  borderWidthDefault ??= "1";
   List<MapItemPropItem> props = [];
   props.add(
       MapItemPropItem("", "border_color", "Border Color", "color", "FF00EFFF"));
-  props.add(MapItemPropItem("", "border_width", "Border Width", "double", "1"));
+  props.add(MapItemPropItem(
+      "", "border_width", "Border Width", "double", borderWidthDefault));
   props.add(MapItemPropItem(
       "", "border_corner_radius", "Border Corner Radius", "double", "0"));
   return MapItemPropGroup("Border", true, props);

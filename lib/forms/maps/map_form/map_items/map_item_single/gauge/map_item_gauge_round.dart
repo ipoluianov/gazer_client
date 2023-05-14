@@ -24,8 +24,13 @@ class MapItemGaugeRound extends MapItemSingle {
   double aniCounter2 = 0.0;
   String currentText = "";
 
-  MapItemGaugeRound(Connection connection) : super(connection) {
-    setDouble("font_size", 20);
+  MapItemGaugeRound(Connection connection) : super(connection) {}
+
+  @override
+  void setDefaultsForItem() {
+    //super.setDefaults();
+    setDouble("w", 200);
+    setDouble("h", 200);
   }
 
   @override
@@ -53,22 +58,9 @@ class MapItemGaugeRound extends MapItemSingle {
     double progressWidth = getDouble("progress_width");
     Color progressColor = getColor("progress_color");
 
-    if (backColor.alpha > 0) {
-      canvas.drawArc(
-          Offset(getDoubleZ("x"), getDoubleZ("y")) &
-              Size(getDoubleZ("w"), getDoubleZ("h")),
-          0,
-          pi * 2,
-          false,
-          Paint()
-            ..style = PaintingStyle.fill
-            ..color = backColor
-            ..strokeWidth = z(1));
-    }
-
     drawPre(canvas, size);
 
-    canvas.drawArc(
+    /*canvas.drawArc(
         Offset(getDoubleZ("x"), getDoubleZ("y")) &
             Size(getDoubleZ("w"), getDoubleZ("h")),
         0,
@@ -77,8 +69,8 @@ class MapItemGaugeRound extends MapItemSingle {
         Paint()
           ..style = PaintingStyle.stroke
           ..color = borderColor
-          ..strokeWidth = z(borderWidth));
-    if (borderWidth > 0.9) {
+          ..strokeWidth = z(borderWidth));*/
+    /*if (borderWidth > 0.9) {
       canvas.drawArc(
           Offset(getDoubleZ("x"), getDoubleZ("y")) &
               Size(getDoubleZ("w"), getDoubleZ("h")),
@@ -89,7 +81,7 @@ class MapItemGaugeRound extends MapItemSingle {
             ..style = PaintingStyle.stroke
             ..color = borderColor.withOpacity(0.3)
             ..strokeWidth = z(borderWidth) + 2);
-    }
+    }*/
 
     var progressWidthZ = z(progressWidth);
     var progressPadding = progressWidthZ;
@@ -123,6 +115,8 @@ class MapItemGaugeRound extends MapItemSingle {
     String text = prefix + currentText + suffix;
     text = text.replaceAll("[nl]", "\n");
 
+    var txtProps = getTextAppearance(this);
+
     drawText(
       canvas,
       getDoubleZ("x"),
@@ -130,12 +124,12 @@ class MapItemGaugeRound extends MapItemSingle {
       getDoubleZ("w"),
       getDoubleZ("h"),
       text,
-      getDoubleZ("font_size"),
-      color,
+      txtProps.fontSize,
+      txtProps.textColor,
       TextVAlign.middle,
-      TextAlign.center,
-      null,
-      0,
+      txtProps.hAlign,
+      txtProps.fontFamily,
+      txtProps.fontWeight,
     );
 
     drawAnimatedCircles(canvas);
@@ -288,12 +282,6 @@ class MapItemGaugeRound extends MapItemSingle {
   }
 
   @override
-  void setDefaultsForItem() {
-    setDouble("w", 100);
-    setDouble("h", 100);
-  }
-
-  @override
   List<MapItemPropGroup> propGroupsOfItem() {
     List<MapItemPropGroup> groups = [];
     groups.addAll(super.propGroupsOfItem());
@@ -306,36 +294,37 @@ class MapItemGaugeRound extends MapItemSingle {
     {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem(
-          "", "progress_width", "ProgressWidth", "double", "5"));
+          "", "progress_width", "ProgressWidth", "double", "10"));
       props.add(MapItemPropItem(
-          "", "progress_color", "ProgressColor", "color", "0088FF"));
+          "", "progress_color", "ProgressColor", "color", "FF00EFFF"));
 
       groups.add(MapItemPropGroup("Appearance", false, props));
     }
     {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem("", "text", "Text", "text", "42"));
-      props.add(
-          MapItemPropItem("", "text_color", "Text Color", "color", "FFFFFF"));
-      props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
       props.add(MapItemPropItem("", "prefix", "Prefix", "text", ""));
       props.add(MapItemPropItem("", "suffix", "Suffix", "text", ""));
       groups.add(MapItemPropGroup("Text", false, props));
     }
+    groups.add(textAppearanceGroup());
+
     {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem(
-          "", "animated_circles_radius", "Radius, %", "double", "80"));
+          "", "animated_circles_radius", "Radius, %", "double", "70"));
       props.add(MapItemPropItem(
-          "", "animated_circles_color1", "Color 1", "color", "0088FF"));
+          "", "animated_circles_color1", "Color 1", "color", "4000EFFF"));
       props.add(MapItemPropItem(
           "", "animated_circles_width1", "Width 1", "double", "5"));
       props.add(MapItemPropItem(
-          "", "animated_circles_color2", "Color 2", "color", "0088FF"));
+          "", "animated_circles_color2", "Color 2", "color", "8000EFFF"));
       props.add(MapItemPropItem(
           "", "animated_circles_width2", "Width 2", "double", "1"));
       groups.add(MapItemPropGroup("Animation", false, props));
     }
+    groups.add(borderGroup(borderWidthDefault: "0"));
+    groups.add(backgroundGroup());
     return groups;
   }
 }
