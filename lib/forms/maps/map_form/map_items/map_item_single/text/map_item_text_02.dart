@@ -31,8 +31,8 @@ class MapItemText02 extends MapItemSingle {
 
   @override
   void setDefaultsForItem() {
-    setDouble("w", 400);
-    setDouble("h", 30);
+    setDouble("w", 200);
+    setDouble("h", 40);
   }
 
   bool isDemo = false;

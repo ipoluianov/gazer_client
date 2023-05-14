@@ -24,6 +24,11 @@ class MapItemsLibrary {
     registerItem(MapItemText02.sType, MapItemText02.sName, "text", (c) {
       return MapItemText02(c);
     });
+    registerItem(MapItemUnitTable01.sType, MapItemUnitTable01.sName, "text",
+        (c) {
+      return MapItemUnitTable01(c);
+    });
+
     registerItem(MapItemGaugeRound.sType, MapItemGaugeRound.sName, "gauge",
         (c) {
       return MapItemGaugeRound(c);
@@ -31,12 +36,12 @@ class MapItemsLibrary {
     registerItem(MapItemChart.sType, MapItemChart.sName, "chart", (c) {
       return MapItemChart(c);
     });
-    registerItem(MapItemMap.sType, MapItemMap.sName, "", (c) {
+    /*registerItem(MapItemMap.sType, MapItemMap.sName, "", (c) {
       return MapItemMap(c);
     });
     registerItem(MapItemItem.sType, MapItemItem.sName, "", (c) {
       return MapItemItem(c);
-    });
+    });*/
     registerItem(MapItemErrorIndicator.sType, MapItemErrorIndicator.sName, "",
         (c) {
       return MapItemErrorIndicator(c);
@@ -46,9 +51,6 @@ class MapItemsLibrary {
     });
     registerItem(MapItemButton.sType, MapItemButton.sName, "", (c) {
       return MapItemButton(c);
-    });
-    registerItem(MapItemUnitTable01.sType, MapItemUnitTable01.sName, "", (c) {
-      return MapItemUnitTable01(c);
     });
     registerItem(MapItemRunlang.sType, MapItemRunlang.sName, "", (c) {
       return MapItemRunlang(c);

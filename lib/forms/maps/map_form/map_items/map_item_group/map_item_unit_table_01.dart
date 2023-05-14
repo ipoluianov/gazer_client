@@ -66,25 +66,43 @@ class MapItemUnitTable01 extends MapItem {
 
   @override
   void draw(Canvas canvas, Size size, List<String> parentMaps) {
-    if (!dataItemsLoaded) {
+    //return;
+    if (!dataItemsLoaded && !isDemo) {
       loadDataItems();
     }
 
-    drawPre(canvas, size);
+    Map<String, DataItemInfo> values = {};
+    if (isDemo) {
+      unitDisplayName = "Unit";
+      dataItems = [];
+      dataItems.add("u0/item1");
+      dataItems.add("u0/item2");
+      dataItems.add("u0/item3");
+
+      values["u0/item1"] =
+          DataItemInfo(0, "u0/item1", "u0/item1", "42.0", 0, "uom");
+      values["u0/item2"] =
+          DataItemInfo(0, "u0/item2", "u0/item2", "142.0", 0, "uom");
+      values["u0/item3"] =
+          DataItemInfo(0, "u0/item3", "u0/item3", "242.0", 0, "uom");
+    }
 
     canvas.save();
-    canvas.clipRect(Rect.fromLTWH(getDoubleZ("x"), getDoubleZ("y"),
-        getDoubleZ("w"), getDoubleZ("h") * aniCounter));
+    canvas.clipRect(Rect.fromLTWH(
+        getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h")));
 
-    Map<String, DataItemInfo> values = {};
-    for (var itemName in dataItems) {
-      var val = Repository().history.getNode(connection).value(itemName);
-      values[itemName] = val;
+    drawPre(canvas, size);
 
-      if (unitDisplayName.isEmpty) {
-        int indexOfSlash = val.displayName.indexOf("/");
-        if (indexOfSlash > -1) {
-          unitDisplayName = val.displayName.substring(0, indexOfSlash);
+    if (!isDemo) {
+      for (var itemName in dataItems) {
+        var val = Repository().history.getNode(connection).value(itemName);
+        values[itemName] = val;
+
+        if (unitDisplayName.isEmpty) {
+          int indexOfSlash = val.displayName.indexOf("/");
+          if (indexOfSlash > -1) {
+            unitDisplayName = val.displayName.substring(0, indexOfSlash);
+          }
         }
       }
     }
@@ -290,7 +308,8 @@ class MapItemUnitTable01 extends MapItem {
           MapItemPropItem("", "text_color", "Text Color", "color", "FF19EE46"));
       props.add(
           MapItemPropItem("", "uom_color", "UOM Color", "color", "FF009688"));
-      props.add(MapItemPropItem("", "font_size", "Font Size", "double", "12"));
+      props.add(
+          MapItemPropItem("", "font_size", "Font Size", "font_size", "12"));
       groups.add(MapItemPropGroup("Text", true, props));
     }
     groups.add(borderGroup());

@@ -28,7 +28,7 @@ class MapItemText extends MapItemSingle {
   @override
   void setDefaultsForItem() {
     //super.setDefaults();
-    setDouble("w", 100);
+    setDouble("w", 200);
     setDouble("h", 40);
   }
 

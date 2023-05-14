@@ -120,7 +120,7 @@ MapItemPropGroup backgroundGroup() {
   props.add(MapItemPropItem("", "back_img", "Background Image", "image", ""));
   props.add(MapItemPropItem("", "back_img_scale_fit",
       "Background Image Scale Fit", "scale_fit", "contain"));
-  return MapItemPropGroup("Border", true, props);
+  return MapItemPropGroup("Background", true, props);
 }
 
 class TextAppearance {
