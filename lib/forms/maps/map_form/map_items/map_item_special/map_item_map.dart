@@ -80,6 +80,8 @@ class MapItemMap extends MapItem {
 
     clearProperties();
 
+    // initDefaultProperties();
+
     loading = true;
     //print("loading $resourceId");
 
@@ -137,8 +139,8 @@ class MapItemMap extends MapItem {
         loadPropertiesInner(jsonObject);
       }
     } catch (err) {
-      print("root 222 exception $err");
       setDefaults();
+      initDefaultProperties();
     }
 
     lastLoadedResource = resourceId;

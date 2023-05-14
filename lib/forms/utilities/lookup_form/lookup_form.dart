@@ -8,6 +8,9 @@ import 'package:gazer_client/core/navigation/left_navigator.dart';
 import 'package:gazer_client/core/navigation/navigation.dart';
 import 'package:gazer_client/core/navigation/route_generator.dart';
 
+import '../../../core/design.dart';
+import '../../../widgets/title_bar/title_bar.dart';
+
 class LookupForm extends StatefulWidget {
   final LookupFormArgument arg;
   const LookupForm(this.arg, {Key? key}) : super(key: key);
@@ -208,30 +211,11 @@ class LookupFormSt extends State<LookupForm> {
         bool showBottom = narrow;
 
         return Scaffold(
-          appBar: AppBar(
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  nodeName(),
-                  style: const TextStyle(
-                    color: Colors.white60,
-                    fontSize: 14,
-                  ),
-                  overflow: TextOverflow.fade,
-                ),
-                Text(
-                  widget.arg.header,
-                  style: const TextStyle(
-                    color: Colors.white30,
-                    fontSize: 12,
-                  ),
-                  overflow: TextOverflow.fade,
-                )
-              ],
-            ),
+          appBar: TitleBar(
+            widget.arg.connection,
+            "Lookup ...",
             actions: [
-              Padding(
+              Container(
                 padding: const EdgeInsets.all(10),
                 child: ElevatedButton.icon(
                   onPressed: () {
@@ -261,20 +245,23 @@ class LookupFormSt extends State<LookupForm> {
               buildHomeButton(context),
             ],
           ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    LeftNavigator(showLeft),
-                    buildContent(context),
-                  ],
+          body: Container(
+            color: DesignColors.mainBackgroundColor,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      LeftNavigator(showLeft),
+                      buildContent(context),
+                    ],
+                  ),
                 ),
-              ),
-              BottomNavigator(showBottom),
-            ],
+                BottomNavigator(showBottom),
+              ],
+            ),
           ),
         );
       },

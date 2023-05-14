@@ -38,6 +38,15 @@ class MapItemUnitTable01 extends MapItem {
 
   String unitDisplayName = "";
 
+  String lastDataSource = "";
+
+  void reloadItems() {
+    dataItemsLoaded = false;
+    dataItemsLoading = false;
+    dataItems = [];
+    unitDisplayName = "";
+  }
+
   void loadDataItems() {
     if (dataItemsLoading) {
       return;
@@ -66,7 +75,11 @@ class MapItemUnitTable01 extends MapItem {
 
   @override
   void draw(Canvas canvas, Size size, List<String> parentMaps) {
-    //return;
+    if (lastDataSource != getDataSource()) {
+      lastDataSource = getDataSource();
+      reloadItems();
+    }
+
     if (!dataItemsLoaded && !isDemo) {
       loadDataItems();
     }
@@ -300,6 +313,14 @@ class MapItemUnitTable01 extends MapItem {
   @override
   List<MapItemPropGroup> propGroupsOfItem() {
     List<MapItemPropGroup> groups = [];
+    groups.addAll(super.propGroupsOfItem());
+    {
+      List<MapItemPropItem> props = [];
+      props.add(MapItemPropItem(
+          "", "data_source", "Data Source Item", "data_source", ""));
+      groups.add(MapItemPropGroup("Data Source", true, props));
+    }
+
     {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem(

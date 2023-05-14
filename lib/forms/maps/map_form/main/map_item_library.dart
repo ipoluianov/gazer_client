@@ -36,10 +36,10 @@ class MapItemsLibrary {
     registerItem(MapItemChart.sType, MapItemChart.sName, "chart", (c) {
       return MapItemChart(c);
     });
-    /*registerItem(MapItemMap.sType, MapItemMap.sName, "", (c) {
+    registerItem(MapItemMap.sType, MapItemMap.sName, "", (c) {
       return MapItemMap(c);
     });
-    registerItem(MapItemItem.sType, MapItemItem.sName, "", (c) {
+    /*registerItem(MapItemItem.sType, MapItemItem.sName, "", (c) {
       return MapItemItem(c);
     });*/
     registerItem(MapItemErrorIndicator.sType, MapItemErrorIndicator.sName, "",
