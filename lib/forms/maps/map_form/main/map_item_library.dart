@@ -2,6 +2,9 @@ import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/maps/map_form/map_items/map_item_group/map_item_unit_table_01.dart';
 import 'package:gazer_client/forms/maps/map_item_add_form/map_item_add_form.dart';
 
+import '../map_items/map_item_decoration/map_item_decoration_border_01.dart';
+import '../map_items/map_item_decoration/map_item_decoration_clock_01.dart';
+import '../map_items/map_item_decoration/map_item_decoration_material_icon01.dart';
 import 'map_item.dart';
 import '../map_items/map_item_control/map_item_button.dart';
 import '../map_items/map_item_single/chart/map_item_chart.dart';
@@ -54,6 +57,20 @@ class MapItemsLibrary {
     });
     registerItem(MapItemRunlang.sType, MapItemRunlang.sName, "", (c) {
       return MapItemRunlang(c);
+    });
+
+    registerItem(MapItemDecorationClock01.sType, MapItemDecorationClock01.sName,
+        "decoration", (c) {
+      return MapItemDecorationClock01(c);
+    });
+
+    registerItem(MapItemDecorationBorder01.sType,
+        MapItemDecorationBorder01.sName, "decoration", (c) {
+      return MapItemDecorationBorder01(c);
+    });
+    registerItem(MapItemDecorationMaterialIcon01.sType,
+        MapItemDecorationMaterialIcon01.sName, "decoration", (c) {
+      return MapItemDecorationMaterialIcon01(c);
     });
   }
 

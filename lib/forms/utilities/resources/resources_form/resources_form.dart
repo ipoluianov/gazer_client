@@ -122,6 +122,9 @@ class ResourcesFormSt extends State<ResourcesForm> {
       if (mounted) {
         setState(() {
           items = value.item.items;
+          items.sort((var r1, var r2) {
+            return r1.getProp("name").compareTo(r2.getProp("name"));
+          });
           loadedItems = true;
           loadingItems = false;
           errorMessageItems = "";

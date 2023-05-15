@@ -188,6 +188,19 @@ class MapItemAddFormSt extends State<MapItemAddForm> {
                 ? DesignColors.accent()
                 : DesignColors.fore2()));
 
+        buttons.add(buildFilterButtonFull(context, Icons.stars, "Decorations",
+            () {
+          if (mounted) {
+            setState(() {
+              filter = "decoration";
+            });
+            load();
+          }
+        }, false,
+            imageColor: (filter == "decoration")
+                ? DesignColors.accent()
+                : DesignColors.fore2()));
+
         buttons.add(buildFilterButtonFull(context, Icons.layers, "External",
             () {
           if (mounted) {
