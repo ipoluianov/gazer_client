@@ -365,6 +365,14 @@ class MapFormSt extends State<MapForm> {
               context, Icons.delete_forever, "Remove item", () {
             map.removeSelectedItem();
           }));
+          rightButtons.add(
+              buildActionButton(context, Icons.vertical_align_top, "to Up", () {
+            map.upSelectedItem();
+          }));
+          rightButtons.add(buildActionButton(
+              context, Icons.vertical_align_bottom, "to Down", () {
+            map.downSelectedItem();
+          }));
           rightButtons.add(buildActionButton(context, Icons.copy, "Copy", () {
             map.copySelectedItem();
           }));

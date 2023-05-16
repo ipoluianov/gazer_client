@@ -80,7 +80,7 @@ class MapItemDecorationBorder01 extends MapItemSingle {
         path,
         Paint()
           ..style = paintingStyle
-          ..strokeWidth = strokeWidth
+          ..strokeWidth = z(strokeWidth)
           ..color = getColor("decor_color"));
 
     canvas.restore();

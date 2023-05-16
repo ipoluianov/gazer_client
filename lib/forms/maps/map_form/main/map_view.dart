@@ -340,6 +340,26 @@ class MapView {
     });
   }
 
+  void upSelectedItem() {
+    for (var item in instance.items) {
+      if (item.selected) {
+        instance.items.remove(item);
+        instance.items.add(item);
+        break;
+      }
+    }
+  }
+
+  void downSelectedItem() {
+    for (var item in instance.items) {
+      if (item.selected) {
+        instance.items.remove(item);
+        instance.items.insert(0, item);
+        break;
+      }
+    }
+  }
+
   void copySelectedItem() {
     var item = currentItem();
     if (item != null) {
