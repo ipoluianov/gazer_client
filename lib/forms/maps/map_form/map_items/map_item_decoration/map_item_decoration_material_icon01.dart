@@ -3,7 +3,6 @@ import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/maps/map_form/map_items/map_item_single/map_item_single.dart';
 import 'package:gazer_client/forms/maps/utils/material_icons.dart';
 
-import '../../../../../core/design.dart';
 import '../../../utils/draw_text.dart';
 import '../../main/map_item.dart';
 
@@ -63,7 +62,8 @@ class MapItemDecorationMaterialIcon01 extends MapItemSingle {
     //groups.addAll(super.propGroupsOfItem());
     {
       List<MapItemPropItem> props = [];
-      props.add(MapItemPropItem("", "icon_name", "Icon Name", "text", "add"));
+      props.add(MapItemPropItem(
+          "", "icon_name", "Icon Name", "material_icon", "add"));
       props.add(
           MapItemPropItem("", "decor_color", "Color", "color", "FF00EFFF"));
       groups.add(MapItemPropGroup("Decoration", true, props));

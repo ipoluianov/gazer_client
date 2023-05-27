@@ -13,6 +13,7 @@ import 'map_item_prop_font_size.dart';
 import 'map_item_prop_font_weight.dart';
 import 'map_item_prop_halign.dart';
 import 'map_item_prop_image.dart';
+import 'map_item_prop_material_icon.dart';
 import 'map_item_prop_multiline.dart';
 import 'map_item_prop_scale_fit.dart';
 import 'map_item_prop_text.dart';
@@ -91,6 +92,9 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
     }
     if (propItem.type == "font_size") {
       propWidget = MapItemPropFontSize(item, propItem, key: key);
+    }
+    if (propItem.type == "material_icon") {
+      propWidget = MapItemPropMaterialIcon(item, propItem, key: key);
     }
 
     return Container(
