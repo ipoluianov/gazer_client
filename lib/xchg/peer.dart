@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
@@ -19,6 +18,15 @@ import 'utils.dart';
 
 class XchgServerProcessor {}
 
+class BillingInfo {
+  String key = "";
+  String router = "";
+  int receivedFrames = 0;
+
+  int counter = 0;
+  int limit = 0;
+}
+
 class Peer {
   AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> keyPair = generateRSAkeyPair();
   bool started = false;
@@ -31,6 +39,7 @@ class Peer {
 
   // Client
   Map<String, RemotePeer> remotePeers = {};
+  Map<String, BillingInfo> routersBillingInfo = {};
 
   // Server
   Map<String, Transaction> incomingTransactions = {};
@@ -219,19 +228,73 @@ class Peer {
     return "peer not found";
   }
 
+  BillingInfo billingInfo(String router, String addr1, String addr2) {
+    String billingKey = genBillingKey(router, addr1, addr2);
+    BillingInfo? billingInfo;
+    if (routersBillingInfo.containsKey(billingKey)) {
+      billingInfo = routersBillingInfo[billingKey];
+    }
+    if (billingInfo != null) {
+      billingInfo = BillingInfo();
+    }
+    return billingInfo!;
+  }
+
+  String genBillingKey(String router, String addr1, String addr2) {
+    List<String> addrs = [router, addr1, addr2];
+    addrs.sort(
+      (a, b) {
+        return a.compareTo(b);
+      },
+    );
+    String resAddrsString = "-${addrs[0]}-${addrs[1]}-${addrs[2]}-";
+    return resAddrsString;
+  }
+
+  List<BillingInfo> billingInfoForAddress(String address) {
+    List<BillingInfo> result = [];
+    for (var billingInfo in routersBillingInfo.values) {
+      if (billingInfo.key.contains("-$address-")) {
+        result.add(billingInfo);
+      }
+    }
+    return result;
+  }
+
   Future<void> processFrame(String router, Uint8List frame) async {
     // Min size of frame is 128 bytes
     if (frame.length < 128) {
       return;
     }
 
-    int frameType = frame[8];
-    switch (frameType) {
+    // Parse frame
+    Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
+
+    // Fill in billing info
+    String billingKey =
+        genBillingKey(router, transaction.srcAddress, transaction.destAddress);
+    BillingInfo? billingInfo = BillingInfo();
+    if (routersBillingInfo.containsKey(billingKey)) {
+      billingInfo = routersBillingInfo[billingKey];
+    } else {
+      billingInfo = BillingInfo();
+      billingInfo.key = billingKey;
+      billingInfo.router = router;
+      routersBillingInfo[billingKey] = billingInfo;
+    }
+    if (billingInfo != null) {
+      billingInfo.counter = transaction.billingCounter;
+      billingInfo.limit = transaction.billingCounter;
+      billingInfo.receivedFrames++;
+    }
+
+    // Parse frame type
+    switch (transaction.frameType) {
       case 0x10:
-        processFrame10(frame);
+        processFrame10(transaction);
         break;
       case 0x11:
-        processFrame11(router, frame);
+        processFrame11(router, transaction);
         break;
       case 0x20:
         processFrame20(frame);
@@ -247,8 +310,8 @@ class Peer {
 // Incoming Call - Server Role
 // ----------------------------------------
 
-  void processFrame10(Uint8List frame) {
-    Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
+  void processFrame10(Transaction transaction) {
+    //Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
 
     List<String> transactionsToRemove = [];
     for (var trKey in incomingTransactions.keys) {
@@ -306,10 +369,7 @@ class Peer {
     }
   }
 
-  void processFrame11(String router, Uint8List frame) {
-    //print("processFrame11");
-    Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
-
+  void processFrame11(String router, Transaction transaction) {
     transaction.transportType = "HTTP $router";
 
     RemotePeer? remotePeer;
@@ -325,7 +385,7 @@ class Peer {
     }
   }
 
-  // ARP LAN request
+  // Get Public Key
   void processFrame20(Uint8List frame) {
     String localAddress = addressForPublicKey(keyPair.publicKey);
     Uint8List nonce = frame.sublist(8, 8 + 16);
@@ -346,7 +406,7 @@ class Peer {
     sendFrame([response], this, false);
   }
 
-  // ARP LAN response
+  // Get Public Key Response
   void processFrame21(Uint8List frame) {
     try {
       Uint8List receivedPublicKeyBS = frame.sublist(128 + 16 + 256);

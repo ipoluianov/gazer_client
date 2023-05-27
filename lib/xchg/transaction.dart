@@ -10,6 +10,8 @@ class Transaction {
   int totalSize = 0; // offset: 36
   String srcAddress = ""; // offset: 40
   String destAddress = ""; // offset: 70
+  int billingCounter = 0;
+  int billingLimit = 0;
   Uint8List data = Uint8List(0); // offset: 128
 
   bool complete = false;
@@ -37,6 +39,9 @@ class Transaction {
         base32.encode(Uint8List.fromList(frame.sublist(40, 70))).toLowerCase();
     tr.destAddress = "#" +
         base32.encode(Uint8List.fromList(frame.sublist(70, 100))).toLowerCase();
+
+    tr.billingCounter = frame.buffer.asUint32List(100)[0];
+    tr.billingLimit = frame.buffer.asUint32List(104)[0];
 
     tr.data = frame.sublist(128, size);
     return tr;

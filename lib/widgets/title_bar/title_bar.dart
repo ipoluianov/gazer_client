@@ -65,7 +65,15 @@ class TitleBarSt extends State<TitleBar> {
 
   String addressLine() {
     if (widget.connection != null) {
-      return Repository().client(widget.connection!).linkInformation();
+      var billingInfos = Repository().client(widget.connection!).billibInfos();
+      String result = "";
+      for (var bi in billingInfos) {
+        result += bi.router;
+        result += "=";
+        result += "${bi.receivedFrames} ${bi.counter}/${bi.limit}";
+        result += " | ";
+      }
+      return result;
     }
     return "";
   }
