@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/maps/map_form/map_items/map_item_single/map_item_single.dart';
 
-import '../../../../../core/design.dart';
 import '../../../utils/draw_text.dart';
 import '../../main/map_item.dart';
 

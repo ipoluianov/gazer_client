@@ -5,6 +5,7 @@ import 'package:gazer_client/forms/maps/map_item_add_form/map_item_add_form.dart
 import '../map_items/map_item_decoration/map_item_decoration_border_01.dart';
 import '../map_items/map_item_decoration/map_item_decoration_clock_01.dart';
 import '../map_items/map_item_decoration/map_item_decoration_material_icon01.dart';
+import '../map_items/map_item_single/gauge/map_item_gauge_02.dart';
 import 'map_item.dart';
 import '../map_items/map_item_control/map_item_button.dart';
 import '../map_items/map_item_single/chart/map_item_chart.dart';
@@ -35,6 +36,9 @@ class MapItemsLibrary {
     registerItem(MapItemGaugeRound.sType, MapItemGaugeRound.sName, "gauge",
         (c) {
       return MapItemGaugeRound(c);
+    });
+    registerItem(MapItemGauge02.sType, MapItemGauge02.sName, "gauge", (c) {
+      return MapItemGauge02(c);
     });
     registerItem(MapItemChart.sType, MapItemChart.sName, "chart", (c) {
       return MapItemChart(c);
