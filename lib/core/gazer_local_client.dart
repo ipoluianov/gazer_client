@@ -50,6 +50,7 @@ import 'package:gazer_client/core/protocol/user/user_prop_set.dart';
 import 'package:gazer_client/core/protocol/user/user_remove.dart';
 import 'package:gazer_client/core/protocol/user/user_set_password.dart';
 import 'package:gazer_client/core/repository.dart';
+import 'package:gazer_client/xchg/billing_for_address.dart';
 import 'package:gazer_client/xchg/peer.dart';
 
 typedef FromJsonFunc = dynamic Function(Map<String, dynamic> json);
@@ -69,8 +70,8 @@ class GazerLocalClient {
   String lastError = "";
   GazerLocalClient(this.id, this.transport, this.address, this.session);
 
-  List<BillingInfo> billibInfos() {
-    List<BillingInfo> result = Repository().peer.billingInfoForAddress(address);
+  BillingSummary billingInfo() {
+    BillingSummary result = Repository().peer.billingInfoForAddress(address);
     return result;
   }
 

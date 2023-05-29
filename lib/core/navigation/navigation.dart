@@ -51,14 +51,14 @@ String navCurrentPath(context) {
 }
 
 Widget buildActionButton(
-    context, IconData icon, String tooltip, Function() onPress,
+    context, IconData? icon, String tooltip, Function() onPress,
     {key}) {
   return buildActionButtonFull(context, icon, tooltip, onPress, false,
       key: key);
 }
 
 Widget buildActionButtonFull(
-    context, IconData icon, String tooltip, Function() onPress, bool checked,
+    context, IconData? icon, String tooltip, Function() onPress, bool checked,
     {Color? imageColor, Color? backColor, key}) {
   return ActionButton(
       icon: icon,

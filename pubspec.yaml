@@ -43,7 +43,7 @@ dependencies:
   permission_handler: ^10.2.0
   base32: ^2.1.3
   archive: ^3.3.6
-  dio: ^5.0.1
+  dio: ^5.1.2
   image: ^4.0.15
   url_launcher: ^6.1.10
   flutter_colorpicker: ^1.0.3

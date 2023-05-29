@@ -10,7 +10,15 @@ class ActionButton extends StatefulWidget {
   final Color? imageColor;
   final Color? backColor;
 
-  const ActionButton({this.icon, this.tooltip, this.onPress, this.backColor, this.checked, this.imageColor, Key? key}) : super(key: key);
+  const ActionButton(
+      {this.icon,
+      this.tooltip,
+      this.onPress,
+      this.backColor,
+      this.checked,
+      this.imageColor,
+      Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -42,6 +50,20 @@ class ActionButtonState extends State<ActionButton> {
       );
     }
 
+    Widget border = Border04Painter.build(hover);
+    if (widget.icon == null) {
+      return SizedBox(
+        width: 56,
+        height: 56,
+        child: Center(
+          child: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.white.withOpacity(0.1),
+          ),
+        ),
+      );
+    }
+
     Color imageColor = widget.imageColor ?? DesignColors.fore();
     Color backColor = widget.backColor ?? Colors.black38;
 
@@ -53,7 +75,7 @@ class ActionButtonState extends State<ActionButton> {
         padding: const EdgeInsets.all(3),
         child: Stack(
           children: [
-            Border04Painter.build(hover),
+            border,
             MouseRegion(
               cursor: SystemMouseCursors.click,
               onEnter: (_) {

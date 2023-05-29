@@ -5,6 +5,7 @@ import 'package:gazer_client/core/protocol/service/service_info.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/widgets/borders/border_02_titlebar.dart';
+import 'package:gazer_client/xchg/billing_for_address.dart';
 
 class TitleBar extends StatefulWidget implements PreferredSizeWidget {
   final Connection? connection;
@@ -63,19 +64,24 @@ class TitleBarSt extends State<TitleBar> {
     loadNodeInfo();
   }
 
-  String addressLine() {
+  Widget billing() {
+    BillingSummary billingInfo = BillingSummary();
     if (widget.connection != null) {
-      var billingInfos = Repository().client(widget.connection!).billibInfos();
-      String result = "";
-      for (var bi in billingInfos) {
-        result += bi.router;
-        result += "=";
-        result += "${bi.receivedFrames} ${bi.counter}/${bi.limit}";
-        result += " | ";
-      }
-      return result;
+      billingInfo = Repository().client(widget.connection!).billingInfo();
     }
-    return "";
+
+    double value = 0;
+    if (billingInfo.limit > 0) {
+      value = billingInfo.counter.toDouble() / billingInfo.limit.toDouble();
+    }
+
+    Color colorOfValue = Colors.green;
+
+    if (value > 0.5) {
+      colorOfValue = Colors.orange;
+    }
+
+    return Text("${billingInfo.counter} / ${billingInfo.limit}");
   }
 
   List<Widget> getActions() {
@@ -91,7 +97,61 @@ class TitleBarSt extends State<TitleBar> {
         Navigator.of(context).pop();
       });
     }
-    return Container();
+    return buildActionButton(context, null, "", () {});
+  }
+
+  Widget buildBillingButton() {
+    BillingSummary billingInfo = BillingSummary();
+    if (widget.connection != null) {
+      billingInfo = Repository().client(widget.connection!).billingInfo();
+    }
+
+    double value = 0;
+    if (billingInfo.limit > 0) {
+      value = billingInfo.counter.toDouble() / billingInfo.limit.toDouble();
+    }
+
+    Color colorOfValue = Colors.green;
+
+    if (value > 0.5) {
+      colorOfValue = Colors.orange;
+    }
+
+    if (value > 0.99) {
+      colorOfValue = Colors.red;
+    }
+
+    return Stack(
+      children: [
+        SizedBox(
+          width: 52,
+          height: 52,
+          child: Container(
+            //padding: EdgeInsets.all(10),
+            child: Center(
+              child: CircularProgressIndicator(
+                value: value,
+                color: colorOfValue,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(
+          width: 52,
+          height: 52,
+          child: Container(
+            //color: Colors.amber.withOpacity(0.3),
+            child: Center(
+              child: Text(
+                "${(value * 100).round()}%",
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 10),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -108,6 +168,7 @@ class TitleBarSt extends State<TitleBar> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   buildBackButton(),
+                  buildBillingButton(),
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.only(top: 8, left: 12),
@@ -134,13 +195,7 @@ class TitleBarSt extends State<TitleBar> {
                             child: Container(
                               //color: Colors.cyan,
                               alignment: Alignment.topLeft,
-                              child: Text(
-                                addressLine(),
-                                style: TextStyle(
-                                    color: DesignColors.fore1(),
-                                    overflow: TextOverflow.ellipsis),
-                                maxLines: 1,
-                              ),
+                              child: billing(),
                             ),
                           ),
                         ],

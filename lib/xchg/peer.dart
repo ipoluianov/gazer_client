@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
+import 'package:gazer_client/xchg/billing_for_address.dart';
 import 'package:gazer_client/xchg/network.dart';
 import 'package:gazer_client/xchg/remote_peer.dart';
 import 'package:gazer_client/xchg/frame_writer.dart';
@@ -18,15 +19,6 @@ import 'utils.dart';
 
 class XchgServerProcessor {}
 
-class BillingInfo {
-  String key = "";
-  String router = "";
-  int receivedFrames = 0;
-
-  int counter = 0;
-  int limit = 0;
-}
-
 class Peer {
   AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> keyPair = generateRSAkeyPair();
   bool started = false;
@@ -39,7 +31,7 @@ class Peer {
 
   // Client
   Map<String, RemotePeer> remotePeers = {};
-  Map<String, BillingInfo> routersBillingInfo = {};
+  //Map<String, BillingInfo> routersBillingInfo = {};
 
   // Server
   Map<String, Transaction> incomingTransactions = {};
@@ -92,6 +84,10 @@ class Peer {
       return;
     }
 
+//    String localAddress = addressForPublicKey(keyPair.publicKey);
+
+//    updateBillingInfo(host, localAddress);
+
     requestingFromInternet.add(host);
     Uint8List localAddressBS = addressBSForPublicKey(keyPair.publicKey);
     Uint8List getMessagesRequest = Uint8List(16 + 30);
@@ -100,11 +96,6 @@ class Peer {
     copyBytes(getMessagesRequest, 16, localAddressBS);
 
     Uint8List res = Uint8List(0);
-    /*try {
-      res = await httpCall(host, "r", getMessagesRequest, 20000);
-    } catch (err) {
-      print("ex: $err");
-    }*/
 
     httpCall(host, "r", getMessagesRequest).then((res) {
       if (res.length >= 8) {
@@ -228,37 +219,10 @@ class Peer {
     return "peer not found";
   }
 
-  BillingInfo billingInfo(String router, String addr1, String addr2) {
-    String billingKey = genBillingKey(router, addr1, addr2);
-    BillingInfo? billingInfo;
-    if (routersBillingInfo.containsKey(billingKey)) {
-      billingInfo = routersBillingInfo[billingKey];
-    }
-    if (billingInfo != null) {
-      billingInfo = BillingInfo();
-    }
-    return billingInfo!;
-  }
-
-  String genBillingKey(String router, String addr1, String addr2) {
-    List<String> addrs = [router, addr1, addr2];
-    addrs.sort(
-      (a, b) {
-        return a.compareTo(b);
-      },
-    );
-    String resAddrsString = "-${addrs[0]}-${addrs[1]}-${addrs[2]}-";
-    return resAddrsString;
-  }
-
-  List<BillingInfo> billingInfoForAddress(String address) {
-    List<BillingInfo> result = [];
-    for (var billingInfo in routersBillingInfo.values) {
-      if (billingInfo.key.contains("-$address-")) {
-        result.add(billingInfo);
-      }
-    }
-    return result;
+  BillingDB billingDB = BillingDB();
+  BillingSummary billingInfoForAddress(String address) {
+    String localAddress = addressForPublicKey(keyPair.publicKey);
+    return billingDB.getSummaryForAddresses(network, localAddress, address);
   }
 
   Future<void> processFrame(String router, Uint8List frame) async {
@@ -269,24 +233,6 @@ class Peer {
 
     // Parse frame
     Transaction transaction = Transaction.fromBinary(frame, 0, frame.length);
-
-    // Fill in billing info
-    String billingKey =
-        genBillingKey(router, transaction.srcAddress, transaction.destAddress);
-    BillingInfo? billingInfo = BillingInfo();
-    if (routersBillingInfo.containsKey(billingKey)) {
-      billingInfo = routersBillingInfo[billingKey];
-    } else {
-      billingInfo = BillingInfo();
-      billingInfo.key = billingKey;
-      billingInfo.router = router;
-      routersBillingInfo[billingKey] = billingInfo;
-    }
-    if (billingInfo != null) {
-      billingInfo.counter = transaction.billingCounter;
-      billingInfo.limit = transaction.billingCounter;
-      billingInfo.receivedFrames++;
-    }
 
     // Parse frame type
     switch (transaction.frameType) {
