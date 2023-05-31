@@ -70,9 +70,22 @@ class GazerLocalClient {
   String lastError = "";
   GazerLocalClient(this.id, this.transport, this.address, this.session);
 
+  String localAddress() {
+    return Repository().peer.address();
+  }
+
   BillingSummary billingInfo() {
     BillingSummary result = Repository().peer.billingInfoForAddress(address);
     return result;
+  }
+
+  BillingDB billingDB() {
+    BillingDB result = Repository().peer.billingDB;
+    return result;
+  }
+
+  bool usingLocalRouter() {
+    return Repository().peer.usingLocalRouter(address);
   }
 
   ////////////////////////////////////////////////////////

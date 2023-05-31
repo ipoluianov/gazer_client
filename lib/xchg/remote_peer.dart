@@ -327,6 +327,10 @@ class RemotePeer {
     return addressForPublicKey(keyPair.publicKey);
   }
 
+  bool usingLocalRouter() {
+    return useLocalRouter;
+  }
+
   Future<CallResult> executeTransaction(int sessionId, Uint8List data) async {
     int localTransactionId = nextTransactionId;
     nextTransactionId++;

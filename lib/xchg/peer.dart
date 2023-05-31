@@ -58,6 +58,22 @@ class Peer {
     });
   }
 
+  String address() {
+    String localAddress = addressForPublicKey(keyPair.publicKey);
+    return localAddress;
+  }
+
+  bool usingLocalRouter(String address) {
+    RemotePeer? remotePeer;
+    if (remotePeers.containsKey(address)) {
+      remotePeer = remotePeers[address];
+    }
+    if (remotePeer == null) {
+      return false;
+    }
+    return remotePeer.usingLocalRouter();
+  }
+
   void requestIncomingFramesFromInternet() {
     checkNetwork();
     if (network != null) {
@@ -222,7 +238,10 @@ class Peer {
   BillingDB billingDB = BillingDB();
   BillingSummary billingInfoForAddress(String address) {
     String localAddress = addressForPublicKey(keyPair.publicKey);
-    return billingDB.getSummaryForAddresses(network, localAddress, address);
+
+    var summary = billingDB.getSummaryForAddresses(
+        network, localAddress, address, usingLocalRouter(address));
+    return summary;
   }
 
   Future<void> processFrame(String router, Uint8List frame) async {

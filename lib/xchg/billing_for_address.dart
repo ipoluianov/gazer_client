@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:gazer_client/xchg/network_container.dart';
 
@@ -7,6 +8,7 @@ import 'network.dart';
 class BillingFromRouter {
   String address = "";
   String router = "";
+  DateTime dt = DateTime(0);
 
   int counter = 0;
   int limit = 0;
@@ -26,6 +28,9 @@ class BillingSummary {
   String serverAddress = "";
   int counter = 0;
   int limit = 0;
+  double percents = 0;
+  bool usingLocalRouter = false;
+  bool isPremium = false;
 }
 
 class BillingForAddress {
@@ -36,11 +41,11 @@ class BillingForAddress {
     if (network == null) {
       return;
     }
-    if (DateTime.now().difference(latestRequest) < const Duration(seconds: 3)) {
+    if (DateTime.now().difference(latestRequest) < const Duration(seconds: 5)) {
       return;
     }
     latestRequest = DateTime.now();
-    var routers = network!.getNodesAddressesByAddress(address);
+    var routers = network.getNodesAddressesByAddress(address);
     for (var router in routers) {
       httpGet("http://$router/api/billing?addr=${address.replaceAll("#", "")}",
               1000)
@@ -51,6 +56,7 @@ class BillingForAddress {
         var billingObject = BillingFromRouter.fromJson(jsonObject);
         billingObject.router = router;
         billingObject.address = address;
+        billingObject.dt = DateTime.now();
         billingInfoFromRouters[router] = billingObject;
       }).catchError((err) {
         print("Billing request error: $err");
@@ -73,21 +79,74 @@ class BillingDB {
     return result;
   }
 
-  BillingSummary getSummaryForAddresses(
-      XchgNetwork? network, String clientAddress, String serverAddress) {
+  void clear() {
+    for (var entry in entries.entries) {
+      List<String> routersToRemove = [];
+      for (var billingFromRouter
+          in entry.value.billingInfoFromRouters.entries) {
+        if (DateTime.now().difference(billingFromRouter.value.dt) >
+            const Duration(seconds: 60)) {
+          routersToRemove.add(billingFromRouter.key);
+        }
+      }
+      for (String routerToRemove in routersToRemove) {
+        entry.value.billingInfoFromRouters.remove(routerToRemove);
+      }
+    }
+  }
+
+  BillingSummary getSummaryForAddresses(XchgNetwork? network,
+      String clientAddress, String serverAddress, bool usingLocalRouter) {
+    clear();
     BillingSummary result = BillingSummary();
+
+    if (usingLocalRouter) {
+      result.clientAddress = clientAddress;
+      result.serverAddress = serverAddress;
+      result.limit = 1000000000;
+      result.counter = 0;
+      result.percents = 0;
+      result.usingLocalRouter = true;
+      result.isPremium = false;
+      return result;
+    }
+
     BillingForAddress billingForClient = get(network, clientAddress);
     BillingForAddress billingForServer = get(network, serverAddress);
+    double percentsClient = 1;
+    bool premiumDetected = false;
     for (var bi in billingForClient.billingInfoFromRouters.values) {
-      result.limit += bi.limit;
-      result.counter += bi.counter;
+      double p = 0;
+      if (bi.limit > 0) {
+        if (bi.limit == 1000000000) {
+          premiumDetected = true;
+        }
+        p = bi.counter.toDouble() / bi.limit.toDouble();
+        if (p < percentsClient) {
+          percentsClient = p;
+        }
+      }
     }
+    double percentsServer = 1;
     for (var bi in billingForServer.billingInfoFromRouters.values) {
-      result.limit += bi.limit;
-      result.counter += bi.counter;
+      double p = 0;
+      if (bi.limit > 0) {
+        if (bi.limit == 1000000000) {
+          premiumDetected = true;
+        }
+        p = bi.counter.toDouble() / bi.limit.toDouble();
+        if (p < percentsServer) {
+          percentsServer = p;
+        }
+      }
     }
+
+    double percents = max(percentsClient, percentsServer);
     result.clientAddress = clientAddress;
     result.serverAddress = serverAddress;
+    result.percents = percents * 100;
+    //result.usingLocalRouter = false;
+    result.isPremium = premiumDetected;
     return result;
   }
 }

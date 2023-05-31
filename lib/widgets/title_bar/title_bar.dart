@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/navigation/navigation.dart';
@@ -6,6 +8,8 @@ import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/widgets/borders/border_02_titlebar.dart';
 import 'package:gazer_client/xchg/billing_for_address.dart';
+
+import '../../core/navigation/route_generator.dart';
 
 class TitleBar extends StatefulWidget implements PreferredSizeWidget {
   final Connection? connection;
@@ -28,6 +32,22 @@ class TitleBar extends StatefulWidget implements PreferredSizeWidget {
 class TitleBarSt extends State<TitleBar> {
   bool serviceInfoLoaded = false;
   late ServiceInfoResponse serviceInfo;
+
+  @override
+  void initState() {
+    super.initState();
+    loadNodeInfo();
+    _timerTick = Timer.periodic(const Duration(milliseconds: 500), (t) {
+      tick();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timerTick.cancel();
+    super.dispose();
+  }
+
   void loadNodeInfo() {
     if (widget.connection != null) {
       Repository().client(widget.connection!).serviceInfo().then((value) {
@@ -41,14 +61,21 @@ class TitleBarSt extends State<TitleBar> {
     }
   }
 
-  String nodeName() {
+  String nodeAddress() {
     if (widget.connection == null) {
-      return "1werwer";
-    }
-    if (serviceInfoLoaded) {
-      return "${widget.connection!.address} - ${serviceInfo.nodeName}";
+      return "-";
     }
     return widget.connection!.address;
+  }
+
+  String nodeName() {
+    if (widget.connection == null) {
+      return "-";
+    }
+    if (serviceInfoLoaded) {
+      return serviceInfo.nodeName;
+    }
+    return "-"; //widget.connection!.address;
   }
 
   String titleLine() {
@@ -58,30 +85,40 @@ class TitleBarSt extends State<TitleBar> {
     return widget.title;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    loadNodeInfo();
+  late Timer _timerTick;
+  int tickCounter_ = 0;
+  void tick() {
+    setState(() {
+      tickCounter_++;
+    });
   }
 
   Widget billing() {
     BillingSummary billingInfo = BillingSummary();
+
+    String text = "";
+    Color color = Colors.grey.withOpacity(0.5);
+
     if (widget.connection != null) {
       billingInfo = Repository().client(widget.connection!).billingInfo();
+      text = Repository().client(widget.connection!).linkInformation();
+      if (billingInfo.isPremium) {
+        text = "Premium Node";
+        color = Colors.green;
+      }
+
+      if (billingInfo.usingLocalRouter) {
+        text = "local connection";
+        color = Colors.grey;
+      }
     }
 
-    double value = 0;
-    if (billingInfo.limit > 0) {
-      value = billingInfo.counter.toDouble() / billingInfo.limit.toDouble();
-    }
+    text += " ${nodeAddress()}";
 
-    Color colorOfValue = Colors.green;
-
-    if (value > 0.5) {
-      colorOfValue = Colors.orange;
-    }
-
-    return Text("${billingInfo.counter} / ${billingInfo.limit}");
+    return Text(
+      text,
+      style: TextStyle(color: color, fontSize: 10),
+    );
   }
 
   List<Widget> getActions() {
@@ -102,55 +139,112 @@ class TitleBarSt extends State<TitleBar> {
 
   Widget buildBillingButton() {
     BillingSummary billingInfo = BillingSummary();
+
+    bool usingLocalRouter = false;
+    if (widget.connection != null) {
+      usingLocalRouter =
+          Repository().client(widget.connection!).usingLocalRouter();
+    }
     if (widget.connection != null) {
       billingInfo = Repository().client(widget.connection!).billingInfo();
     }
 
+    bool isPremium = billingInfo.isPremium;
+
+    // isPremium = true;
+
     double value = 0;
-    if (billingInfo.limit > 0) {
-      value = billingInfo.counter.toDouble() / billingInfo.limit.toDouble();
-    }
+    value = billingInfo.percents;
 
     Color colorOfValue = Colors.green;
 
-    if (value > 0.5) {
-      colorOfValue = Colors.orange;
+    // value = 80;
+
+    if (value > 50) {
+      colorOfValue = Colors.orangeAccent;
+      if ((tickCounter_ % 2) == 0) {
+        colorOfValue = Colors.yellow;
+      }
     }
 
-    if (value > 0.99) {
+    if (value > 80) {
       colorOfValue = Colors.red;
+      if ((tickCounter_ % 2) == 0) {
+        colorOfValue = Colors.yellow;
+      }
     }
 
-    return Stack(
-      children: [
-        SizedBox(
-          width: 52,
-          height: 52,
-          child: Container(
-            //padding: EdgeInsets.all(10),
-            child: Center(
-              child: CircularProgressIndicator(
-                value: value,
-                color: colorOfValue,
+    Widget innerWidget = CircularProgressIndicator(
+      value: value / 100,
+      color: colorOfValue,
+      backgroundColor: Colors.grey,
+    );
+    Widget percentsText = Center(
+      child: Text(
+        "${(value).round()}%",
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontSize: 10),
+      ),
+    );
+
+    if (usingLocalRouter) {
+      innerWidget = const Center(
+        child: Icon(
+          Icons.radar,
+          size: 32,
+          color: Colors.green,
+        ),
+      );
+      percentsText = Container();
+    }
+
+    if (isPremium) {
+      innerWidget = const Center(
+        child: Icon(
+          Icons.auto_awesome,
+          size: 32,
+          color: Colors.green,
+        ),
+      );
+      percentsText = Container();
+    }
+
+    if (widget.connection == null) {
+      innerWidget = const Image(
+          image: AssetImage('assets/images/ios/Icon-App-40x40@1x.png'));
+      percentsText = Container();
+    }
+
+    return GestureDetector(
+      onTap: () {
+        if (widget.connection != null) {
+          Navigator.pushNamed(context, "/billing",
+              arguments: BillingFormArgument(widget.connection!));
+        }
+      },
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Stack(
+          children: [
+            SizedBox(
+              width: 52,
+              height: 52,
+              child: Center(
+                child: SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: innerWidget,
+                ),
               ),
             ),
-          ),
-        ),
-        SizedBox(
-          width: 52,
-          height: 52,
-          child: Container(
-            //color: Colors.amber.withOpacity(0.3),
-            child: Center(
-              child: Text(
-                "${(value * 100).round()}%",
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 10),
-              ),
+            SizedBox(
+              width: 52,
+              height: 52,
+              child: percentsText,
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -161,7 +255,7 @@ class TitleBarSt extends State<TitleBar> {
         color: DesignColors.mainBackgroundColor,
         child: Stack(
           children: [
-            Border02Painter.build(false),
+            Border02Painter.build(false, DesignColors.fore2()),
             Container(
               padding: const EdgeInsets.only(left: 3, top: 3, right: 6),
               child: Row(

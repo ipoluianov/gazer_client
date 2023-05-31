@@ -3,13 +3,14 @@ import 'package:gazer_client/core/design.dart';
 
 class Border02Painter extends CustomPainter {
   bool hover;
-  Border02Painter(this.hover);
+  Color color;
+  Border02Painter(this.hover, this.color);
 
-  static Widget build(bool hover) {
+  static Widget build(bool hover, Color color) {
     return Container(
       padding: const EdgeInsets.all(3),
       child: CustomPaint(
-        painter: Border02Painter(hover),
+        painter: Border02Painter(hover, color),
         child: Container(),
         key: UniqueKey(),
       ),
@@ -106,7 +107,7 @@ class Border02Painter extends CustomPainter {
           Paint()
             //..isAntiAlias = false
             ..style = PaintingStyle.stroke
-            ..color = DesignColors.fore2().withOpacity(0.02)
+            ..color = color.withOpacity(0.02)
             ..strokeCap = StrokeCap.round
             ..strokeJoin = StrokeJoin.round
             ..strokeWidth = 8);
@@ -115,7 +116,7 @@ class Border02Painter extends CustomPainter {
           Paint()
             //..isAntiAlias = false
             ..style = PaintingStyle.stroke
-            ..color = DesignColors.fore2().withOpacity(0.05)
+            ..color = color.withOpacity(0.05)
             ..strokeCap = StrokeCap.round
             ..strokeJoin = StrokeJoin.round
             ..strokeWidth = 6);
@@ -124,7 +125,7 @@ class Border02Painter extends CustomPainter {
           Paint()
             //..isAntiAlias = false
             ..style = PaintingStyle.stroke
-            ..color = DesignColors.fore2().withOpacity(0.1)
+            ..color = color.withOpacity(0.1)
             ..strokeCap = StrokeCap.round
             ..strokeJoin = StrokeJoin.round
             ..strokeWidth = 4);
@@ -133,7 +134,7 @@ class Border02Painter extends CustomPainter {
           Paint()
             //..isAntiAlias = false
             ..style = PaintingStyle.stroke
-            ..color = DesignColors.fore2()
+            ..color = color
             ..strokeCap = StrokeCap.round
             ..strokeJoin = StrokeJoin.round
             ..strokeWidth = 1);
