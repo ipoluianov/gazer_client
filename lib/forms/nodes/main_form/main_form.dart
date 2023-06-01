@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/design.dart';
+import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/nodes/main_form/node_widget.dart';
 import 'package:gazer_client/core/navigation/route_generator.dart';
@@ -31,22 +32,30 @@ class MainFormSt extends State<MainForm> {
   ScrollController scrollController1 = ScrollController();
   ScrollController scrollController2 = ScrollController();
 
+  bool peerLoaded = false;
+  void initPeer() async {
+    loadPeer().then((value) {
+      setState(() {
+        peerLoaded = true;
+      });
+      addLocalConnection().then((value) {
+        if (value is Connection) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+          Navigator.of(context).pop();
+          Navigator.pushNamed(context, "/node",
+              arguments: NodeFormArgument(value));
+          return;
+        }
+
+        loadNodesList();
+      });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    //conn.call("", Uint8List(0));
-
-    addLocalConnection().then((value) {
-      if (value is Connection) {
-        Navigator.of(context).popUntil((route) => route.isFirst);
-        Navigator.of(context).pop();
-        Navigator.pushNamed(context, "/node",
-            arguments: NodeFormArgument(value));
-        return;
-      }
-
-      loadNodesList();
-    });
+    initPeer();
   }
 
   bool loading = true;

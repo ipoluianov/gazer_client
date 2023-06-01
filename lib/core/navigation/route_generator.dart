@@ -17,6 +17,7 @@ import 'package:gazer_client/forms/mores/users_form/users_form.dart';
 import 'package:gazer_client/forms/utilities/resources/resources_form/resources_form.dart';
 
 import '../../forms/chart_groups/chart_group_form/chart_group_form.dart';
+import '../../forms/mores/access_form/access_form.dart';
 import '../../forms/mores/billing_form/billing_form.dart';
 import '../../forms/units/data_item_history_table_form/data_item_history_table_form.dart';
 import '../../forms/units/data_item_properties/data_item_properties.dart';
@@ -140,6 +141,19 @@ class RouteGenerator {
               Animation<double> secondaryAnimation) {
             return AboutForm(
               settings.arguments as AboutFormArgument,
+            );
+          },
+          transitionsBuilder: transBuilder,
+          transitionDuration: transDuration(),
+          reverseTransitionDuration: transDuration(),
+        );
+      case '/access':
+        Repository().navIndex = NavIndex.more;
+        return PageRouteBuilder(
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
+            return AccessForm(
+              settings.arguments as AccessFormArgument,
             );
           },
           transitionsBuilder: transBuilder,
@@ -444,6 +458,11 @@ class MoreFormArgument {
 class AboutFormArgument {
   Connection connection;
   AboutFormArgument(this.connection);
+}
+
+class AccessFormArgument {
+  Connection connection;
+  AccessFormArgument(this.connection);
 }
 
 class BillingFormArgument {

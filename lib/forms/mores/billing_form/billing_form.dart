@@ -101,7 +101,7 @@ class BillingFormSt extends State<BillingForm> {
         return Scaffold(
           appBar: TitleBar(
             widget.arg.connection,
-            "Billing",
+            "Remote Access",
             actions: <Widget>[
               buildHomeButton(context),
             ],

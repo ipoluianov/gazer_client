@@ -59,7 +59,7 @@ class GazerLocalClient {
   String id;
   String transport;
   String address;
-  String session;
+  String accessKey;
   String repeater = "";
   bool active = false;
   bool isValid = false;
@@ -68,7 +68,7 @@ class GazerLocalClient {
   String nodeVersion = "";
   String nodeBuildTime = "";
   String lastError = "";
-  GazerLocalClient(this.id, this.transport, this.address, this.session);
+  GazerLocalClient(this.id, this.transport, this.address, this.accessKey);
 
   String localAddress() {
     return Repository().peer.address();
@@ -482,7 +482,7 @@ class GazerLocalClient {
   }
 
   Future<CloudRegisteredNodesResponse> cloudRegisteredNode() async {
-    if (session.isEmpty) {
+    if (accessKey.isEmpty) {
       throw GazerClientException("no session");
     }
 
@@ -634,8 +634,8 @@ class GazerLocalClient {
 
     // Gazer request body
     var reqString = jsonEncode(request);
-    var res = await Repository().peer.call(
-        address, session, function, Uint8List.fromList(utf8.encode(reqString)));
+    var res = await Repository().peer.call(address, accessKey, function,
+        Uint8List.fromList(utf8.encode(reqString)));
 
     if (!res.isError()) {
       String s = utf8.decode(res.data);

@@ -2,6 +2,8 @@ import 'package:gazer_client/core/gazer_local_client.dart';
 import 'package:gazer_client/core/history/history.dart';
 import 'package:gazer_client/core/items_watcher/items_watcher.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
+import 'package:pointycastle/api.dart';
+import 'package:pointycastle/asymmetric/api.dart';
 
 import '../xchg/peer.dart';
 
@@ -22,7 +24,12 @@ class Repository {
   NavIndex navIndex = NavIndex.units;
   //XchgConnection xchg = XchgConnection("gruvl3znuewl3gslgkz6aaebya4j5hvd2lcgu3i4lvj263ze", "pass");
 
+  bool peerLoaded = false;
   Peer peer = Peer(null, false);
+
+  void initPeer(AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> keyPair) {
+    peer = Peer(keyPair, false);
+  }
 
   GazerLocalClient client(Connection conn) {
     String clientKey =
@@ -40,4 +47,11 @@ class Repository {
   }
 
   Repository._internal();
+}
+
+Future<void> loadPeer() async {
+  try {
+    var keyPair = await getKeyPair();
+    Repository().initPeer(keyPair);
+  } catch (ex) {}
 }

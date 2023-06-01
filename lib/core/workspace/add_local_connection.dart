@@ -7,7 +7,7 @@ import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/nodes/node_add_form/node_add_form.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<Connection?> addLocalConnection() async  {
+Future<Connection?> addLocalConnection() async {
   Connection? connection;
   final prefs = await SharedPreferences.getInstance();
 
@@ -19,15 +19,16 @@ Future<Connection?> addLocalConnection() async  {
       cl.transport = "http/local";
       cl.address = "localhost";
       var openSessionResult = await cl.sessionOpen("admin", localAdminPassword);
-      cl.session = openSessionResult.sessionToken;
+      cl.accessKey = openSessionResult.sessionToken;
       cl.isValid = true;
 
       var connectionId = UniqueKey().toString();
-      connection = Connection(connectionId, cl.transport, cl.address, cl.session);
+      connection =
+          Connection(connectionId, cl.transport, cl.address, cl.accessKey);
       await wsAddConnection(connection);
       prefs.setBool("node_client_added_connection", true);
     }
-  } catch(err) {
+  } catch (err) {
     connection = null;
   }
 
@@ -37,7 +38,8 @@ Future<Connection?> addLocalConnection() async  {
 Future<String> loadLocalAdminPassword() async {
   String text = "";
   try {
-    final File file = File('${NodeAddFormSt.gazerDataDirectory()}/default_admin_password.txt');
+    final File file = File(
+        '${NodeAddFormSt.gazerDataDirectory()}/default_admin_password.txt');
     text = await file.readAsString();
   } catch (e) {}
   return text;

@@ -61,19 +61,20 @@ class MoreFormSt extends State<MoreForm> {
                             child: Wrap(
                               children: [
                                 MoreButton(() {
-                                  Navigator.pushNamed(context, "/users",
-                                      arguments: UsersFormArgument(
+                                  Navigator.pushNamed(context, "/access",
+                                      arguments: AccessFormArgument(
                                           widget.arg.connection));
                                 },
-                                    "Users",
-                                    const Icon(Icons.supervisor_account,
-                                        size: 48),
+                                    "Access",
+                                    const Icon(Icons.shield_outlined, size: 48),
                                     0),
                                 MoreButton(() {
                                   Navigator.pushNamed(context, "/billing",
                                       arguments: BillingFormArgument(
                                           widget.arg.connection));
-                                }, "Billing", const Icon(Icons.money, size: 48),
+                                },
+                                    "Remote Access",
+                                    const Icon(Icons.auto_awesome, size: 48),
                                     0),
                                 MoreButton(() {
                                   Navigator.pushNamed(context, "/about",

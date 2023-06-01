@@ -1,6 +1,10 @@
 import 'dart:convert';
 
+import 'package:pointycastle/api.dart';
+import 'package:pointycastle/asymmetric/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../xchg/rsa.dart';
 
 class Connection {
   String id;
@@ -10,8 +14,7 @@ class Connection {
 
   Connection(this.id, this.transport, this.address, this.sessionKey);
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'id': id,
         'transport': transport,
         'address': address,
@@ -114,6 +117,65 @@ Future<void> wsAddConnection(Connection connection) async {
   var ws = await readWorkspace();
   ws.connections.add(connection);
   saveWorkspace(ws);
+}
+
+Future<AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>> getKeyPair() async {
+  AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> result = generateRSAkeyPair();
+  final prefs = await SharedPreferences.getInstance();
+  String privateKeyString = prefs.getString("private_key_p") ?? "";
+  bool loaded = false;
+  if (privateKeyString != "") {
+    try {
+      var privateP = prefs.getString("private_key_p");
+      var privateQ = prefs.getString("private_key_q");
+      var privateModulus = prefs.getString("private_key_mod");
+      var privateExponent = prefs.getString("private_key_exp");
+
+      var publicModulus = prefs.getString("public_key_mod");
+      var publicExponent = prefs.getString("public_key_exp");
+
+      if (privateP != null &&
+          privateQ != null &&
+          privateModulus != null &&
+          privateExponent != null &&
+          publicModulus != null &&
+          publicExponent != null) {
+        RSAPrivateKey privateKey = RSAPrivateKey(
+            BigInt.parse(privateModulus),
+            BigInt.parse(privateExponent),
+            BigInt.parse(privateP),
+            BigInt.parse(privateQ));
+
+        RSAPublicKey publicKey = RSAPublicKey(
+            BigInt.parse(publicModulus), BigInt.parse(publicExponent));
+
+        result = AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>(
+            publicKey, privateKey);
+        loaded = true;
+      }
+    } catch (ex) {
+      print(ex);
+    }
+  }
+
+  if (!loaded) {
+    var privateP = result.privateKey.p!.toString();
+    prefs.setString("private_key_p", privateP);
+    var privateQ = result.privateKey.q!.toString();
+    prefs.setString("private_key_q", privateQ);
+    var privateModulus = result.privateKey.modulus!.toString();
+    prefs.setString("private_key_mod", privateModulus);
+    var privateExponent = result.privateKey.privateExponent!.toString();
+    prefs.setString("private_key_exp", privateExponent);
+
+    var publicExponent = result.publicKey.exponent!.toString();
+    prefs.setString("public_key_exp", publicExponent);
+
+    var publicModulus = result.publicKey.modulus!.toString();
+    prefs.setString("public_key_mod", publicModulus);
+  }
+
+  return result;
 }
 
 Future<void> wsRemoveConnection(String id) async {
