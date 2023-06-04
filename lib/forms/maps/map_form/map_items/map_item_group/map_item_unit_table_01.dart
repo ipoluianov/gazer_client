@@ -181,7 +181,7 @@ class MapItemUnitTable01 extends MapItem {
               getDoubleZ("w") - padding * 2,
               getDoubleZ("h"),
               itemName,
-              fontSize,
+              getDouble("font_size"),
               getColor("name_color"),
               TextAlign.left,
               fontFamily,
