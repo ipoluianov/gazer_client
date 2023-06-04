@@ -346,11 +346,11 @@ class MapItemUnitTable01 extends MapItem {
     {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem(
-          "", "name_color", "Item Name Color", "color", "FF00BCD4"));
+          "", "name_color", "Item Name Color", "color", "{fore}"));
       props.add(
-          MapItemPropItem("", "text_color", "Text Color", "color", "FF19EE46"));
+          MapItemPropItem("", "text_color", "Text Color", "color", "{good}"));
       props.add(
-          MapItemPropItem("", "uom_color", "UOM Color", "color", "FF009688"));
+          MapItemPropItem("", "uom_color", "UOM Color", "color", "{fore1}"));
       props.add(MapItemPropItem(
           "", "font_family", "Font Family", "font_family", "Roboto"));
       props.add(

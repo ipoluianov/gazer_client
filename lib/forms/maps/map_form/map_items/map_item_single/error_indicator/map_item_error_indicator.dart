@@ -12,14 +12,6 @@ class MapItemErrorIndicator extends MapItem {
     return sType;
   }
 
-  double realValue = 0.0;
-  double targetValue = 0.0;
-  double lastValue = 0.0;
-  double aniCounter = 0.0;
-
-  bool isReplacer = false;
-  String replaceType = "";
-
   MapItemErrorIndicator(Connection connection) : super(connection) {
     setDouble("font_size", 20);
   }
@@ -46,7 +38,9 @@ class MapItemErrorIndicator extends MapItem {
       }
     }
 
-    targetValue = getDoubleZ("font_size");
+    var fontSizeGood = getDoubleZ("font_regular_size");
+    var fontSizeBad = getDoubleZ("font_error_size");
+
     text = text.replaceAll("[nl]", "\n");
 
     double widthZ = getDoubleZ("w");
@@ -56,8 +50,10 @@ class MapItemErrorIndicator extends MapItem {
     double indicatorRadius = indicatorWidth / 2.5;
 
     var textColor = Colors.white;
+    var fontSize = fontSizeGood;
     if (isError) {
       textColor = getColor("text_error_color");
+      fontSize = fontSizeBad;
     } else {
       textColor = getColor("text_regular_color");
     }
@@ -69,7 +65,7 @@ class MapItemErrorIndicator extends MapItem {
       getDoubleZ("w") - indicatorWidth,
       getDoubleZ("h"),
       text,
-      lastValue,
+      fontSize,
       textColor,
       TextVAlign.middle,
       TextAlign.left,
@@ -105,35 +101,26 @@ class MapItemErrorIndicator extends MapItem {
       props.add(MapItemPropItem("", "text", "Text", "text", "Text"));
 
       props.add(MapItemPropItem(
-          "", "regular_color", "Regular Color", "color", "FF3BD33B"));
+          "", "regular_color", "Regular Color", "color", "{good}"));
       props.add(MapItemPropItem(
-          "", "text_regular_color", "Text Regular Color", "color", "FF00EFFF"));
+          "", "text_regular_color", "Text Regular Color", "color", "{good}"));
       props.add(MapItemPropItem(
-          "", "font_regular_size", "Font Regular Size", "double", "20"));
+          "", "font_regular_size", "Font Regular Size", "font_size", "20"));
 
+      props.add(
+          MapItemPropItem("", "error_color", "Error Color", "color", "{bad}"));
       props.add(MapItemPropItem(
-          "", "error_color", "Error Color", "color", "FFE53535"));
+          "", "text_error_color", "Text Error Color", "color", "{bad}"));
       props.add(MapItemPropItem(
-          "", "text_error_color", "Text Error Color", "color", "FFE53535"));
-      props.add(MapItemPropItem(
-          "", "font_error_size", "Font Error Size", "double", "20"));
+          "", "font_error_size", "Font Error Size", "font_size", "20"));
       groups.add(MapItemPropGroup("Text", true, props));
     }
     return groups;
   }
 
   @override
-  void tick() {
-    var diff = targetValue - lastValue;
-    lastValue += diff / 2;
-    if ((lastValue - targetValue).abs() < 0.1) {
-      lastValue = targetValue;
-    }
-  }
+  void tick() {}
 
   @override
-  void resetToEndOfAnimation() {
-    targetValue = getDoubleZ("font_size");
-    lastValue = targetValue;
-  }
+  void resetToEndOfAnimation() {}
 }

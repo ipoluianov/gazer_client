@@ -296,7 +296,7 @@ class MapItemGaugeRound extends MapItemSingle {
       props.add(MapItemPropItem(
           "", "progress_width", "ProgressWidth", "double", "10"));
       props.add(MapItemPropItem(
-          "", "progress_color", "ProgressColor", "color", "FF00EFFF"));
+          "", "progress_color", "ProgressColor", "color", "{fore}"));
 
       groups.add(MapItemPropGroup("Appearance", false, props));
     }
@@ -314,11 +314,11 @@ class MapItemGaugeRound extends MapItemSingle {
       props.add(MapItemPropItem(
           "", "animated_circles_radius", "Radius, %", "double", "70"));
       props.add(MapItemPropItem(
-          "", "animated_circles_color1", "Color 1", "color", "4000EFFF"));
+          "", "animated_circles_color1", "Color 1", "color", "{fore1}"));
       props.add(MapItemPropItem(
           "", "animated_circles_width1", "Width 1", "double", "5"));
       props.add(MapItemPropItem(
-          "", "animated_circles_color2", "Color 2", "color", "8000EFFF"));
+          "", "animated_circles_color2", "Color 2", "color", "{fore2}"));
       props.add(MapItemPropItem(
           "", "animated_circles_width2", "Width 2", "double", "1"));
       groups.add(MapItemPropGroup("Animation", false, props));

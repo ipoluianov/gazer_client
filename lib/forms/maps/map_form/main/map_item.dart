@@ -5,6 +5,7 @@ import 'dart:ui' as dart_ui;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/protocol/dataitem/data_item_list.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
@@ -365,6 +366,9 @@ abstract class MapItem extends IPropContainer {
 
   Color getColor(String name) {
     var val = get(name);
+    if (val != "" && val[0] == "{") {
+      return DesignColors.paletteColor(val);
+    }
     if (val != "") {
       return colorFromHex(val);
     }

@@ -97,8 +97,7 @@ MapItemPropGroup textAppearanceGroup() {
   props.add(MapItemPropItem("", "font_size", "Font Size", "font_size", "20"));
   props.add(
       MapItemPropItem("", "font_weight", "Font Weight", "font_weight", "400"));
-  props.add(
-      MapItemPropItem("", "text_color", "Text Color", "color", "FF00EFFF"));
+  props.add(MapItemPropItem("", "text_color", "Text Color", "color", "{fore}"));
   props.add(MapItemPropItem("", "h_align", "Hor Align", "halign", "center"));
   return MapItemPropGroup("Text Appearance", false, props);
 }
@@ -107,7 +106,7 @@ MapItemPropGroup borderGroup({borderWidthDefault}) {
   borderWidthDefault ??= "1";
   List<MapItemPropItem> props = [];
   props.add(
-      MapItemPropItem("", "border_color", "Border Color", "color", "FF00EFFF"));
+      MapItemPropItem("", "border_color", "Border Color", "color", "{fore}"));
   props.add(MapItemPropItem(
       "", "border_width", "Border Width", "double", borderWidthDefault));
   props.add(MapItemPropItem(

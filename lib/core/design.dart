@@ -21,6 +21,114 @@ class DesignColors {
 
   static DesignSettings _settings = DesignSettings.makeDefault();
 
+  static Color paletteColor(String code) {
+    code = code.replaceAll("{", "");
+    code = code.replaceAll("}", "");
+    if (code == "fore") {
+      return DesignColors.fore();
+    }
+    if (code == "fore1") {
+      return DesignColors.fore1();
+    }
+    if (code == "fore2") {
+      return DesignColors.fore2();
+    }
+    if (code == "back") {
+      return DesignColors.back();
+    }
+    if (code == "back1") {
+      return DesignColors.back1();
+    }
+    if (code == "back2") {
+      return DesignColors.back2();
+    }
+    if (code == "good") {
+      return DesignColors.good();
+    }
+    if (code == "bad") {
+      return DesignColors.bad();
+    }
+    return fore();
+  }
+
+  static void setPalette(String code) {
+    if (code == "blue") {
+      _fore = const Color(0xFF00BCFF);
+      _fore1 = const Color(0xB000BCFF);
+      _fore2 = const Color(0x9000BCFF);
+
+      _back = const Color(0xFF151515);
+      _back1 = const Color(0x1000BCFF);
+      _back2 = const Color(0x3000BCFF);
+
+      mainBackgroundColor = _back;
+
+      _good = const Color(0xFF008800);
+      _bad = const Color(0xFFBF360C);
+      _warning = const Color(0xFFFF7700);
+    }
+    if (code == "green") {
+      _fore = const Color(0xFF009922);
+      _fore1 = const Color(0xB0009922);
+      _fore2 = const Color(0x90009922);
+
+      _back = const Color(0xFF151515);
+      _back1 = const Color(0x10009922);
+      _back2 = const Color(0x30009922);
+
+      mainBackgroundColor = _back;
+
+      _good = const Color(0xFF008800);
+      _bad = const Color(0xFFBF360C);
+      _warning = const Color(0xFFFF7700);
+    }
+    if (code == "turquoise") {
+      _fore = const Color(0xFF00EFFF);
+      _fore1 = const Color(0xB000EFFF);
+      _fore2 = const Color(0x9000EFFF);
+
+      _back = const Color(0xFF151515);
+      _back1 = const Color(0x1000EFFF);
+      _back2 = const Color(0x3000EFFF);
+
+      mainBackgroundColor = _back;
+
+      _good = const Color(0xFF008800);
+      _bad = const Color(0xFFBF360C);
+      _warning = const Color(0xFFFF7700);
+    }
+    if (code == "yellow") {
+      _fore = const Color(0xFFDDAA00);
+      _fore1 = const Color(0xB0DDAA00);
+      _fore2 = const Color(0x90DDAA00);
+
+      _back = const Color(0xFF151515);
+      _back1 = const Color(0x10DDAA00);
+      _back2 = const Color(0x30DDAA00);
+
+      mainBackgroundColor = _back;
+
+      _good = const Color(0xFF008800);
+      _bad = const Color(0xFFBF360C);
+      _warning = const Color(0xFFFF7700);
+    }
+    if (code == "white") {
+      _fore = const Color(0xFFBBBBBB);
+      _fore1 = const Color(0xB0BBBBBB);
+      _fore2 = const Color(0x90BBBBBB);
+
+      _back = const Color(0xFF151515);
+      _back1 = const Color(0x10151515);
+      _back2 = const Color(0x30151515);
+
+      mainBackgroundColor = _back;
+
+      _good = const Color(0xFF008800);
+      _bad = const Color(0xFFBF360C);
+      _warning = const Color(0xFFFF7700);
+    }
+  }
+
   static Color accent() {
     return _accent;
   }

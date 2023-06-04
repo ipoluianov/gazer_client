@@ -77,6 +77,12 @@ class MoreFormSt extends State<MoreForm> {
                                     const Icon(Icons.auto_awesome, size: 48),
                                     0),
                                 MoreButton(() {
+                                  Navigator.pushNamed(context, "/appearance",
+                                      arguments: AppearanceFormArgument(
+                                          widget.arg.connection));
+                                }, "Appearance",
+                                    const Icon(Icons.settings, size: 48), 0),
+                                MoreButton(() {
                                   Navigator.pushNamed(context, "/about",
                                       arguments: AboutFormArgument(
                                           widget.arg.connection));
