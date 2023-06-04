@@ -1,3 +1,4 @@
+import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/gazer_local_client.dart';
 import 'package:gazer_client/core/history/history.dart';
 import 'package:gazer_client/core/items_watcher/items_watcher.dart';
@@ -57,6 +58,8 @@ Future<void> loadPeer() async {
   }
   try {
     var keyPair = await getKeyPair();
+    await loadAppearance();
+    DesignColors.setPalette(DesignColors.palette());
     Repository().initPeer(keyPair);
     peerInited = true;
   } catch (ex) {}

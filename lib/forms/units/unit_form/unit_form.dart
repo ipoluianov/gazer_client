@@ -148,7 +148,7 @@ class UnitFormSt extends State<UnitForm> {
       _chartSettings.areas.add(TimeChartSettingsArea(
           widget.arg.connection, <TimeChartSettingsSeries>[
         TimeChartSettingsSeries(
-            widget.arg.connection, itemName, [], colorByIndex(0))
+            widget.arg.connection, itemName, [], DesignColors.fore())
       ]));
     });
   }

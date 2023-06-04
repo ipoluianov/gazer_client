@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/design_settings.dart';
 import 'package:gazer_client/core/tools/hex_colors.dart';
+import 'package:gazer_client/core/workspace/workspace.dart';
+import 'package:intl/number_symbols_data.dart';
 
 class DesignColors {
   static Color _accent = const Color(0xFFFFBF00);
@@ -51,7 +53,15 @@ class DesignColors {
     return fore();
   }
 
+  static String currentPalette = "blue";
+
+  static String palette() {
+    return currentPalette;
+  }
+
   static void setPalette(String code) {
+    currentPalette = code;
+    saveAppearance().then((value) {}).catchError((err) {});
     if (code == "blue") {
       _fore = const Color(0xFF00BCFF);
       _fore1 = const Color(0xB000BCFF);

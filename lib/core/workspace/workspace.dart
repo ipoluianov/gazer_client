@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:gazer_client/core/design.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -176,6 +177,19 @@ Future<AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>> getKeyPair() async {
   }
 
   return result;
+}
+
+Future<void> saveAppearance() async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setString("palette", DesignColors.palette());
+}
+
+Future<void> loadAppearance() async {
+  final prefs = await SharedPreferences.getInstance();
+  String? paletteName = prefs.getString("palette");
+  if (paletteName != null) {
+    DesignColors.setPalette(paletteName);
+  }
 }
 
 Future<void> wsRemoveConnection(String id) async {

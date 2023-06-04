@@ -161,8 +161,8 @@ class MapItemChart extends MapItemSingle {
     {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem("", "span", "Span, sec", "double", "300"));
-      props.add(MapItemPropItem(
-          "", "chart_color", "Chart Color", "color", "FF0EC35E"));
+      props.add(
+          MapItemPropItem("", "chart_color", "Chart Color", "color", "{fore}"));
       props.add(MapItemPropItem(
           "", "show_time_scale", "Show Time Scale", "bool", "0"));
       groups.add(MapItemPropGroup("Chart", true, props));
