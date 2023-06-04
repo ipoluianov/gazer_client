@@ -100,7 +100,7 @@ MapItemPropGroup textAppearanceGroup() {
   props.add(
       MapItemPropItem("", "text_color", "Text Color", "color", "FF00EFFF"));
   props.add(MapItemPropItem("", "h_align", "Hor Align", "halign", "center"));
-  return MapItemPropGroup("Text Appearance", true, props);
+  return MapItemPropGroup("Text Appearance", false, props);
 }
 
 MapItemPropGroup borderGroup({borderWidthDefault}) {
