@@ -60,10 +60,11 @@ class NodeAddFormSt extends State<NodeAddForm> {
       return;
     }
 
-    wsAddConnection(Connection(
-            UniqueKey().toString(), cl.transport, cl.address, cl.accessKey))
-        .then((value) {
-      Navigator.pop(context, true);
+    var conn = Connection(
+        UniqueKey().toString(), cl.transport, cl.address, cl.accessKey);
+
+    wsAddConnection(conn).then((value) {
+      Navigator.pop(context, conn);
     });
   }
 

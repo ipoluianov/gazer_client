@@ -191,6 +191,12 @@ class MainFormSt extends State<MainForm> {
       (value) {
         updateCounter++;
         loadNodesList();
+        if (value is Connection) {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+          Navigator.of(context).pop();
+          Navigator.pushNamed(context, "/node",
+              arguments: NodeFormArgument(value));
+        }
       },
     );
   }
