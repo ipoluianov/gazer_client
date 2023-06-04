@@ -21,10 +21,6 @@ class MapItemText02 extends MapItemSingle {
     return sType;
   }
 
-  double targetValue = 0.0;
-  double lastValue = 0.0;
-  double aniCounter = 0.0;
-
   MapItemText02(Connection connection) : super(connection) {
     setDouble("font_size", 20);
   }
@@ -44,14 +40,20 @@ class MapItemText02 extends MapItemSingle {
     var text = "";
     var uom = "";
 
+    var fontSize = getDoubleZ("font_size");
+    var fontFamily = get("font_family");
+    int? fontWeightN = int.tryParse(get("font_weight"));
+    int fontWeight = 400;
+    if (fontWeightN != null) {
+      fontWeight = fontWeightN;
+    }
+
     if (hasDataSource()) {
       var value = dataSourceValue();
       itemName = value.displayName;
       text = value.value;
       uom = value.uom;
     }
-
-    targetValue = getDoubleZ("font_size");
 
     if (isDemo) {
       itemName = "Name";
@@ -68,12 +70,12 @@ class MapItemText02 extends MapItemSingle {
       getDoubleZ("w") - padding * 2,
       getDoubleZ("h"),
       itemName,
-      lastValue,
+      fontSize,
       getColor("name_color"),
       TextVAlign.middle,
       TextAlign.left,
-      null,
-      0,
+      fontFamily,
+      fontWeight,
     );
 
     drawValueAndUOM(
@@ -84,10 +86,12 @@ class MapItemText02 extends MapItemSingle {
         getDoubleZ("h"),
         text,
         uom,
-        lastValue,
+        fontSize,
         getColor("text_color"),
         getColor("uom_color"),
-        TextAlign.right);
+        TextAlign.right,
+        fontFamily,
+        fontWeight);
     drawPost(canvas, size);
   }
 
@@ -102,13 +106,17 @@ class MapItemText02 extends MapItemSingle {
       double size,
       Color colorValue,
       Color colorUOM,
-      TextAlign align) {
+      TextAlign align,
+      String fontFamily,
+      int fontWeight) {
     var textSpan = TextSpan(children: [
       TextSpan(
         text: value + " ",
         style: TextStyle(
           color: colorValue,
           fontSize: size,
+          fontFamily: fontFamily,
+          fontWeight: intToFontWeight(fontWeight),
         ),
       ),
       TextSpan(
@@ -116,6 +124,8 @@ class MapItemText02 extends MapItemSingle {
         style: TextStyle(
           color: colorUOM,
           fontSize: size,
+          fontFamily: fontFamily,
+          fontWeight: intToFontWeight(fontWeight),
         ),
       ),
     ]);
@@ -154,7 +164,12 @@ class MapItemText02 extends MapItemSingle {
           MapItemPropItem("", "text_color", "Text Color", "color", "FF19EE46"));
       props.add(
           MapItemPropItem("", "uom_color", "UOM Color", "color", "FF009688"));
-      props.add(MapItemPropItem("", "font_size", "Font Size", "double", "20"));
+      props.add(MapItemPropItem(
+          "", "font_family", "Font Family", "font_family", "Roboto"));
+      props.add(
+          MapItemPropItem("", "font_size", "Font Size", "font_size", "20"));
+      props.add(MapItemPropItem(
+          "", "font_weight", "Font Weight", "font_weight", "400"));
       groups.add(MapItemPropGroup("Text", true, props));
     }
     groups.add(borderGroup());
@@ -164,17 +179,8 @@ class MapItemText02 extends MapItemSingle {
   }
 
   @override
-  void tick() {
-    var diff = targetValue - lastValue;
-    lastValue += diff / 2;
-    if ((lastValue - targetValue).abs() < 0.1) {
-      lastValue = targetValue;
-    }
-  }
+  void tick() {}
 
   @override
-  void resetToEndOfAnimation() {
-    targetValue = getDoubleZ("font_size");
-    lastValue = targetValue;
-  }
+  void resetToEndOfAnimation() {}
 }

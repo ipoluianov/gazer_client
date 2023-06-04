@@ -112,7 +112,7 @@ MapItemPropGroup borderGroup({borderWidthDefault}) {
       "", "border_width", "Border Width", "double", borderWidthDefault));
   props.add(MapItemPropItem(
       "", "border_corner_radius", "Border Corner Radius", "double", "0"));
-  return MapItemPropGroup("Border", true, props);
+  return MapItemPropGroup("Border", false, props);
 }
 
 MapItemPropGroup backgroundGroup() {
@@ -122,7 +122,7 @@ MapItemPropGroup backgroundGroup() {
   props.add(MapItemPropItem("", "back_img", "Background Image", "image", ""));
   props.add(MapItemPropItem("", "back_img_scale_fit",
       "Background Image Scale Fit", "scale_fit", "contain"));
-  return MapItemPropGroup("Background", true, props);
+  return MapItemPropGroup("Background", false, props);
 }
 
 class TextAppearance {
