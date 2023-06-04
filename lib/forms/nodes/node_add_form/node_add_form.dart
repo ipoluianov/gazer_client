@@ -44,6 +44,29 @@ class NodeAddFormSt extends State<NodeAddForm> {
     super.dispose();
   }
 
+  void tryToAddNode() {
+    cl.transport = "http/local";
+    List<String> parts = _txtControllerAccessData.text.split("_");
+    if (parts.length == 2) {
+      cl.address = parts[0];
+      cl.accessKey = parts[1];
+    }
+
+    if (cl.address.length != 49) {
+      return;
+    }
+
+    if (cl.address[0] != '#') {
+      return;
+    }
+
+    wsAddConnection(Connection(
+            UniqueKey().toString(), cl.transport, cl.address, cl.accessKey))
+        .then((value) {
+      Navigator.pop(context, true);
+    });
+  }
+
   Widget buildAddNodeButton() {
     return Center(
       child: Container(
@@ -53,20 +76,9 @@ class NodeAddFormSt extends State<NodeAddForm> {
           height: 36,
           child: ElevatedButton(
             onPressed: () {
-              cl.transport = "http/local";
-              List<String> parts = _txtControllerAccessData.text.split("_");
-              if (parts.length == 2) {
-                cl.address = parts[0];
-                cl.accessKey = parts[1];
-              }
-
-              wsAddConnection(Connection(UniqueKey().toString(), cl.transport,
-                      cl.address, cl.accessKey))
-                  .then((value) {
-                Navigator.pop(context, true);
-              });
+              tryToAddNode();
             },
-            child: Text("Add node"),
+            child: const Text("Add node"),
           ),
         ),
       ),
@@ -281,6 +293,7 @@ class NodeAddFormSt extends State<NodeAddForm> {
                 _txtControllerAccessData.text = barcode.rawValue!;
                 usingScanner = false;
               });
+              tryToAddNode();
             }
           }
         },
@@ -367,7 +380,11 @@ class NodeAddFormSt extends State<NodeAddForm> {
   Future<List<String>> loadLocalAdminPassword() async {
     String address = "";
     String masterKey = "";
-    Permission.storage.request();
+    Permission.storage.request().then((value) {
+      print("Granted");
+    }).catchError((err) {
+      print("errro");
+    });
     try {
       final File file = File('${gazerDataDirectory()}/address.txt');
       var stream = file.openRead();

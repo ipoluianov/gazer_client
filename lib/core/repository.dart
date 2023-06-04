@@ -49,9 +49,15 @@ class Repository {
   Repository._internal();
 }
 
+bool peerInited = false;
+
 Future<void> loadPeer() async {
+  if (peerInited) {
+    return;
+  }
   try {
     var keyPair = await getKeyPair();
     Repository().initPeer(keyPair);
+    peerInited = true;
   } catch (ex) {}
 }
