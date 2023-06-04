@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/navigation/bottom_navigator.dart';
@@ -27,6 +28,23 @@ class ResourceItemAddFormSt extends State<ResourceItemAddForm> {
     //bloc.load();
   }
 
+  InputDecoration textInputDecoration(String lbl) {
+    return InputDecoration(
+      contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 6),
+      border: const OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.transparent),
+      ),
+      enabledBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.transparent),
+      ),
+      fillColor: Colors.black45,
+      filled: true,
+      label: Text(lbl),
+      hoverColor: Colors.black12,
+      constraints: const BoxConstraints(maxHeight: 40),
+    );
+  }
+
   String name = "";
   TextEditingController textEditingControllerName = TextEditingController();
   Widget buildContent(BuildContext context) {
@@ -34,17 +52,48 @@ class ResourceItemAddFormSt extends State<ResourceItemAddForm> {
       child: Container(
         margin: const EdgeInsets.all(6),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: textEditingControllerName,
-              autofocus: true,
-              onChanged: (newValue) {
-                name = newValue;
-              },
-              decoration: const InputDecoration(
-                label: Text("Name"),
+            Padding(
+              padding: const EdgeInsets.only(top: 20, bottom: 20),
+              child: Text(
+                "Add ${widget.arg.typeName}",
+                style: TextStyle(
+                  fontSize: 20,
+                  color: DesignColors.fore(),
+                ),
               ),
             ),
+            RawKeyboardListener(
+              focusNode: FocusNode(),
+              onKey: (event) {
+                if (event.runtimeType == RawKeyDownEvent &&
+                    (event.logicalKey == LogicalKeyboardKey.enter)) {
+                  save();
+                }
+              },
+              child: TextField(
+                controller: textEditingControllerName,
+                autofocus: true,
+                onChanged: (newValue) {
+                  name = newValue;
+                },
+                decoration: textInputDecoration("Name"),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  save();
+                },
+                icon: const Icon(Icons.save),
+                label: Container(
+                  padding: EdgeInsets.all(20),
+                  child: Text("Save"),
+                ),
+              ),
+            )
           ],
         ),
       ),
@@ -77,18 +126,8 @@ class ResourceItemAddFormSt extends State<ResourceItemAddForm> {
         return Scaffold(
           appBar: TitleBar(
             widget.arg.connection,
-            "Add " + widget.arg.typeName,
+            "Add ${widget.arg.typeName}",
             actions: [
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    save();
-                  },
-                  icon: const Icon(Icons.save),
-                  label: const Text("Save"),
-                ),
-              ),
               buildHomeButton(context),
             ],
           ),
