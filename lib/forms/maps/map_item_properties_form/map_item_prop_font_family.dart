@@ -79,6 +79,13 @@ class MapItemPropFontFamilySt extends State<MapItemPropFontFamily> {
             widget.item.get(widget.propItem.name) == "ShareTechMono"
                 ? colActive
                 : colReg),
+        buildFontFamilyButton(
+            "BrunoAce",
+            "BrunoAce",
+            Icons.format_align_right,
+            widget.item.get(widget.propItem.name) == "BrunoAce"
+                ? colActive
+                : colReg),
       ],
     );
   }
