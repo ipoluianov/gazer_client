@@ -78,7 +78,7 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
               if (originalColorBeforeDialog.contains("{")) {
                 pickerColorSpecialCode = originalColorBeforeDialog;
               }
-              showColorDialog("Select color");
+              showColorDialog("Select color .1");
             },
             //child: const Text("..."),
           ),
@@ -327,6 +327,74 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
     );
   }
 
+  Widget colorDialogContentOriginal(BuildContext context, Function setState) {
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.all(6),
+          child: Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {
+                    setState(() {
+                      colorPickerCurrentTypeIndex = 0;
+                    });
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(
+                        colorPickerCurrentTypeIndex == 0
+                            ? Colors.blueAccent
+                            : Colors.transparent),
+                    foregroundColor: MaterialStateProperty.all(
+                        colorPickerCurrentTypeIndex == 0
+                            ? Colors.white
+                            : Colors.blueAccent),
+                  ),
+                  child: const Text("Palette"),
+                ),
+              ),
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {
+                    setState(() {
+                      colorPickerCurrentTypeIndex = 1;
+                    });
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(
+                        colorPickerCurrentTypeIndex == 1
+                            ? Colors.blueAccent
+                            : Colors.transparent),
+                    foregroundColor: MaterialStateProperty.all(
+                        colorPickerCurrentTypeIndex == 1
+                            ? Colors.white
+                            : Colors.blueAccent),
+                  ),
+                  child: const Text("Free"),
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 1,
+          child: Container(
+            color: Colors.white38,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(6),
+          child: colorPicker(context, setState),
+        ),
+        SizedBox(
+          width: 400,
+          child: Container(),
+        ),
+      ],
+    );
+  }
+
   Future<void> showColorDialog(String text) async {
     return showDialog<void>(
       context: context,
@@ -345,10 +413,8 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
                 child: const SizedBox(
                   width: 100,
                   height: 30,
-                  child: Expanded(
-                    child: Center(
-                      child: Text('OK'),
-                    ),
+                  child: Center(
+                    child: Text('OK'),
                   ),
                 ),
                 onPressed: () {
@@ -364,10 +430,8 @@ class MapItemPropColorSt extends State<MapItemPropColor> {
                 child: const SizedBox(
                   width: 100,
                   height: 30,
-                  child: Expanded(
-                    child: Center(
-                      child: Text('Cancel'),
-                    ),
+                  child: Center(
+                    child: Text('Cancel'),
                   ),
                 ),
                 onPressed: () {
