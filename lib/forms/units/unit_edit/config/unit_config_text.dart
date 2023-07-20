@@ -6,7 +6,10 @@ class UnitConfigText extends StatefulWidget {
   final GazerLocalClient client;
   final Map<String, dynamic> meta;
   Map<String, dynamic> config;
-  UnitConfigText(this.client, this.meta, this.config, {Key? key}) : super(key: key);
+  final Function() onChanged;
+  UnitConfigText(this.client, this.meta, this.config, this.onChanged,
+      {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -22,7 +25,8 @@ class UnitConfigTextState extends State<UnitConfigText>
   void initState() {
     _controller = TextEditingController();
     if (!widget.config.containsKey(widget.meta['name'])) {
-      widget.config[widget.meta['name']] = defaultValue(widget.meta['type'], widget.meta['default_value'], widget.meta['format']);
+      widget.config[widget.meta['name']] = defaultValue(widget.meta['type'],
+          widget.meta['default_value'], widget.meta['format']);
     }
     _controller.text = widget.config[widget.meta['name']];
     super.initState();
@@ -35,7 +39,6 @@ class UnitConfigTextState extends State<UnitConfigText>
 
   @override
   Widget build(BuildContext context) {
-
     return TextField(
       controller: _controller,
       decoration: InputDecoration(

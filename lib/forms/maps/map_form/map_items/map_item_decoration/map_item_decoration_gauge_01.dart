@@ -19,14 +19,11 @@ class MapItemDecorationGauge01 extends MapItemSingle {
 
   MapItemDecorationGauge01(Connection connection) : super(connection) {}
 
-  Ticker tick1 = Ticker(0, 2 * pi, 5000);
-  Ticker tick2 = Ticker(0, 2 * pi, 10000);
-
   @override
   void setDefaultsForItem() {
     //super.setDefaults();
     setDouble("w", 200);
-    setDouble("h", 40);
+    setDouble("h", 200);
   }
 
   Rect padding(Rect rect, double padding) {
@@ -36,6 +33,9 @@ class MapItemDecorationGauge01 extends MapItemSingle {
 
   @override
   void draw(Canvas canvas, Size size, List<String> parentMaps) {
+    Ticker tick1 = Ticker(0, 2 * pi, getDouble("decor_period_1").toInt());
+    Ticker tick2 = Ticker(0, 2 * pi, getDouble("decor_period_2").toInt());
+
     drawPre(canvas, size);
 
     Rect mainRect = Offset(getDoubleZ("x"), getDoubleZ("y")) &
@@ -44,45 +44,47 @@ class MapItemDecorationGauge01 extends MapItemSingle {
     double minSize = getDoubleZ("w");
     if (getDoubleZ("h") < minSize) minSize = getDoubleZ("h");
 
+    Color decColor = getColor("decor_color");
+
     drawDashes(
       canvas,
-      Colors.yellow,
-      padding(mainRect, minSize / 20),
+      decColor,
+      padding(mainRect, minSize * 0.05 / 2),
       5,
-      z(minSize / 20),
+      minSize * 0.05,
       tick1.value(),
     );
 
     drawDashes(
       canvas,
-      Colors.yellow,
+      decColor,
       padding(mainRect, minSize * 0.15),
       7,
-      z(minSize * 0.02),
-      tick2.value(),
+      minSize * 0.02,
+      tick2.value(reverse: true),
     );
 
     drawDashes(
       canvas,
-      Colors.green,
+      decColor,
       padding(mainRect, minSize / 5),
       0,
-      z(2),
+      z(0.5),
       0,
     );
 
     drawDashes(
       canvas,
-      Colors.red,
+      decColor,
       padding(mainRect, minSize / 3),
       50,
       z(1),
-      0,
+      tick1.value(),
     );
 
     drawDashes(
       canvas,
-      Colors.blue,
+      decColor,
       padding(mainRect, minSize / 2),
       50,
       z(1),
@@ -95,6 +97,18 @@ class MapItemDecorationGauge01 extends MapItemSingle {
   @override
   List<MapItemPropGroup> propGroupsOfItem() {
     List<MapItemPropGroup> groups = [];
+    groups.addAll(super.propGroupsOfItem());
+    {
+      List<MapItemPropItem> props = [];
+      props.add(
+          MapItemPropItem("", "decor_color", "Color", "color", "FF00EFFF"));
+      props.add(
+          MapItemPropItem("", "decor_period_1", "Period 1", "double", "20000"));
+      props.add(
+          MapItemPropItem("", "decor_period_2", "Period 2", "double", "10000"));
+      groups.add(MapItemPropGroup("Decoration", true, props));
+    }
+    groups.add(borderGroup(borderWidthDefault: "0"));
     groups.add(backgroundGroup());
     return groups;
   }

@@ -5,12 +5,16 @@ import 'package:gazer_client/forms/units/unit_edit/config/unit_config_string.dar
 import 'package:gazer_client/forms/units/unit_edit/config/unit_config_table.dart';
 import 'package:flutter/material.dart';
 
+import 'unit_config_text.dart';
+
 class UnitConfigObject extends StatefulWidget {
   final GazerLocalClient client;
   final List<dynamic> meta;
   Map<String, dynamic> config;
   final Function() onChanged;
-  UnitConfigObject(this.client, this.meta, this.config, this.onChanged, {Key? key}) : super(key: key);
+  UnitConfigObject(this.client, this.meta, this.config, this.onChanged,
+      {Key? key})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -38,8 +42,13 @@ class UnitConfigObjectState extends State<UnitConfigObject>
           .map((entry) {
             if (entry['type'] == "string") {
               return UnitConfigString(widget.client, entry, widget.config, () {
-                setState(() {
-                });
+                setState(() {});
+                widget.onChanged();
+              });
+            }
+            if (entry['type'] == "text") {
+              return UnitConfigText(widget.client, entry, widget.config, () {
+                setState(() {});
                 widget.onChanged();
               });
             }

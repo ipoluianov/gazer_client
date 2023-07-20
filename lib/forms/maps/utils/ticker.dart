@@ -5,7 +5,7 @@ class Ticker {
 
   Ticker(this.min, this.max, this.periodMs);
 
-  double value() {
+  double value({reverse = false}) {
     int period = periodMs;
     if (period < 1) {
       period = 1;
@@ -14,7 +14,11 @@ class Ticker {
     int nowMs = DateTime.now().millisecondsSinceEpoch;
     double result = (nowMs % period).toDouble() / periodMsDbl;
     double delta = max - min;
-    result = min + result * delta;
+    if (reverse) {
+      result = max - result * delta;
+    } else {
+      result = min + result * delta;
+    }
     return result;
   }
 }
