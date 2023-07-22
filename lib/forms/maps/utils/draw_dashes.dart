@@ -3,7 +3,8 @@ import "dart:math";
 import "dart:ui";
 
 void drawDashes(Canvas canvas, Color color, Rect rect, int count, double width,
-    double offsetAngle) {
+    double offsetAngle,
+    {imageFilter}) {
   double angle = 0;
   double step = 1;
   if (count > 0) {
@@ -20,7 +21,8 @@ void drawDashes(Canvas canvas, Color color, Rect rect, int count, double width,
       Paint()
         ..style = PaintingStyle.stroke
         ..color = color
-        ..strokeWidth = width,
+        ..strokeWidth = width
+        ..imageFilter = imageFilter,
     );
   }
 }

@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
@@ -9,15 +11,15 @@ import '../../../utils/draw_text.dart';
 import '../../../utils/ticker.dart';
 import '../../main/map_item.dart';
 
-class MapItemDecorationGauge01 extends MapItemSingle {
-  static const String sType = "decoration.gauge.01";
-  static const String sName = "Decoration.gauge.01";
+class MapItemDecorationGauge02 extends MapItemSingle {
+  static const String sType = "decoration.gauge.02";
+  static const String sName = "Decoration.gauge.02";
   @override
   String type() {
     return sType;
   }
 
-  MapItemDecorationGauge01(Connection connection) : super(connection) {}
+  MapItemDecorationGauge02(Connection connection) : super(connection) {}
 
   @override
   void setDefaultsForItem() {
@@ -35,6 +37,7 @@ class MapItemDecorationGauge01 extends MapItemSingle {
   void draw(Canvas canvas, Size size, List<String> parentMaps) {
     Ticker tick1 = Ticker(0, 2 * pi, getDouble("decor_period_1").toInt());
     Ticker tick2 = Ticker(0, 2 * pi, getDouble("decor_period_2").toInt());
+    Ticker tick3 = Ticker(0, 1, 1000);
 
     drawPre(canvas, size);
 
@@ -49,9 +52,9 @@ class MapItemDecorationGauge01 extends MapItemSingle {
     drawDashes(
       canvas,
       decColor,
-      padding(mainRect, minSize * 0.1 / 2),
-      5,
-      minSize * 0.1,
+      padding(mainRect, minSize * 0.08 / 2),
+      10,
+      minSize * 0.08,
       tick1.value(),
     );
 
@@ -76,19 +79,47 @@ class MapItemDecorationGauge01 extends MapItemSingle {
     drawDashes(
       canvas,
       decColor,
-      padding(mainRect, minSize / 4),
+      padding(mainRect, minSize / 3),
       50,
-      z(1),
+      z(5),
       tick1.value(),
     );
 
     drawDashes(
       canvas,
       decColor,
-      padding(mainRect, minSize / 2.5),
+      padding(mainRect, minSize / 2),
+      50,
+      z(1),
       0,
-      z(0.5),
-      0,
+    );
+
+    canvas.drawPath(
+      Path()
+        ..moveTo(mainRect.left + mainRect.width / 2,
+            mainRect.top + mainRect.height / 4)
+        ..lineTo(mainRect.left + mainRect.width / 2,
+            mainRect.top + mainRect.height - mainRect.height / 4),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..color = decColor
+        ..strokeWidth = 2
+        ..imageFilter =
+            ImageFilter.blur(sigmaX: 2, sigmaY: mainRect.height / 10),
+    );
+
+    canvas.drawPath(
+      Path()
+        ..moveTo(mainRect.left + mainRect.width / 4,
+            mainRect.top + mainRect.height / 2)
+        ..lineTo(mainRect.left + mainRect.width - mainRect.width / 4,
+            mainRect.top + mainRect.height / 2),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..color = decColor
+        ..strokeWidth = 2
+        ..imageFilter =
+            ImageFilter.blur(sigmaX: mainRect.width / 10, sigmaY: 2),
     );
 
     drawPost(canvas, size);

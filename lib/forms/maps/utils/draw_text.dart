@@ -121,6 +121,9 @@ MapItemPropGroup backgroundGroup() {
   props.add(MapItemPropItem("", "back_img", "Background Image", "image", ""));
   props.add(MapItemPropItem("", "back_img_scale_fit",
       "Background Image Scale Fit", "scale_fit", "contain"));
+  props.add(
+      MapItemPropItem("", "grid_color", "Grid Color", "color", "00000000"));
+  props.add(MapItemPropItem("", "grid_size", "Grid Size", "double", "0"));
   return MapItemPropGroup("Background", false, props);
 }
 
