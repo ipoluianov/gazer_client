@@ -122,6 +122,19 @@ class UnitEditFormSt extends State<UnitEditForm> {
               currentConfigMeta, currentConfig, () {
             setState(() {});
           }),
+          Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: OutlinedButton.icon(
+              onPressed: () {
+                save();
+              },
+              icon: const Icon(Icons.save),
+              label: Container(
+                padding: EdgeInsets.all(20),
+                child: Text("Save"),
+              ),
+            ),
+          )
         ],
       );
     }
@@ -159,6 +172,19 @@ class UnitEditFormSt extends State<UnitEditForm> {
               currentConfigMeta, currentConfig, () {
             setState(() {});
           }),
+          Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: OutlinedButton.icon(
+              onPressed: () {
+                save();
+              },
+              icon: const Icon(Icons.save),
+              label: Container(
+                padding: EdgeInsets.all(20),
+                child: Text("Save"),
+              ),
+            ),
+          )
         ],
       );
     }

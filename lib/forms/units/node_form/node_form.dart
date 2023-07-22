@@ -170,15 +170,9 @@ class NodeFormSt extends State<NodeForm> {
   }
 
   Widget buildAddButton(BuildContext context) {
-    if (items.isNotEmpty) {
-      return buildActionButton(context, Icons.add, "Add Unit", () {
-        addUnit();
-      });
-    } else {
-      return buildActionButtonFull(context, Icons.add, "Add Unit", () {
-        addUnit();
-      }, false, imageColor: Colors.white, backColor: Colors.green);
-    }
+    return buildActionButton(context, Icons.add, "Add Unit", () {
+      addUnit();
+    });
   }
 
   void addLocalSystemUnits() async {

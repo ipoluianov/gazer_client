@@ -660,6 +660,17 @@ class GazerLocalClient {
   String linkInformation() {
     return Repository().peer.remotePeerTransport(address);
   }
+
+///////////////////////////////////////
+  DateTime lastRefreshState = DateTime.now();
+  ServiceInfoResponse? lastServiceInfo;
+  void refreshState() {
+    if (DateTime.now().difference(lastRefreshState).inSeconds.abs() < 3) return;
+    lastRefreshState = DateTime.now();
+    serviceInfo().then((value) {
+      lastServiceInfo = value;
+    });
+  }
 }
 
 class GazerClientException implements Exception {
