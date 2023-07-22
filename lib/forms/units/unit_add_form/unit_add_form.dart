@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -10,7 +11,7 @@ import 'package:gazer_client/core/navigation/bottom_navigator.dart';
 import 'package:gazer_client/core/navigation/left_navigator.dart';
 import 'package:gazer_client/core/navigation/navigation.dart';
 import 'package:gazer_client/forms/units/unit_add_form/unit_type.dart';
-import 'package:gazer_client/widgets/error_dialog/error_dialog.dart';
+
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
 import 'package:gazer_client/widgets/title_widget/title_widget.dart';
 
@@ -30,50 +31,77 @@ class UnitAddFormSt extends State<UnitAddForm> {
   @override
   void initState() {
     super.initState();
-    loadCategories();
-    load();
+
+    timerLoad = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      loadCategories();
+      loadUnitTypes();
+    });
   }
+
+  late Timer timerLoad;
+
+  bool categoriesLoading = false;
+  bool categoriesLoaded = false;
+
+  bool unitTypesLoading = false;
+  bool unitTypesLoaded = false;
 
   final ScrollController _scrollController = ScrollController();
 
   @override
   void dispose() {
+    timerLoad.cancel();
     super.dispose();
   }
-
-  bool loading = false;
-  bool loaded = false;
 
   List<UnitTypeListItemResponse> types = [];
   List<UnitTypeCategoriesItemResponse> categories = [];
 
-  void load() {
-    setState(() {
-      loading = true;
-    });
+  void updateUnitTypes() {
+    unitTypesLoading = false;
+    unitTypesLoaded = false;
+    loadUnitTypes();
+  }
+
+  void loadUnitTypes() {
+    if (unitTypesLoading || unitTypesLoaded) return;
+    unitTypesLoading = true;
 
     String category = "";
     if (selectedCategory != null) {
       category = selectedCategory!.name;
     }
 
+    String loadingCategory = category;
+    String loadingFilterString = filterString;
+
     Repository()
         .client(widget.arg.connection)
-        .unitTypeList(category, filterString, 0, 1000)
+        .unitTypeList(loadingCategory, loadingFilterString, 0, 1000)
         .then((value) {
-      setState(() {
-        types = value.types;
-        loading = false;
-      });
+      String category = "";
+      if (selectedCategory != null) {
+        category = selectedCategory!.name;
+      }
+      if (loadingCategory == category && loadingFilterString == filterString) {
+        setState(() {
+          types = value.types;
+          unitTypesLoading = false;
+          unitTypesLoaded = true;
+        });
+      }
     }).catchError((err) {
       setState(() {
-        loading = false;
+        unitTypesLoading = false;
+        unitTypesLoaded = false;
       });
-      showErrorDialog(context, "Error", "$err");
     });
   }
 
   void loadCategories() {
+    if (categoriesLoading || categoriesLoaded) return;
+    categoriesLoading = true;
+
     Repository()
         .client(widget.arg.connection)
         .unitTypeCategories()
@@ -88,7 +116,11 @@ class UnitAddFormSt extends State<UnitAddForm> {
           break;
         }
       }
+      categoriesLoading = false;
+      categoriesLoaded = true;
     }).catchError((err) {
+      categoriesLoading = false;
+      categoriesLoaded = false;
       print("load cats error $err");
       setState(() {});
     });
@@ -135,7 +167,7 @@ class UnitAddFormSt extends State<UnitAddForm> {
             selectedCategory = newValue!;
           },
         );
-        load();
+        updateUnitTypes();
       },
       items: categories.map<DropdownMenuItem<UnitTypeCategoriesItemResponse>>(
           (UnitTypeCategoriesItemResponse value) {
@@ -176,7 +208,7 @@ class UnitAddFormSt extends State<UnitAddForm> {
               ),
               onChanged: (value) {
                 filterString = value;
-                load();
+                updateUnitTypes();
               },
             ),
             const SizedBox(
