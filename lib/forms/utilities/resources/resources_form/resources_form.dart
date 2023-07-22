@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -30,6 +31,8 @@ class ResourcesForm extends StatefulWidget {
 enum ItemsFilter { items, favorite, template, all }
 
 class ResourcesFormSt extends State<ResourcesForm> {
+  late Timer _timerLoad;
+
   @override
   void initState() {
     super.initState();
@@ -37,7 +40,20 @@ class ResourcesFormSt extends State<ResourcesForm> {
     //filterByFolder = widget.arg.filterByFolder;
     currentFolder = widget.arg.folderId;
 
+    _timerLoad = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+      setState(() {});
+      if (loading()) return;
+      if (loaded()) return;
+      load();
+    });
+
     load();
+  }
+
+  @override
+  void dispose() {
+    _timerLoad.cancel();
+    super.dispose();
   }
 
   bool loadingItems = false;
@@ -63,6 +79,10 @@ class ResourcesFormSt extends State<ResourcesForm> {
 
   bool loading() {
     return loadingItems || loadingFolders;
+  }
+
+  bool loaded() {
+    return loadedItems && loadedFolders;
   }
 
   void load() {
@@ -102,6 +122,7 @@ class ResourcesFormSt extends State<ResourcesForm> {
     }).catchError((e) {
       if (mounted) {
         setState(() {
+          loadedFolders = false;
           loadingFolders = false;
           errorMessageFolders = e.toString();
         });
@@ -133,6 +154,7 @@ class ResourcesFormSt extends State<ResourcesForm> {
     }).catchError((e) {
       if (mounted) {
         setState(() {
+          loadedItems = false;
           loadingItems = false;
           errorMessageItems = e.toString();
         });
