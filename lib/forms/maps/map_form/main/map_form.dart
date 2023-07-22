@@ -34,27 +34,9 @@ class MapForm extends StatefulWidget {
 class MapFormSt extends State<MapForm> {
   late MapView map;
 
-  bool serviceInfoLoaded = false;
-  late ServiceInfoResponse serviceInfo;
   bool changed = false;
   String errorMessage = "";
   bool loading = false;
-
-  void loadNodeInfo() {
-    Repository().client(widget.arg.connection).serviceInfo().then((value) {
-      setState(() {
-        serviceInfo = value;
-        serviceInfoLoaded = true;
-      });
-    });
-  }
-
-  String nodeName() {
-    if (serviceInfoLoaded) {
-      return serviceInfo.nodeName;
-    }
-    return widget.arg.connection.address;
-  }
 
   String mapName = "";
 
@@ -67,7 +49,6 @@ class MapFormSt extends State<MapForm> {
   void initState() {
     super.initState();
     map = MapView(widget.arg.connection);
-    loadNodeInfo();
     load();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
@@ -689,7 +670,7 @@ class MapFormSt extends State<MapForm> {
         return Scaffold(
           appBar: TitleBar(
             widget.arg.connection,
-            nodeName() + " - Map - " + mapName,
+            " - Map - $mapName",
             actions: <Widget>[
               !fullScreen
                   ? buildActionButton(context, Icons.fullscreen, "Full Screen",

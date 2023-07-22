@@ -91,38 +91,43 @@ class MapItemMap extends MapItem {
     loadingProgress = 0;
     for (int offset = 0; offset < 100 * 1000000; offset += step) {
       var partLoaded = false;
+      var partIsEmpty = false;
       String partErrorText = "";
       for (int iteration = 0; iteration < 10; iteration++) {
         try {
-          //print("loading res offset $offset");
-          var value = await Repository()
-              .client(connection)
-              .fetch<ResGetRequest, ResGetResponse>(
-                'resource_get',
-                ResGetRequest(resourceId, offset, step),
-                (Map<String, dynamic> json) => ResGetResponse.fromJson(json),
-              );
-          if (value.content.isEmpty) {
-            break;
+          if (iteration == 1) {
+            print("IT1");
           }
+          print("--------------- loading res offset $offset it: $iteration");
+          var client = Repository().client(connection);
+          var value = await client.resGet(resourceId, offset, step);
           nameOfMap = value.name;
           result.addAll(value.content.toList());
-          if (value.size > 0) {
-            loadingProgress = result.length / value.size;
-          }
           partLoaded = true;
+          if (value.content.isEmpty) {
+            print("-------- RESEIVED 0 BYTES");
+            partIsEmpty = true;
+            break;
+          }
+          print("---------- LOAD OK ---------- ${value.size} ${result.length}");
         } catch (loadingErr) {
-          print("loading error");
+          print("------------------------- loading error");
           partErrorText = loadingErr.toString();
         }
 
         if (partLoaded) {
+          print("---------- LOAD OK!!! ----------");
           break;
         }
       }
 
       if (!partLoaded) {
         loadingError = partErrorText;
+        print("------------ SET ERROR $loadingError");
+        break;
+      }
+
+      if (partIsEmpty) {
         break;
       }
     }
@@ -130,6 +135,7 @@ class MapItemMap extends MapItem {
 
     try {
       var jsonString = utf8.decode(result);
+      print("loaded $jsonString");
       var jsonObject = jsonDecode(jsonString);
       if (isRoot) {
         //print("root 222 $jsonString");

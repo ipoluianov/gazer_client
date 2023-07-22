@@ -43,9 +43,9 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
   String loadingError = "";
   String lastLoadedResource = "";
 
-  //late Timer _timerUpdate = Timer.periodic(const Duration(milliseconds: 500), (timer) {});
+  late Timer timerUpdate;
 
-  void loadNodeInfo() {
+  /*void loadNodeInfo() {
     Repository().client(widget.arg.connection).serviceInfo().then((value) {
       setState(() {
         serviceInfo = value;
@@ -59,35 +59,34 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
       return serviceInfo.nodeName;
     }
     return widget.arg.connection.address;
-  }
+  }*/
 
   @override
   void initState() {
     super.initState();
     _settings = TimeChartSettings(widget.arg.connection, []);
-    loadNodeInfo();
-    load();
-
-    /*_timerUpdate = Timer.periodic(const Duration(milliseconds: 1000), (t) {
-      setState(() {
-      });
-    });*/
+    timerUpdate = Timer.periodic(const Duration(milliseconds: 200), (timer) {
+      loadFromResource(widget.arg.id);
+    });
+    loadFromResource(widget.arg.id);
   }
 
   @override
   void dispose() {
+    timerUpdate.cancel();
     super.dispose();
-    //_timerUpdate.cancel();
   }
 
   void loadFromResource(String resourceId) async {
+    if (loading || loaded) {
+      return;
+    }
+
     if (resourceId == "") {
       return;
     }
 
-    if (loading) {
-      return;
-    }
+    _settings.areas = [];
 
     loaded = false;
     loading = true;
@@ -109,12 +108,22 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
         }
         nameOfChartGroup = value.name;
         result.addAll(value.content.toList());
+        errorMessage = "";
       }
     } catch (loadingErr) {
       setState(() {
         errorMessage = loadingErr.toString();
+        loaded = false;
         loading = false;
       });
+    }
+
+    if (errorMessage.isNotEmpty) {
+      setState(() {
+        loaded = false;
+        loading = false;
+      });
+      return;
     }
 
     try {
@@ -139,12 +148,6 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
         }
       });
     }
-  }
-
-  void load() {
-    _settings.areas = [];
-    loadFromResource(widget.arg.id);
-    return;
   }
 
   bool saving = false;
@@ -487,7 +490,7 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
         return Scaffold(
           appBar: TitleBar(
             widget.arg.connection,
-            nodeName() + " - Chart Group - " + nameOfChartGroup,
+            "Chart Group - $nameOfChartGroup",
             actions: <Widget>[
               !fullScreen
                   ? buildActionButton(context, Icons.fullscreen, "Full Screen",
@@ -512,7 +515,7 @@ class ChartGroupFormSt extends State<ChartGroupForm> {
                       padding: const EdgeInsets.all(10),
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          load();
+                          loadFromResource(widget.arg.id);
                           setState(() {
                             _settings.setEditing(false);
                           });

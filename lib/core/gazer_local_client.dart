@@ -558,7 +558,7 @@ class GazerLocalClient {
         id, name, type, Uint8List.fromList(result), resSize, resHash);
   }
 
-  Future<ResGetResponse> resGet1(String id, int offset, int size) async {
+  Future<ResGetResponse> resGet(String id, int offset, int size) async {
     return fetch<ResGetRequest, ResGetResponse>(
       'resource_get',
       ResGetRequest(id, offset, size),
