@@ -50,6 +50,8 @@ class UnitFormSt extends State<UnitForm> {
 
   String itemPropView = "";
   bool itemPropLoading = false;
+
+  bool unitInfoLoading = false;
   bool unitInfoLoaded = false;
 
   late UnitStateResponse unitState;
@@ -65,9 +67,10 @@ class UnitFormSt extends State<UnitForm> {
     unitState =
         UnitStateResponse(widget.arg.unitId, "", "", "", "", "", "", "", []);
 
-    updateUnitInfo();
     _timer = Timer.periodic(const Duration(milliseconds: 500), (t) {
+      updateUnitInfo();
       updateItems();
+      loadItemProperties();
     });
   }
 
@@ -78,6 +81,9 @@ class UnitFormSt extends State<UnitForm> {
   }
 
   void updateUnitInfo() {
+    if (unitInfoLoading || unitInfoLoaded) return;
+    unitInfoLoading = true;
+
     unitName = widget.arg.unitId;
     Repository()
         .client(widget.arg.connection)
@@ -87,15 +93,24 @@ class UnitFormSt extends State<UnitForm> {
         mainItem = value.getProp("main_item");
       });
       unitInfoLoaded = true;
+      unitInfoLoading = false;
       updateItems();
-    }).catchError((err) {});
+    }).catchError((err) {
+      unitInfoLoaded = false;
+      unitInfoLoading = false;
+    });
   }
 
+  bool unitStateLoading = false;
   bool unitStateLoaded = false;
+
   void updateItems() {
+    if (unitStateLoading) return;
     if (!unitInfoLoaded) {
       return;
     }
+    unitStateLoading = true;
+
     GazerLocalClient client = Repository().client(widget.arg.connection);
     client.unitsState(widget.arg.unitId).then((value) {
       if (mounted) {
@@ -108,8 +123,11 @@ class UnitFormSt extends State<UnitForm> {
           }).toList();
           goToMainItem();
         });
+        unitStateLoading = false;
       }
-    }).catchError((err) {});
+    }).catchError((err) {
+      unitStateLoading = false;
+    });
   }
 
   String formatDateTime(DateTime dt) {
@@ -123,15 +141,28 @@ class UnitFormSt extends State<UnitForm> {
     return itemName.replaceAll("${widget.arg.unitId}/", "");
   }
 
-  void loadItemProperties(String itemName) {
+  bool itemPropsLoading = false;
+  bool itemPropsLoaded = false;
+  String itemPropsItem = "";
+
+  void loadItemProperties() {
+    if (itemPropsLoading) return;
+    if (itemPropsLoaded) return;
+
+    String currentItem = itemPropsItem;
+
     Repository()
         .client(widget.arg.connection)
-        .dataItemPropGet(itemName)
+        .dataItemPropGet(currentItem)
         .then((value) {
-      setState(() {
-        itemPropView = value.getProp("view");
-        itemPropLoading = false;
-      });
+      if (mounted) {
+        if (currentItem == itemPropsItem) {
+          setState(() {
+            itemPropView = value.getProp("view");
+            itemPropLoading = false;
+          });
+        }
+      }
     }).catchError((err) {});
   }
 
@@ -200,7 +231,12 @@ class UnitFormSt extends State<UnitForm> {
                   selectItemByIndex(index);
                   itemPropLoading = true;
                 });
-                loadItemProperties(items[index].name);
+                if (itemPropsItem != items[index].name) {
+                  itemPropsItem = items[index].name;
+                  itemPropsLoading = false;
+                  itemPropsLoaded = false;
+                  loadItemProperties();
+                }
               },
               child: Container(
                 padding: const EdgeInsets.all(0),
