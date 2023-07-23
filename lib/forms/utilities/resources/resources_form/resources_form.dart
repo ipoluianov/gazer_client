@@ -342,8 +342,7 @@ class ResourcesFormSt extends State<ResourcesForm> {
           color: DesignColors.fore2(),
           height: 1,
         ),
-        /*viewType == ViewType.items ?*/ buildContent(
-            context) /*: buildContentFolders(context)*/,
+        buildContent(context),
       ],
     ));
   }

@@ -125,6 +125,38 @@ class NodeFormSt extends State<NodeForm> {
     );
   }
 
+  Widget buildToolbar(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        List<Widget> leftButtons = [];
+        List<Widget> rightButtons = [];
+
+        leftButtons.add(buildAddButton(context));
+
+        leftButtons.add(Expanded(child: Container()));
+        leftButtons.addAll(rightButtons);
+        return Row(
+          children: leftButtons,
+        );
+      },
+    );
+  }
+
+  Widget buildForm(BuildContext context) {
+    return Expanded(
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        buildToolbar(context),
+        Container(
+          color: DesignColors.fore2(),
+          height: 1,
+        ),
+        buildContent(context),
+      ],
+    ));
+  }
+
   Widget buildContent(BuildContext context) {
     if (loading && !loaded) {
       return const LoadIndicator();
@@ -290,7 +322,6 @@ class NodeFormSt extends State<NodeForm> {
             widget.arg.connection,
             "Units",
             actions: [
-              buildAddButton(context),
               buildHomeButton(context),
             ],
           ),
@@ -307,7 +338,7 @@ class NodeFormSt extends State<NodeForm> {
                       Expanded(
                         child: Stack(
                           children: [
-                            buildContent(context),
+                            buildForm(context),
                             buildError(context),
                           ],
                         ),
@@ -322,51 +353,5 @@ class NodeFormSt extends State<NodeForm> {
         );
       },
     );
-  }
-
-  String txtNodeName = "";
-  final TextEditingController _textFieldController = TextEditingController();
-
-  Future<void> _displayNodeNameDialog(BuildContext context) async {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Set Node Name'),
-            content: TextField(
-              autofocus: true,
-              onChanged: (value) {
-                setState(() {
-                  txtNodeName = value;
-                });
-              },
-              controller: _textFieldController,
-              decoration: const InputDecoration(hintText: "Node Name"),
-            ),
-            actions: <Widget>[
-              OutlinedButton(
-                child: const Text('CANCEL'),
-                onPressed: () {
-                  setState(() {
-                    Navigator.pop(context);
-                  });
-                },
-              ),
-              OutlinedButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  setState(() {
-                    Repository()
-                        .client(widget.arg.connection)
-                        .serviceSetNodeName(txtNodeName)
-                        .then((value) {
-                      Navigator.pop(context);
-                    });
-                  });
-                },
-              ),
-            ],
-          );
-        });
   }
 }
