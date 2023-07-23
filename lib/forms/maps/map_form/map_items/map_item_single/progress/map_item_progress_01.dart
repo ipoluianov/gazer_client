@@ -30,7 +30,7 @@ class MapItemProgress01 extends MapItemSingle {
   void setDefaultsForItem() {
     //super.setDefaults();
     setDouble("w", 200);
-    setDouble("h", 200);
+    setDouble("h", 50);
   }
 
   @override
@@ -39,7 +39,7 @@ class MapItemProgress01 extends MapItemSingle {
         Rect.fromLTWH(
             getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h")),
         Radius.circular(getDoubleZ("w")));
-    drawPre(canvas, size, rRect: rRect);
+    drawPre(canvas, size);
 
     Color color = getColor("text_color");
 
