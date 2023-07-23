@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/gazer_local_client.dart';
-import 'package:gazer_client/core/protocol/service/service_info.dart';
 import 'package:gazer_client/core/protocol/unit/unit_state_all.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/navigation/bottom_navigator.dart';
@@ -13,10 +11,8 @@ import 'package:gazer_client/widgets/load_indicator/load_indicator.dart';
 import 'package:gazer_client/core/navigation/navigation.dart';
 import 'package:gazer_client/forms/units/node_form/unit_card.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
-import 'package:gazer_client/widgets/title_widget/title_widget.dart';
 
 import '../../../core/navigation/route_generator.dart';
-import 'node_form_bloc.dart';
 
 class NodeForm extends StatefulWidget {
   final NodeFormArgument arg;
