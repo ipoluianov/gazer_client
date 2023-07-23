@@ -291,9 +291,20 @@ class ResourcesFormSt extends State<ResourcesForm> {
   Widget buildToolbar(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        List<Widget> buttons = [];
-        buttons.add(buildActionButtonFull(context, Icons.favorite, "Favorites",
-            () {
+        List<Widget> leftButtons = [];
+        List<Widget> rightButtons = [];
+
+        leftButtons.add(buildActionButton(
+            context, Icons.add, "Add ${widget.arg.typeName}", () {
+          addItem();
+        }));
+        leftButtons.add(buildActionButton(
+            context, Icons.create_new_folder_outlined, "Add Folder", () {
+          addFolder();
+        }));
+
+        rightButtons.add(buildActionButtonFull(
+            context, Icons.favorite, "Favorites", () {
           if (filter == ItemsFilter.favorite) {
             if (mounted) {
               setState(() {
@@ -312,15 +323,6 @@ class ResourcesFormSt extends State<ResourcesForm> {
                 ? DesignColors.accent()
                 : DesignColors.fore2()));
 
-        int countOfButtons = ((constraints.maxWidth - 200) / 65).round();
-        if (countOfButtons < 1) {
-          countOfButtons = 1;
-        }
-        if (countOfButtons > buttons.length) {
-          countOfButtons = buttons.length;
-        }
-        var leftButtons = buttons.getRange(0, countOfButtons).toList();
-        List<Widget> rightButtons = [];
         leftButtons.add(Expanded(child: Container()));
         leftButtons.addAll(rightButtons);
         return Row(
@@ -550,14 +552,6 @@ class ResourcesFormSt extends State<ResourcesForm> {
             widget.arg.connection,
             "${widget.arg.typeNamePlural} ${fullFolderName()}",
             actions: <Widget>[
-              buildActionButton(
-                  context, Icons.add, "Add ${widget.arg.typeName}", () {
-                addItem();
-              }),
-              buildActionButton(
-                  context, Icons.create_new_folder_outlined, "Add Folder", () {
-                addFolder();
-              }),
               buildHomeButton(context),
             ],
           ),
