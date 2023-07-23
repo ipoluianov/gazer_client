@@ -55,6 +55,12 @@ class MapItemProgress01 extends MapItemSingle {
 
     double progressPadding = getDoubleZ("progress_padding");
     Color progressColor = getColor("progress_color");
+    double value = lastValue;
+    if (value < 0) value = 0;
+    if (value > 1) {
+      progressColor = getColor("progress_overflow_color");
+      value = 1;
+    }
 
     drawPre(canvas, size);
     Paint paint = Paint()
@@ -65,7 +71,6 @@ class MapItemProgress01 extends MapItemSingle {
     if (get("orientation") == "horizontal") {
       double effectiveWidth = getDoubleZ("w") - progressPadding * 2;
 
-      double value = lastValue;
       if (getBool("inverted")) {
         value = 1 - value;
         double realWidth = effectiveWidth * value;
@@ -78,7 +83,6 @@ class MapItemProgress01 extends MapItemSingle {
             ),
             paint);
       } else {
-        value = value;
         double realWidth = effectiveWidth * value;
         Rect rect = Rect.fromLTRB(
           getDoubleZ("x") + progressPadding,
@@ -89,8 +93,6 @@ class MapItemProgress01 extends MapItemSingle {
         canvas.drawRect(rect, paint);
       }
     } else {
-      double value = lastValue;
-
       double effectiveHeight = getDoubleZ("h") - progressPadding * 2;
 
       if (getBool("inverted")) {
@@ -106,6 +108,7 @@ class MapItemProgress01 extends MapItemSingle {
             paint);
       } else {
         value = 1 - value;
+
         double realHeight = effectiveHeight * value;
         Rect rect = Rect.fromLTRB(
           getDoubleZ("x") + progressPadding,
@@ -217,6 +220,8 @@ class MapItemProgress01 extends MapItemSingle {
           "", "progress_padding", "ProgressPadding", "double", "2"));
       props.add(MapItemPropItem(
           "", "progress_color", "ProgressColor", "color", "{fore}"));
+      props.add(MapItemPropItem("", "progress_overflow_color", "OverflowColor",
+          "color", "#FFFF8800"));
 
       groups.add(MapItemPropGroup("Appearance", false, props));
     }
