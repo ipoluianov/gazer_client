@@ -1,20 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/gazer_local_client.dart';
 import 'package:gazer_client/core/gazer_style.dart';
-import 'package:gazer_client/core/protocol/unit/unit_items_values.dart';
 import 'package:gazer_client/core/protocol/unit/unit_state.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/navigation/bottom_navigator.dart';
 import 'package:gazer_client/core/navigation/left_navigator.dart';
-import 'package:gazer_client/core/tools/color_by_index.dart';
 import 'package:gazer_client/widgets/borders/border_01_item.dart';
-import 'package:gazer_client/widgets/borders/border_05_left_navigator.dart';
 import 'package:gazer_client/widgets/borders/border_08_item_list_item.dart';
-import 'package:gazer_client/widgets/load_indicator/load_indicator.dart';
 import 'package:gazer_client/core/navigation/navigation.dart';
 import 'package:gazer_client/forms/units/unit_form/widget_dataitem_detail.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart.dart';
@@ -24,10 +19,8 @@ import 'package:gazer_client/widgets/time_chart/time_chart_settings_series.dart'
 import 'package:gazer_client/widgets/time_table/time_table.dart';
 import 'package:gazer_client/widgets/time_table/time_table_settings.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
-import 'package:gazer_client/widgets/title_widget/title_widget.dart';
 
 import '../../../core/navigation/route_generator.dart';
-import 'unit_form_bloc.dart';
 
 class UnitForm extends StatefulWidget {
   final UnitFormArgument arg;
