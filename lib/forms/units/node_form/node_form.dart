@@ -277,17 +277,6 @@ class NodeFormSt extends State<NodeForm> {
     );
   }
 
-  int currentTitleKey = 0;
-  void incrementTitleKey() {
-    setState(() {
-      currentTitleKey++;
-    });
-  }
-
-  String getCurrentTitleKey() {
-    return "units_" + currentTitleKey.toString();
-  }
-
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -300,20 +289,8 @@ class NodeFormSt extends State<NodeForm> {
           appBar: TitleBar(
             widget.arg.connection,
             "Units",
-            key: Key(getCurrentTitleKey()),
             actions: [
               buildAddButton(context),
-              buildActionButton(context, Icons.edit, "Node Name", () {
-                Repository()
-                    .client(widget.arg.connection)
-                    .serviceInfo()
-                    .then((value) {
-                  _textFieldController.text = value.nodeName;
-                  _displayNodeNameDialog(context).then((value) {
-                    incrementTitleKey();
-                  });
-                }).catchError((err) {});
-              }),
               buildHomeButton(context),
             ],
           ),

@@ -6,6 +6,7 @@ import 'package:gazer_client/core/navigation/navigation.dart';
 import 'package:gazer_client/core/navigation/route_generator.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
 
+import '../../../core/repository.dart';
 import 'more_button.dart';
 
 class MoreForm extends StatefulWidget {
@@ -41,6 +42,7 @@ class MoreFormSt extends State<MoreForm> {
             actions: <Widget>[
               buildHomeButton(context),
             ],
+            key: Key(getCurrentTitleKey()),
           ),
           body: Container(
             color: DesignColors.mainBackgroundColor,
@@ -83,6 +85,19 @@ class MoreFormSt extends State<MoreForm> {
                                 }, "Appearance",
                                     const Icon(Icons.settings, size: 48), 0),
                                 MoreButton(() {
+                                  Repository()
+                                      .client(widget.arg.connection)
+                                      .serviceInfo()
+                                      .then((value) {
+                                    _textFieldController.text = value.nodeName;
+                                    _displayNodeNameDialog(context)
+                                        .then((value) {
+                                      incrementTitleKey();
+                                    });
+                                  }).catchError((err) {});
+                                }, "Rename node",
+                                    const Icon(Icons.abc, size: 48), 0),
+                                MoreButton(() {
                                   Navigator.pushNamed(context, "/about",
                                       arguments: AboutFormArgument(
                                           widget.arg.connection));
@@ -105,5 +120,62 @@ class MoreFormSt extends State<MoreForm> {
         );
       },
     );
+  }
+
+  String txtNodeName = "";
+  final TextEditingController _textFieldController = TextEditingController();
+
+  int currentTitleKey = 0;
+  void incrementTitleKey() {
+    setState(() {
+      currentTitleKey++;
+    });
+  }
+
+  String getCurrentTitleKey() {
+    return "units_" + currentTitleKey.toString();
+  }
+
+  Future<void> _displayNodeNameDialog(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Rename node'),
+            content: TextField(
+              autofocus: true,
+              onChanged: (value) {
+                setState(() {
+                  txtNodeName = value;
+                });
+              },
+              controller: _textFieldController,
+              decoration: const InputDecoration(hintText: "Node Name"),
+            ),
+            actions: <Widget>[
+              OutlinedButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  setState(() {
+                    Repository()
+                        .client(widget.arg.connection)
+                        .serviceSetNodeName(txtNodeName)
+                        .then((value) {
+                      Navigator.pop(context);
+                    });
+                  });
+                },
+              ),
+              OutlinedButton(
+                child: const Text('CANCEL'),
+                onPressed: () {
+                  setState(() {
+                    Navigator.pop(context);
+                  });
+                },
+              ),
+            ],
+          );
+        });
   }
 }
