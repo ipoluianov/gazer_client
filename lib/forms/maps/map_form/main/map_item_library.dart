@@ -8,6 +8,7 @@ import '../map_items/map_item_decoration/map_item_decoration_gauge_01.dart';
 import '../map_items/map_item_decoration/map_item_decoration_gauge_02.dart';
 import '../map_items/map_item_decoration/map_item_decoration_material_icon01.dart';
 import '../map_items/map_item_single/gauge/map_item_gauge_02.dart';
+import '../map_items/map_item_single/progress/map_item_progress_01.dart';
 import 'map_item.dart';
 import '../map_items/map_item_control/map_item_button.dart';
 import '../map_items/map_item_single/chart/map_item_chart.dart';
@@ -38,6 +39,10 @@ class MapItemsLibrary {
     registerItem(MapItemGaugeRound.sType, MapItemGaugeRound.sName, "gauge",
         (c) {
       return MapItemGaugeRound(c);
+    });
+    registerItem(MapItemProgress01.sType, MapItemProgress01.sName, "gauge",
+        (c) {
+      return MapItemProgress01(c);
     });
     registerItem(MapItemGauge02.sType, MapItemGauge02.sName, "gauge", (c) {
       return MapItemGauge02(c);
