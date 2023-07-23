@@ -114,7 +114,7 @@ class TitleBarSt extends State<TitleBar> {
       }
     }
 
-    text += " ${nodeAddress()}";
+    //text += " ${nodeAddress()}";
 
     return Text(
       text,
