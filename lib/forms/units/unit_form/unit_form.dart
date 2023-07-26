@@ -403,13 +403,13 @@ class UnitFormSt extends State<UnitForm> {
                   child: buildTable(items, false),
                 ),
               ),
-              Expanded(
+              /*Expanded(
                 flex: 2,
                 child: Container(
                   //color: Colors.green,
                   child: buildDetails(getSelectedItem(items)),
                 ),
-              ),
+              ),*/
             ],
           ),
         ),
