@@ -462,6 +462,7 @@ class UnitFormSt extends State<UnitForm> {
   }
 
   Widget buildDetails(UnitStateValuesResponseItem item) {
+    return Text("Detail");
     var client = Repository().client(widget.arg.connection);
     return WidgetDataItemDetail(
         widget.arg.connection, client, unitName, widget.arg.unitId, item, () {
