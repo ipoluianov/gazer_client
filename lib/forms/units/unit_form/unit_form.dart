@@ -394,7 +394,7 @@ class UnitFormSt extends State<UnitForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
+        /*Expanded(
           child: Row(
             children: [
               Expanded(
@@ -413,7 +413,7 @@ class UnitFormSt extends State<UnitForm> {
               ),*/
             ],
           ),
-        ),
+        ),*/
         Container(
           height: 0.5,
           color: DesignColors.fore(),
