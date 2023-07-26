@@ -199,6 +199,7 @@ class UnitFormSt extends State<UnitForm> {
 
   Widget buildTable(
       List<UnitStateValuesResponseItem> items, bool showPopupMenu) {
+    return Text("Table");
     showPopupMenu = false;
 
     return DesignColors.buildScrollBar(
