@@ -199,7 +199,7 @@ class UnitFormSt extends State<UnitForm> {
 
   Widget buildTable(
       List<UnitStateValuesResponseItem> items, bool showPopupMenu) {
-    return Text("Table");
+    //return Text("Table");
     showPopupMenu = false;
 
     return DesignColors.buildScrollBar(
@@ -394,7 +394,7 @@ class UnitFormSt extends State<UnitForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        /*Expanded(
+        Expanded(
           child: Row(
             children: [
               Expanded(
@@ -404,16 +404,16 @@ class UnitFormSt extends State<UnitForm> {
                   child: buildTable(items, false),
                 ),
               ),
-              /*Expanded(
+              Expanded(
                 flex: 2,
                 child: Container(
                   //color: Colors.green,
                   child: buildDetails(getSelectedItem(items)),
                 ),
-              ),*/
+              ),
             ],
           ),
-        ),*/
+        ),
         Container(
           height: 0.5,
           color: DesignColors.fore(),
@@ -463,7 +463,6 @@ class UnitFormSt extends State<UnitForm> {
   }
 
   Widget buildDetails(UnitStateValuesResponseItem item) {
-    return Text("Detail");
     var client = Repository().client(widget.arg.connection);
     return WidgetDataItemDetail(
         widget.arg.connection, client, unitName, widget.arg.unitId, item, () {

@@ -144,17 +144,19 @@ class NodeFormSt extends State<NodeForm> {
 
   Widget buildForm(BuildContext context) {
     return Expanded(
-        child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        buildToolbar(context),
-        Container(
-          color: DesignColors.fore2(),
-          height: 1,
-        ),
-        buildContent(context),
-      ],
-    ));
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          //buildToolbar(context),
+          /*Container(
+            color: DesignColors.fore2(),
+            height: 1,
+          ),*/
+          //buildContent(context),
+          Text("Content"),
+        ],
+      ),
+    );
   }
 
   Widget buildContent(BuildContext context) {
