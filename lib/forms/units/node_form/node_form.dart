@@ -143,6 +143,7 @@ class NodeFormSt extends State<NodeForm> {
   }
 
   Widget buildForm(BuildContext context) {
+    return Text("123");
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
