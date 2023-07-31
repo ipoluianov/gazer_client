@@ -29,8 +29,8 @@ class MapItemGauge02 extends MapItemSingle {
   @override
   void setDefaultsForItem() {
     //super.setDefaults();
-    setDouble("w", 200);
-    setDouble("h", 200);
+    setDouble("w", 400);
+    setDouble("h", 100);
   }
 
   @override
