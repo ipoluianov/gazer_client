@@ -15,6 +15,7 @@ import 'map_item_prop_halign.dart';
 import 'map_item_prop_image.dart';
 import 'map_item_prop_material_icon.dart';
 import 'map_item_prop_multiline.dart';
+import 'map_item_prop_options.dart';
 import 'map_item_prop_scale_fit.dart';
 import 'map_item_prop_text.dart';
 
@@ -95,6 +96,9 @@ class MapItemGroupOfPropertiesSt extends State<MapItemGroupOfProperties> {
     }
     if (propItem.type == "material_icon") {
       propWidget = MapItemPropMaterialIcon(item, propItem, key: key);
+    }
+    if (propItem.type.contains("options")) {
+      propWidget = MapItemPropOptions(item, propItem, key: key);
     }
 
     return Container(

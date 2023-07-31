@@ -3,6 +3,7 @@ import 'package:gazer_client/forms/maps/map_form/map_items/map_item_group/map_it
 import 'package:gazer_client/forms/maps/map_item_add_form/map_item_add_form.dart';
 
 import '../map_items/map_item_decoration/map_item_decoration_border_01.dart';
+import '../map_items/map_item_decoration/map_item_decoration_border_02.dart';
 import '../map_items/map_item_decoration/map_item_decoration_clock_01.dart';
 import '../map_items/map_item_decoration/map_item_decoration_gauge_01.dart';
 import '../map_items/map_item_decoration/map_item_decoration_gauge_02.dart';
@@ -89,6 +90,12 @@ class MapItemsLibrary {
         MapItemDecorationBorder01.sName, "decoration", (c) {
       return MapItemDecorationBorder01(c);
     });
+
+    registerItem(MapItemDecorationBorder02.sType,
+        MapItemDecorationBorder02.sName, "decoration", (c) {
+      return MapItemDecorationBorder02(c);
+    });
+
     registerItem(MapItemDecorationMaterialIcon01.sType,
         MapItemDecorationMaterialIcon01.sName, "decoration", (c) {
       return MapItemDecorationMaterialIcon01(c);
