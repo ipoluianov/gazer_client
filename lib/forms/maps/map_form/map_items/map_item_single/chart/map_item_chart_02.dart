@@ -65,9 +65,9 @@ class MapItemChart02 extends MapItemSingle {
     lastUpdateDataDT = DateTime.now();
   }
 
-  Color chartRegularColor = Color.fromARGB(255, 130, 133, 139);
-  Color chartErrorColor = Color.fromARGB(255, 255, 0, 0);
-  Color chartColor = Color.fromARGB(255, 130, 133, 139);
+  Color chartRegularColor = const Color.fromARGB(255, 130, 133, 139);
+  Color chartErrorColor = const Color.fromARGB(255, 255, 0, 0);
+  Color chartColor = const Color.fromARGB(255, 130, 133, 139);
 
   Color candleColorUp = Colors.blueAccent;
   Color candleColorDown = Colors.blueAccent;
@@ -83,6 +83,9 @@ class MapItemChart02 extends MapItemSingle {
 
   bool isDemo = false;
 
+  TextAppearance txtProps =
+      TextAppearance("", 1, 100, Colors.black, TextAlign.center);
+
   @override
   void draw(Canvas canvas, Size size, List<String> parentMaps) {
     DateTime now = DateTime.now();
@@ -90,12 +93,14 @@ class MapItemChart02 extends MapItemSingle {
     try {
       currentValueTarget = double.parse(dataSourceValue().value);
       currentValueTargetExists = true;
-    } catch (e) {}
+    } catch (e) {
+      // no action
+    }
 
     String valueType = get("value_type");
     String kind = get("kind");
     bool showLegend = getBool("show_legend");
-    var txtProps = getTextAppearance(this);
+    txtProps = getTextAppearance(this);
 
     if (isDemo) {
       showLegend = false;
@@ -111,7 +116,7 @@ class MapItemChart02 extends MapItemSingle {
       candleColorDown = getColor("candle_down_color");
     }
 
-    double padding = txtProps.fontSize + txtProps.fontSize * 0.1;
+    double padding = txtProps.fontSize + txtProps.fontSize * 0.2;
     if (!showLegend) {
       padding = z(1);
     }
@@ -229,7 +234,7 @@ class MapItemChart02 extends MapItemSingle {
     double pixelsPerValueX = width / expectedCountOfItem;
 
     canvas.save();
-    canvas.clipRect(Rect.fromLTWH(x, y, width, height));
+    canvas.clipRect(Rect.fromLTWH(x, y - 1, width, height + 2));
 
     double barWidth = getDouble("bar_width");
     if (barWidth < 1) {
@@ -435,11 +440,17 @@ class MapItemChart02 extends MapItemSingle {
           txtProps.fontSize,
           txtProps.textColor,
           TextVAlign.middle,
-          TextAlign.center,
+          TextAlign.left,
           icon.fontFamily,
           400,
         );
-      } catch (e) {}
+      } catch (e) {
+        // no action
+      }
+
+      drawScaleLeft(canvas, Rect.fromLTRB(x - padding, y, x, y + height));
+      drawScaleRight(
+          canvas, Rect.fromLTRB(x + width, y, x + width + padding, y + height));
     }
 
     drawPost(canvas, size);
@@ -516,6 +527,68 @@ class MapItemChart02 extends MapItemSingle {
         ..strokeWidth = z(1),
     );
     canvas.restore();
+  }
+
+  void drawScaleLeft(Canvas canvas, Rect rect) {
+    canvas.drawLine(
+      Offset(rect.left + rect.width / 4, rect.top),
+      Offset(rect.left + rect.width / 4, rect.bottom),
+      Paint()
+        ..color = txtProps.textColor
+        ..strokeWidth = z(1),
+    );
+    double step = rect.height / 5;
+    for (double y = rect.top; y < rect.bottom + step / 2; y += step) {
+      canvas.drawLine(
+        Offset(rect.left + rect.width / 4, y),
+        Offset(rect.left + rect.width / 4 + rect.width / 4, y),
+        Paint()
+          ..color = txtProps.textColor
+          ..strokeWidth = z(1),
+      );
+    }
+
+    step = rect.height / 20;
+    for (double y = rect.top; y < rect.bottom + step / 2; y += step) {
+      canvas.drawLine(
+        Offset(rect.left + rect.width / 4, y),
+        Offset(rect.left + rect.width / 4 + rect.width / 8, y),
+        Paint()
+          ..color = txtProps.textColor
+          ..strokeWidth = z(0.5),
+      );
+    }
+  }
+
+  void drawScaleRight(Canvas canvas, Rect rect) {
+    canvas.drawLine(
+      Offset(rect.right - rect.width / 4, rect.top),
+      Offset(rect.right - rect.width / 4, rect.bottom),
+      Paint()
+        ..color = txtProps.textColor
+        ..strokeWidth = z(1),
+    );
+    double step = rect.height / 5;
+    for (double y = rect.top; y < rect.bottom + step / 2; y += step) {
+      canvas.drawLine(
+        Offset(rect.right - rect.width / 4, y),
+        Offset(rect.right - rect.width / 4 - rect.width / 5, y),
+        Paint()
+          ..color = txtProps.textColor
+          ..strokeWidth = z(1),
+      );
+    }
+
+    step = rect.height / 20;
+    for (double y = rect.top; y < rect.bottom + step / 2; y += step) {
+      canvas.drawLine(
+        Offset(rect.right - rect.width / 4, y),
+        Offset(rect.right - rect.width / 4 - rect.width / 8, y),
+        Paint()
+          ..color = txtProps.textColor
+          ..strokeWidth = z(0.5),
+      );
+    }
   }
 
   @override
