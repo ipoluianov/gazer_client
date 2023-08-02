@@ -65,7 +65,10 @@ class MapItemChart02 extends MapItemSingle {
     lastUpdateDataDT = DateTime.now();
   }
 
+  Color chartRegularColor = Color.fromARGB(255, 130, 133, 139);
+  Color chartErrorColor = Color.fromARGB(255, 255, 0, 0);
   Color chartColor = Color.fromARGB(255, 130, 133, 139);
+
   Color candleColorUp = Colors.blueAccent;
   Color candleColorDown = Colors.blueAccent;
 
@@ -98,7 +101,10 @@ class MapItemChart02 extends MapItemSingle {
       showLegend = false;
     }
 
-    chartColor = getColor("chart_color");
+    chartRegularColor = getColor("chart_color");
+    chartErrorColor = getColor("chart_error_color");
+
+    chartColor = chartRegularColor;
 
     if (kind == "CANDLES") {
       candleColorUp = getColor("candle_up_color");
@@ -198,7 +204,8 @@ class MapItemChart02 extends MapItemSingle {
     maxValueTarget = maxValueTargetTemp;
 
     if (maxValueTarget < minValueTarget) {
-      return;
+      minValueTarget = 0;
+      maxValueTarget = 1;
     }
 
     if (minValueTarget == maxValueTarget) {
@@ -235,6 +242,11 @@ class MapItemChart02 extends MapItemSingle {
 
     for (int i = 0; i < data.length; i++) {
       var item = data[i];
+
+      chartColor = chartRegularColor;
+      if (item.hasBad) {
+        chartColor = chartErrorColor;
+      }
 
       // Calc minMaxRect
       Rect rectMinMax = Rect.zero;
@@ -341,6 +353,8 @@ class MapItemChart02 extends MapItemSingle {
       }
     }
 
+    chartColor = chartRegularColor;
+
     canvas.restore();
 
     if (showLegend) {
@@ -397,7 +411,7 @@ class MapItemChart02 extends MapItemSingle {
         padding,
         "${dataSourceValue().value} ${dataSourceValue().uom}",
         txtProps.fontSize,
-        txtProps.textColor,
+        dataSourceValue().uom == "error" ? chartErrorColor : txtProps.textColor,
         TextVAlign.middle,
         TextAlign.right,
         txtProps.fontFamily,
@@ -538,6 +552,8 @@ class MapItemChart02 extends MapItemSingle {
           "", "kind", "Kind", "options:BARS:CANDLES:BONES", "BONES"));
       props.add(
           MapItemPropItem("", "chart_color", "Chart Color", "color", "{fore}"));
+      props.add(MapItemPropItem(
+          "", "chart_error_color", "Chart Error Color", "color", "FFF90B1A"));
       props.add(MapItemPropItem(
           "", "candle_up_color", "Candle Up Color", "color", "FF02FC81"));
       props.add(MapItemPropItem(
