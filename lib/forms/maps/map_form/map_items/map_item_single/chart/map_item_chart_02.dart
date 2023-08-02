@@ -43,11 +43,23 @@ class MapItemChart02 extends MapItemSingle {
     lastUpdateDataDT = DateTime.now();
   }
 
-  Color currentChartColor = Colors.blueAccent;
+  Color chartColor = Colors.blueAccent;
+  Color candleColorUp = Colors.blueAccent;
+  Color candleColorDown = Colors.blueAccent;
 
   @override
   void draw(Canvas canvas, Size size, List<String> parentMaps) {
     DateTime now = DateTime.now();
+
+    String valueType = get("value_type");
+    String kind = get("kind");
+
+    chartColor = getColor("chart_color");
+
+    if (kind == "CANDLES") {
+      candleColorUp = getColor("candle_up_color");
+      candleColorDown = getColor("candle_down_color");
+    }
 
     double padding = z(10);
 
@@ -133,25 +145,9 @@ class MapItemChart02 extends MapItemSingle {
     for (int i = 0; i < data.length; i++) {
       var item = data[i];
 
-      if (get("value_type") == "CANDLES") {
-        double xRange = (end - begin).toDouble();
-        double x01 = (item.datetimeFirst - begin) / xRange;
-        double left = x + x01 * width;
-        double right = left + pixelsPerValueX * barWidth;
-        double value1_01 = (item.firstValue - minValue) / valuesRange;
-        double value2_01 = (item.lastValue - minValue) / valuesRange;
-        double lineY1 = (item.maxValue - minValue) / valuesRange;
-        lineY1 = y + height - lineY1 * height;
-        double lineY2 = (item.minValue - minValue) / valuesRange;
-        lineY2 = y + height - lineY2 * height;
-        double top = y + height - value1_01 * height;
-        double bottom = y + height - value2_01 * height;
-        Rect rect = Rect.fromLTRB(left, top, right, bottom);
-        drawCandle(
-            canvas, rect, lineY1, lineY2, item.firstValue < item.lastValue);
-      }
-
-      if (get("value_type") == "MINMAX") {
+      // Calc minMaxRect
+      Rect rectMinMax = Rect.zero;
+      if (valueType == "MINMAX") {
         double xRange = (end - begin).toDouble();
         double x01 = (item.datetimeFirst - begin) / xRange;
         double left = x + x01 * width;
@@ -160,34 +156,97 @@ class MapItemChart02 extends MapItemSingle {
         double value2_01 = (item.minValue - minValue) / valuesRange;
         double top = y + height - value1_01 * height;
         double bottom = y + height - value2_01 * height;
-        Rect rect = Rect.fromLTRB(left, top, right, bottom);
-        drawBar(canvas, rect);
+        rectMinMax = Rect.fromLTRB(left, top, right, bottom);
       }
-      if (get("value_type") == "MIN" ||
-          get("value_type") == "MAX" ||
-          get("value_type") == "AVG") {
-        double value = item.minValue;
-        switch (get("value_type")) {
-          case "MIN":
-            value = item.minValue;
-            break;
-          case "AVG":
-            value = item.avgValue;
-            break;
-          case "MAX":
-            value = item.maxValue;
-            break;
-        }
 
+      Rect rectFirstLast = Rect.zero;
+      double yLineMinMax1 = 0;
+      double yLineMinMax2 = 0;
+      if (kind == "CANDLES") {
         double xRange = (end - begin).toDouble();
         double x01 = (item.datetimeFirst - begin) / xRange;
         double left = x + x01 * width;
         double right = left + pixelsPerValueX * barWidth;
-        double value01 = (value - minValue) / valuesRange;
+        double value1_01 = (item.firstValue - minValue) / valuesRange;
+        double value2_01 = (item.lastValue - minValue) / valuesRange;
+        double lineY1 = (item.maxValue - minValue) / valuesRange;
+        yLineMinMax1 = y + height - lineY1 * height;
+        double lineY2 = (item.minValue - minValue) / valuesRange;
+        yLineMinMax2 = y + height - lineY2 * height;
+        double top = y + height - value1_01 * height;
+        double bottom = y + height - value2_01 * height;
+        rectFirstLast = Rect.fromLTRB(left, top, right, bottom);
+      }
+
+      Rect rectMin = Rect.zero;
+      if (valueType == "MIN") {
+        double xRange = (end - begin).toDouble();
+        double x01 = (item.datetimeFirst - begin) / xRange;
+        double left = x + x01 * width;
+        double right = left + pixelsPerValueX * barWidth;
+        double value01 = (item.minValue - minValue) / valuesRange;
         double top = y + height - value01 * height;
         double bottom = y + height;
-        Rect rect = Rect.fromLTRB(left, top, right, bottom);
-        drawBar(canvas, rect);
+        rectMin = Rect.fromLTRB(left, top, right, bottom);
+      }
+
+      Rect rectMax = Rect.zero;
+      if (valueType == "MAX") {
+        double xRange = (end - begin).toDouble();
+        double x01 = (item.datetimeFirst - begin) / xRange;
+        double left = x + x01 * width;
+        double right = left + pixelsPerValueX * barWidth;
+        double value01 = (item.maxValue - minValue) / valuesRange;
+        double top = y + height - value01 * height;
+        double bottom = y + height;
+        rectMax = Rect.fromLTRB(left, top, right, bottom);
+      }
+
+      Rect rectAvg = Rect.zero;
+      if (valueType == "AVG") {
+        double xRange = (end - begin).toDouble();
+        double x01 = (item.datetimeFirst - begin) / xRange;
+        double left = x + x01 * width;
+        double right = left + pixelsPerValueX * barWidth;
+        double value01 = (item.avgValue - minValue) / valuesRange;
+        double top = y + height - value01 * height;
+        double bottom = y + height;
+        rectAvg = Rect.fromLTRB(left, top, right, bottom);
+      }
+
+      if (kind == "CANDLES") {
+        drawCandle(canvas, rectFirstLast, yLineMinMax1, yLineMinMax2,
+            item.firstValue < item.lastValue);
+      }
+
+      if (kind == "BARS") {
+        if (valueType == "MIN") {
+          drawBar(canvas, rectMin);
+        }
+        if (valueType == "MAX") {
+          drawBar(canvas, rectMax);
+        }
+        if (valueType == "AVG") {
+          drawBar(canvas, rectAvg);
+        }
+        if (valueType == "MINMAX") {
+          drawBar(canvas, rectMinMax);
+        }
+      }
+
+      if (kind == "BONES") {
+        if (valueType == "MIN") {
+          drawBone(canvas, rectMin);
+        }
+        if (valueType == "MAX") {
+          drawBone(canvas, rectMax);
+        }
+        if (valueType == "AVG") {
+          drawBone(canvas, rectAvg);
+        }
+        if (valueType == "MINMAX") {
+          drawBone(canvas, rectMinMax);
+        }
       }
     }
 
@@ -201,7 +260,7 @@ class MapItemChart02 extends MapItemSingle {
       padding,
       maxValue.toString(),
       padding * 0.7,
-      getColor("chart_color"),
+      chartColor,
       TextVAlign.top,
       TextAlign.left,
       null,
@@ -216,7 +275,7 @@ class MapItemChart02 extends MapItemSingle {
       padding,
       minValue.toString(),
       padding * 0.7,
-      getColor("chart_color"),
+      chartColor,
       TextVAlign.top,
       TextAlign.left,
       null,
@@ -238,14 +297,45 @@ class MapItemChart02 extends MapItemSingle {
     );
   }
 
+  void drawBone(Canvas canvas, Rect rect) {
+    if (rect.height < 1) {
+      rect = Rect.fromLTRB(rect.left, rect.top - 2, rect.right, rect.bottom);
+    }
+    canvas.drawLine(
+      Offset(rect.left + rect.width / 2, rect.top),
+      Offset(rect.left + rect.width / 2, rect.bottom),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..color = chartColor
+        ..strokeWidth = z(1),
+    );
+
+    canvas.drawLine(
+      Offset(rect.left, rect.top),
+      Offset(rect.right, rect.top),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..color = chartColor
+        ..strokeWidth = z(1),
+    );
+
+    canvas.drawLine(
+      Offset(rect.left, rect.bottom),
+      Offset(rect.right, rect.bottom),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..color = chartColor
+        ..strokeWidth = z(1),
+    );
+  }
+
   void drawCandle(
       Canvas canvas, Rect rect, double y1, double y2, bool upwards) {
     if (rect.height < 1) {
       rect = Rect.fromLTRB(rect.left, rect.top - 2, rect.right, rect.bottom);
     }
 
-    Color candleColor =
-        upwards ? getColor("candle_up_color") : getColor("candle_down_color");
+    Color candleColor = upwards ? candleColorUp : candleColorDown;
 
     canvas.drawRect(
       rect,
@@ -284,8 +374,10 @@ class MapItemChart02 extends MapItemSingle {
       props.add(MapItemPropItem("", "slot", "Slot, sec", "double", "1"));
       props.add(
           MapItemPropItem("", "bar_width", "Bar Width, %", "double", "50"));
-      props.add(MapItemPropItem("", "value_type", "Value Type, sec",
-          "options:MIN:AVG:MAX:MINMAX:CANDLES", "AVG"));
+      props.add(MapItemPropItem(
+          "", "value_type", "Value Type", "options:MIN:AVG:MAX:MINMAX", "AVG"));
+      props.add(MapItemPropItem(
+          "", "kind", "Kind", "options:BARS:CANDLES:BONES", "BARS"));
       props.add(
           MapItemPropItem("", "chart_color", "Chart Color", "color", "{fore}"));
       props.add(MapItemPropItem(
