@@ -68,10 +68,15 @@ class GazerLocalClient {
   String nodeVersion = "";
   String nodeBuildTime = "";
   String lastError = "";
+  int errorsCounter = 0;
   GazerLocalClient(this.id, this.transport, this.address, this.accessKey);
 
   String localAddress() {
     return Repository().peer.address();
+  }
+
+  bool connected() {
+    return errorsCounter < 5;
   }
 
   BillingSummary billingInfo() {
@@ -632,21 +637,27 @@ class GazerLocalClient {
       String function, TReq request, FromJsonFunc fromJson) async {
     //print("fetchXchg $function");
 
-    // Gazer request body
-    var reqString = jsonEncode(request);
-    var res = await Repository().peer.call(address, accessKey, function,
-        Uint8List.fromList(utf8.encode(reqString)));
+    try {
+      // Gazer request body
+      var reqString = jsonEncode(request);
+      var res = await Repository().peer.call(address, accessKey, function,
+          Uint8List.fromList(utf8.encode(reqString)));
 
-    if (!res.isError()) {
-      String s = utf8.decode(res.data);
-      //print("RESULT: $s");
-      //var fResp = Frame.fromJson(jsonDecode(s));
-      return fromJson(jsonDecode(s));
-    } else {
-      lastError = res.error;
-      //print("err: ${tr.error}");
-      print("RESULT ERROR: ${res.error}");
-      throw GazerClientException(res.error);
+      if (!res.isError()) {
+        String s = utf8.decode(res.data);
+        //print("RESULT: $s");
+        //var fResp = Frame.fromJson(jsonDecode(s));
+        errorsCounter = 0;
+        return fromJson(jsonDecode(s));
+      } else {
+        lastError = res.error;
+        //print("err: ${tr.error}");
+        print("RESULT ERROR: ${res.error}");
+        throw GazerClientException(res.error);
+      }
+    } catch (ex) {
+      errorsCounter++;
+      rethrow;
     }
   }
 

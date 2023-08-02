@@ -199,6 +199,17 @@ class TitleBarSt extends State<TitleBar> {
       percentsText = Container();
     }
 
+    if (!Repository().client(widget.connection!).connected()) {
+      innerWidget = const Center(
+        child: Icon(
+          Icons.error,
+          size: 32,
+          color: Colors.red,
+        ),
+      );
+      percentsText = Container();
+    }
+
     if (isPremium) {
       innerWidget = const Center(
         child: Icon(
