@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -77,6 +78,8 @@ class MapItemChart02 extends MapItemSingle {
   double maxValueTarget = 0;
   double maxValue = 0;
 
+  bool isDemo = false;
+
   @override
   void draw(Canvas canvas, Size size, List<String> parentMaps) {
     DateTime now = DateTime.now();
@@ -90,6 +93,10 @@ class MapItemChart02 extends MapItemSingle {
     String kind = get("kind");
     bool showLegend = getBool("show_legend");
     var txtProps = getTextAppearance(this);
+
+    if (isDemo) {
+      showLegend = false;
+    }
 
     chartColor = getColor("chart_color");
 
@@ -124,6 +131,12 @@ class MapItemChart02 extends MapItemSingle {
     int end = now.microsecondsSinceEpoch;
     int timeSlot = getDouble("slot").toInt() * 1000 * 1000;
 
+    if (isDemo) {
+      begin = 0;
+      end = 10;
+      timeSlot = 1;
+    }
+
     int minTimeSlot = 1 * 1000 * 1000; // 1 sec
     int expectedCountOfItem =
         ((end.toDouble() - begin.toDouble()) / minTimeSlot.toDouble()).round();
@@ -142,13 +155,19 @@ class MapItemChart02 extends MapItemSingle {
       timeSlot = maxTimeSlot;
     }
 
-    data = Repository()
-        .history
-        .getNode(connection)
-        .getHistory(getDataSource(), begin, end, timeSlot);
+    if (!isDemo) {
+      data = Repository()
+          .history
+          .getNode(connection)
+          .getHistory(getDataSource(), begin, end, timeSlot);
+    }
 
     expectedCountOfItem =
         ((end.toDouble() - begin.toDouble()) / timeSlot.toDouble()).round();
+
+    if (isDemo) {
+      expectedCountOfItem = 10;
+    }
 
     drawPre(canvas, size);
 
@@ -191,6 +210,11 @@ class MapItemChart02 extends MapItemSingle {
       if (minValueTarget > 0) {
         minValueTarget = 0;
       }
+    }
+
+    if (isDemo) {
+      minValue = 0;
+      maxValue = 100;
     }
 
     double valuesRange = maxValue - minValue;
@@ -481,7 +505,19 @@ class MapItemChart02 extends MapItemSingle {
   }
 
   @override
-  void drawDemo(Canvas canvas, Size size) {}
+  void drawDemo(Canvas canvas, Size size) {
+    isDemo = true;
+    set("kind", "BARS");
+    data = [];
+    int index = 0;
+    for (double i = 0; i < 6.28; i += 0.5) {
+      double v = sin(i) * 40 + 40;
+      data.add(DataItemHistoryChartItemValueResponse(
+          index, index, v, v, v, v, v, v, 1, [0], true, false, ""));
+      index++;
+    }
+    draw(canvas, size, []);
+  }
 
   @override
   void setDefaultsForItem() {}
@@ -506,9 +542,8 @@ class MapItemChart02 extends MapItemSingle {
           "", "candle_up_color", "Candle Up Color", "color", "FF02FC81"));
       props.add(MapItemPropItem(
           "", "candle_down_color", "Candle Down Color", "color", "FFF90B1A"));
-      props.add(MapItemPropItem("", "show_zero", "Show Zero", "bool", "false"));
-      props.add(
-          MapItemPropItem("", "show_legend", "Show Legend", "bool", "true"));
+      props.add(MapItemPropItem("", "show_zero", "Show Zero", "bool", "0"));
+      props.add(MapItemPropItem("", "show_legend", "Show Legend", "bool", "1"));
       props.add(MapItemPropItem("", "icon_name", "Icon Name", "material_icon",
           "keyboard_arrow_left"));
       groups.add(MapItemPropGroup("Chart", true, props));

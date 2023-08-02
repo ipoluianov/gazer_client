@@ -22,8 +22,8 @@ class MapItemDecorationGauge01 extends MapItemSingle {
   @override
   void setDefaultsForItem() {
     //super.setDefaults();
-    setDouble("w", 200);
-    setDouble("h", 200);
+    setDouble("w", 100);
+    setDouble("h", 100);
   }
 
   Rect padding(Rect rect, double padding) {
