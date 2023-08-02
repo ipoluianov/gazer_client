@@ -395,7 +395,7 @@ class MapItemChart02 extends MapItemSingle {
         y + height,
         width + padding - padding * 0.1,
         padding,
-        dataSourceValue().value,
+        "${dataSourceValue().value} ${dataSourceValue().uom}",
         txtProps.fontSize,
         txtProps.textColor,
         TextVAlign.middle,
