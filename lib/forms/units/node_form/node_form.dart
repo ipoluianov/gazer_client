@@ -102,24 +102,26 @@ class NodeFormSt extends State<NodeForm> {
   }
 
   Widget buildUnitsList(BuildContext context) {
-    return DesignColors.buildScrollBar(
-      controller: scrollController1,
-      child: SingleChildScrollView(
+    return Expanded(
+      child: DesignColors.buildScrollBar(
         controller: scrollController1,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              child: Wrap(
-                children: items.map(
-                  (e) {
-                    return buildUnitCard(context, e);
-                  },
-                ).toList(),
+        child: SingleChildScrollView(
+          controller: scrollController1,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                child: Wrap(
+                  children: items.map(
+                    (e) {
+                      return buildUnitCard(context, e);
+                    },
+                  ).toList(),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
