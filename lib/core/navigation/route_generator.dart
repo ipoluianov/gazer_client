@@ -6,7 +6,6 @@ import 'package:gazer_client/forms/mores/about_form/about_form.dart';
 import 'package:gazer_client/forms/mores/user_edit_form/user_edit_form.dart';
 import 'package:gazer_client/forms/nodes/main_form/main_form.dart';
 import 'package:gazer_client/forms/maps/map_form/main/map_view.dart';
-import 'package:gazer_client/forms/mores/remote_access_form/remote_access_form.dart';
 import 'package:gazer_client/forms/units/unit_add_form/unit_add_form.dart';
 import 'package:gazer_client/forms/units/unit_edit/unit_edit_form.dart';
 import 'package:gazer_client/forms/units/unit_form/unit_form.dart';
@@ -352,18 +351,6 @@ class RouteGenerator {
               Animation<double> secondaryAnimation) {
             return LookupForm(
               settings.arguments as LookupFormArgument,
-            );
-          },
-          transitionsBuilder: transBuilder,
-          transitionDuration: transDuration(),
-          reverseTransitionDuration: transDuration(),
-        );
-      case '/remote_access':
-        return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation,
-              Animation<double> secondaryAnimation) {
-            return RemoteAccessForm(
-              settings.arguments as RemoteAccessFormArgument,
             );
           },
           transitionsBuilder: transBuilder,
