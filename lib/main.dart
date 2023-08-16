@@ -11,6 +11,8 @@ void main() {
     fontWeight = FontWeight.w200;
   }
 
+  print("================ START ==============");
+
   runApp(
     MaterialApp(
       title: 'Gazer Client',

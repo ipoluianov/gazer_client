@@ -71,6 +71,14 @@ class MoreFormSt extends State<MoreForm> {
                                     const Icon(Icons.shield_outlined, size: 48),
                                     0),
                                 MoreButton(() {
+                                  Navigator.pushNamed(context, "/guest_access",
+                                      arguments: GuestAccessFormArgument(
+                                          widget.arg.connection));
+                                },
+                                    "Guest Access",
+                                    const Icon(Icons.shield_outlined, size: 48),
+                                    0),
+                                MoreButton(() {
                                   Navigator.pushNamed(context, "/billing",
                                       arguments: BillingFormArgument(
                                           widget.arg.connection));

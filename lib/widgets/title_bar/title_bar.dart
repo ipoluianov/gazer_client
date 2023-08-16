@@ -14,8 +14,10 @@ import '../../core/navigation/route_generator.dart';
 class TitleBar extends StatefulWidget implements PreferredSizeWidget {
   final Connection? connection;
   final String title;
+  final String version;
   final List<Widget>? actions;
-  const TitleBar(this.connection, this.title, {Key? key, this.actions})
+  const TitleBar(this.connection, this.title,
+      {Key? key, this.actions, this.version = ""})
       : super(key: key);
 
   @override
@@ -114,7 +116,9 @@ class TitleBarSt extends State<TitleBar> {
       }
     }
 
-    //text += " ${nodeAddress()}";
+    if (text.isEmpty) {
+      text = "Client Version: v${widget.version}";
+    }
 
     return Text(
       text,

@@ -20,6 +20,7 @@ import '../../forms/chart_groups/chart_group_form/chart_group_form.dart';
 import '../../forms/mores/access_form/access_form.dart';
 import '../../forms/mores/appearance_form/appearance_form.dart';
 import '../../forms/mores/billing_form/billing_form.dart';
+import '../../forms/mores/guest_access_form/guest_access_form.dart';
 import '../../forms/units/data_item_history_table_form/data_item_history_table_form.dart';
 import '../../forms/units/data_item_properties/data_item_properties.dart';
 import '../../forms/utilities/lookup_form/lookup_form.dart';
@@ -168,6 +169,19 @@ class RouteGenerator {
               Animation<double> secondaryAnimation) {
             return AccessForm(
               settings.arguments as AccessFormArgument,
+            );
+          },
+          transitionsBuilder: transBuilder,
+          transitionDuration: transDuration(),
+          reverseTransitionDuration: transDuration(),
+        );
+      case '/guest_access':
+        Repository().navIndex = NavIndex.more;
+        return PageRouteBuilder(
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
+            return GuestAccessForm(
+              settings.arguments as GuestAccessFormArgument,
             );
           },
           transitionsBuilder: transBuilder,
@@ -482,6 +496,11 @@ class AppearanceFormArgument {
 class AccessFormArgument {
   Connection connection;
   AccessFormArgument(this.connection);
+}
+
+class GuestAccessFormArgument {
+  Connection connection;
+  GuestAccessFormArgument(this.connection);
 }
 
 class BillingFormArgument {

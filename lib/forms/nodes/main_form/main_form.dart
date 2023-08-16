@@ -7,6 +7,7 @@ import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/nodes/main_form/node_widget.dart';
 import 'package:gazer_client/core/navigation/route_generator.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/workspace/add_local_connection.dart';
@@ -54,8 +55,21 @@ class MainFormSt extends State<MainForm> {
 
   @override
   void initState() {
+    print("================ initState ==============");
+
     super.initState();
     initPeer();
+    requestVersion();
+  }
+
+  PackageInfo? packageInfo;
+
+  void requestVersion() {
+    PackageInfo.fromPlatform().then((value) {
+      setState(() {
+        packageInfo = value;
+      });
+    }).catchError((err) {});
   }
 
   bool loading = true;
@@ -203,16 +217,24 @@ class MainFormSt extends State<MainForm> {
 
   @override
   Widget build(BuildContext context) {
+    print("================ build ==============");
     return LayoutBuilder(
       builder: (context, constraints) {
         bool narrow = constraints.maxWidth < 600;
         bool showLeft = !narrow;
         bool showBottom = narrow;
 
+        String version = "";
+
+        if (packageInfo != null) {
+          version = packageInfo!.version;
+        }
+
         return Scaffold(
           appBar: TitleBar(
             null,
             "Nodes Gazer.Cloud",
+            version: version,
             actions: <Widget>[
               buildActionButton(
                 context,

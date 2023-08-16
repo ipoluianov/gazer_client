@@ -12,10 +12,8 @@ class ServiceApiResponse {
 
   factory ServiceApiResponse.fromJson(Map<String, dynamic> json) {
     return ServiceApiResponse(
-      json['product'],
-      json['version'],
-      json['build_time'],
-      //json['functions'].cast<String>(),
-    );
+        json['product'], json['version'], json['build_time']
+        //json['functions'].cast<String>(),
+        );
   }
 }

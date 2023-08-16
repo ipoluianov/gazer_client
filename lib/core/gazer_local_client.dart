@@ -67,6 +67,7 @@ class GazerLocalClient {
   String nodeName = "";
   String nodeVersion = "";
   String nodeBuildTime = "";
+  String nodeGuestKey = "";
   String lastError = "";
   int errorsCounter = 0;
   GazerLocalClient(this.id, this.transport, this.address, this.accessKey);
@@ -280,6 +281,7 @@ class GazerLocalClient {
       nodeName = value.nodeName;
       nodeVersion = value.version;
       nodeBuildTime = value.buildTime;
+      nodeGuestKey = value.guestKey;
     });
   }
 
