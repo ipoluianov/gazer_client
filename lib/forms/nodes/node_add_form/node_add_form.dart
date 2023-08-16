@@ -11,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../../core/design.dart';
 import '../../../core/navigation/route_generator.dart';
+import '../../../core/workspace/add_local_connection.dart';
 
 class NodeAddForm extends StatefulWidget {
   final NodeAddFormArgument arg;
@@ -23,7 +24,6 @@ class NodeAddForm extends StatefulWidget {
 }
 
 class NodeAddFormSt extends State<NodeAddForm> {
-  final GazerLocalClient cl = GazerLocalClient("new", "", "", "");
   bool firstAccountLoaded = false;
 
   final TextEditingController _txtControllerAccessData =
@@ -45,27 +45,14 @@ class NodeAddFormSt extends State<NodeAddForm> {
   }
 
   void tryToAddNode() {
-    cl.transport = "http/local";
     List<String> parts = _txtControllerAccessData.text.split("_");
     if (parts.length == 2) {
-      cl.address = parts[0];
-      cl.accessKey = parts[1];
+      addNode(parts[0], parts[1]).then((conn) {
+        if (conn != null) {
+          Navigator.pop(context, conn);
+        }
+      });
     }
-
-    if (cl.address.length != 49) {
-      return;
-    }
-
-    if (cl.address[0] != '#') {
-      return;
-    }
-
-    var conn = Connection(
-        UniqueKey().toString(), cl.transport, cl.address, cl.accessKey);
-
-    wsAddConnection(conn).then((value) {
-      Navigator.pop(context, conn);
-    });
   }
 
   Widget buildAddNodeButton() {
@@ -357,49 +344,5 @@ class NodeAddFormSt extends State<NodeAddForm> {
       return "/";
     }
     return home;
-  }
-
-  static String gazerDataDirectory() {
-    String result = "";
-
-    String os = Platform.operatingSystem;
-    String varDir = "";
-    Map<String, String> envVars = Platform.environment;
-    if (Platform.isMacOS) {
-      varDir = "/var";
-    } else if (Platform.isLinux) {
-      varDir = "/var";
-    } else if (Platform.isWindows) {
-      if (envVars['PROGRAMDATA'] != null) {
-        varDir = envVars['PROGRAMDATA']!;
-      }
-    }
-    result = varDir + "/gazer";
-    return result;
-  }
-
-  Future<List<String>> loadLocalAdminPassword() async {
-    String address = "";
-    String masterKey = "";
-    Permission.storage.request().then((value) {
-      print("Granted");
-    }).catchError((err) {
-      print("errro");
-    });
-    try {
-      final File file = File('${gazerDataDirectory()}/address.txt');
-      var stream = file.openRead();
-      address = await file.readAsString();
-    } catch (e) {
-      print("error: ${e.toString()}");
-    }
-    try {
-      final File file = File('${gazerDataDirectory()}/masterkey.txt');
-      var stream = file.openRead();
-      masterKey = await file.readAsString();
-    } catch (e) {
-      print("error: ${e.toString()}");
-    }
-    return [address, masterKey];
   }
 }

@@ -3,16 +3,11 @@ import 'package:gazer_client/core/protocol/resource/resource_list.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/mores/about_form/about_form.dart';
-import 'package:gazer_client/forms/mores/user_edit_form/user_edit_form.dart';
 import 'package:gazer_client/forms/nodes/main_form/main_form.dart';
 import 'package:gazer_client/forms/maps/map_form/main/map_view.dart';
 import 'package:gazer_client/forms/units/unit_add_form/unit_add_form.dart';
 import 'package:gazer_client/forms/units/unit_edit/unit_edit_form.dart';
 import 'package:gazer_client/forms/units/unit_form/unit_form.dart';
-import 'package:gazer_client/forms/mores/user_add_form/user_add_form.dart';
-import 'package:gazer_client/forms/mores/user_form/user_form.dart';
-import 'package:gazer_client/forms/mores/user_set_password_form/user_set_password_form.dart';
-import 'package:gazer_client/forms/mores/users_form/users_form.dart';
 import 'package:gazer_client/forms/utilities/resources/resources_form/resources_form.dart';
 
 import '../../forms/chart_groups/chart_group_form/chart_group_form.dart';
@@ -194,66 +189,6 @@ class RouteGenerator {
               Animation<double> secondaryAnimation) {
             return BillingForm(
               settings.arguments as BillingFormArgument,
-            );
-          },
-          transitionsBuilder: transBuilder,
-          transitionDuration: transDuration(),
-          reverseTransitionDuration: transDuration(),
-        );
-      case '/users':
-        return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation,
-              Animation<double> secondaryAnimation) {
-            return UsersForm(
-              settings.arguments as UsersFormArgument,
-            );
-          },
-          transitionsBuilder: transBuilder,
-          transitionDuration: transDuration(),
-          reverseTransitionDuration: transDuration(),
-        );
-      case '/user_add':
-        return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation,
-              Animation<double> secondaryAnimation) {
-            return UserAddForm(
-              settings.arguments as UserAddFormArgument,
-            );
-          },
-          transitionsBuilder: transBuilder,
-          transitionDuration: transDuration(),
-          reverseTransitionDuration: transDuration(),
-        );
-      case '/user_set_password':
-        return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation,
-              Animation<double> secondaryAnimation) {
-            return UserSetPasswordForm(
-              settings.arguments as UserSetPasswordFormArgument,
-            );
-          },
-          transitionsBuilder: transBuilder,
-          transitionDuration: transDuration(),
-          reverseTransitionDuration: transDuration(),
-        );
-      case '/user_edit':
-        return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation,
-              Animation<double> secondaryAnimation) {
-            return UserEditForm(
-              settings.arguments as UserEditFormArgument,
-            );
-          },
-          transitionsBuilder: transBuilder,
-          transitionDuration: transDuration(),
-          reverseTransitionDuration: transDuration(),
-        );
-      case '/user':
-        return PageRouteBuilder(
-          pageBuilder: (BuildContext context, Animation<double> animation,
-              Animation<double> secondaryAnimation) {
-            return UserForm(
-              settings.arguments as UserFormArgument,
             );
           },
           transitionsBuilder: transBuilder,

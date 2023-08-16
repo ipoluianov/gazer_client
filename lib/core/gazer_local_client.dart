@@ -1,13 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:gazer_client/core/protocol/cloud/cloud_account_info.dart';
-import 'package:gazer_client/core/protocol/cloud/cloud_add_node.dart';
-import 'package:gazer_client/core/protocol/cloud/cloud_login.dart';
-import 'package:gazer_client/core/protocol/cloud/cloud_logout.dart';
-import 'package:gazer_client/core/protocol/cloud/cloud_registered_nodes.dart';
-import 'package:gazer_client/core/protocol/cloud/cloud_set_current_node_id.dart';
-import 'package:gazer_client/core/protocol/cloud/cloud_state.dart';
 import 'package:gazer_client/core/protocol/dataitem/data_item_history.dart';
 import 'package:gazer_client/core/protocol/dataitem/data_item_history_chart.dart';
 import 'package:gazer_client/core/protocol/dataitem/data_item_list.dart';
@@ -40,15 +33,6 @@ import 'package:gazer_client/core/protocol/unit/unit_stop.dart';
 import 'package:gazer_client/core/protocol/unit_type/unit_type_categories.dart';
 import 'package:gazer_client/core/protocol/unit_type/unit_type_config_meta.dart';
 import 'package:gazer_client/core/protocol/unit_type/unit_type_list.dart';
-import 'package:gazer_client/core/protocol/user/session_list.dart';
-import 'package:gazer_client/core/protocol/user/session_open.dart';
-import 'package:gazer_client/core/protocol/user/session_remove.dart';
-import 'package:gazer_client/core/protocol/user/user_add.dart';
-import 'package:gazer_client/core/protocol/user/user_list.dart';
-import 'package:gazer_client/core/protocol/user/user_prop_get.dart';
-import 'package:gazer_client/core/protocol/user/user_prop_set.dart';
-import 'package:gazer_client/core/protocol/user/user_remove.dart';
-import 'package:gazer_client/core/protocol/user/user_set_password.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/xchg/billing_for_address.dart';
 import 'package:gazer_client/xchg/peer.dart';
@@ -283,91 +267,6 @@ class GazerLocalClient {
       nodeBuildTime = value.buildTime;
       nodeGuestKey = value.guestKey;
     });
-  }
-
-  ////////////////////////////////////////////////////////
-  //// Users
-  ////////////////////////////////////////////////////////
-
-  Future<SessionListResponse> sessionList(String userName) async {
-    return fetch<SessionListRequest, SessionListResponse>(
-      'session_list',
-      SessionListRequest(userName),
-      (Map<String, dynamic> json) => SessionListResponse.fromJson(json),
-    );
-  }
-
-  Future<SessionRemoveResponse> sessionRemove(String sessionToken) async {
-    return fetch<SessionRemoveRequest, SessionRemoveResponse>(
-      'session_remove',
-      SessionRemoveRequest(sessionToken),
-      (Map<String, dynamic> json) => SessionRemoveResponse.fromJson(json),
-    );
-  }
-
-  Future<UserAddResponse> userAdd(String userName, String password) async {
-    return fetch<UserAddRequest, UserAddResponse>(
-      'user_add',
-      UserAddRequest(userName, password),
-      (Map<String, dynamic> json) => UserAddResponse.fromJson(json),
-    );
-  }
-
-  Future<UserListResponse> userList() async {
-    return fetch<UserListRequest, UserListResponse>(
-      'user_list',
-      UserListRequest(),
-      (Map<String, dynamic> json) => UserListResponse.fromJson(json),
-    );
-  }
-
-  Future<UserRemoveResponse> userRemove(String userName) async {
-    return fetch<UserRemoveRequest, UserRemoveResponse>(
-      'user_remove',
-      UserRemoveRequest(userName),
-      (Map<String, dynamic> json) => UserRemoveResponse.fromJson(json),
-    );
-  }
-
-  Future<UserSetPasswordResponse> userSetPassword(
-      String userName, String password) async {
-    return fetch<UserSetPasswordRequest, UserSetPasswordResponse>(
-      'user_set_password',
-      UserSetPasswordRequest(userName, password),
-      (Map<String, dynamic> json) => UserSetPasswordResponse.fromJson(json),
-    );
-  }
-
-  Future<SessionOpenResponse> sessionOpen(
-      String userName, String password) async {
-    return fetch<SessionOpenRequest, SessionOpenResponse>(
-      'session_open',
-      SessionOpenRequest(userName, password),
-      (Map<String, dynamic> json) => SessionOpenResponse.fromJson(json),
-    );
-  }
-
-  Future<UserPropSetResponse> userPropSet(
-      String userName, Map<String, String> props) async {
-    List<UserPropSetItemRequest> propItems = [];
-    for (var key in props.keys) {
-      var value = props[key];
-      propItems.add(UserPropSetItemRequest(key, value!));
-    }
-
-    return fetch<UserPropSetRequest, UserPropSetResponse>(
-      'user_prop_set',
-      UserPropSetRequest(userName, propItems),
-      (Map<String, dynamic> json) => UserPropSetResponse.fromJson(json),
-    );
-  }
-
-  Future<UserPropGetResponse> userPropGet(String unitId) async {
-    return fetch<UserPropGetRequest, UserPropGetResponse>(
-      'user_prop_get',
-      UserPropGetRequest(unitId),
-      (Map<String, dynamic> json) => UserPropGetResponse.fromJson(json),
-    );
   }
 
   ////////////////////////////////////////////////////////
