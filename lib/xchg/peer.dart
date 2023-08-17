@@ -169,6 +169,7 @@ class Peer {
 
   Future<Uint8List> httpCall(
       String routerHost, String function, Uint8List frame) async {
+    //throw "Ex";
     //print("httpCall $routerHost $function");
     wcounter++;
     Dio? dio;
@@ -179,24 +180,28 @@ class Peer {
       dio = Dio();
       dio.options.connectTimeout = const Duration(milliseconds: 1000);
       dio.options.sendTimeout = const Duration(milliseconds: 1000);
+      dio.options.receiveDataWhenStatusError = true;
+      //dio.options.persistentConnection = false;
       if (function == "w") {
         dio.options.receiveTimeout = const Duration(milliseconds: 1000);
       }
       if (function == "r") {
         print("Read from $routerHost");
-        dio.options.receiveTimeout = const Duration(milliseconds: 10000);
+        dio.options.receiveTimeout = const Duration(milliseconds: 1000);
       }
       httpClients["$routerHost-$function"] = dio;
     }
 
     if (dio != null) {
+      CancelToken cancelToken = CancelToken();
       try {
         final formData = FormData.fromMap({
           'd': base64Encode(frame),
         });
 
-        final response =
-            await dio.post('http://$routerHost/api/$function', data: formData);
+        final response = await dio.post('http://$routerHost/api/$function',
+            data: formData, cancelToken: cancelToken);
+        cancelToken.cancel();
         if (response.statusCode == 200) {
           if (response.data == null) {
             return Uint8List(0);
@@ -205,7 +210,8 @@ class Peer {
           return resStr;
         }
       } catch (ex) {
-        print("httpCall exception $function exception: $ex $wcounter");
+        cancelToken.cancel();
+        //print("httpCall exception $function exception: $ex $wcounter");
       } finally {}
     }
     return Uint8List(0);

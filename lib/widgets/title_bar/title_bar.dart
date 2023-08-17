@@ -90,10 +90,12 @@ class TitleBarSt extends State<TitleBar> {
   late Timer _timerTick;
   int tickCounter_ = 0;
   void tick() {
-    Repository().client(widget.connection!).refreshState();
-    setState(() {
-      tickCounter_++;
-    });
+    if (widget.connection != null) {
+      Repository().client(widget.connection!).refreshState();
+      setState(() {
+        tickCounter_++;
+      });
+    }
   }
 
   Widget billing() {

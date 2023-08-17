@@ -485,7 +485,7 @@ class GazerLocalClient {
       } else {
         lastError = res.error;
         //print("err: ${tr.error}");
-        print("RESULT ERROR: ${res.error}");
+        //print("RESULT ERROR: ${res.error}");
         throw GazerClientException(res.error);
       }
     } catch (ex) {

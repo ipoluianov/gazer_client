@@ -22,18 +22,29 @@ XchgNetwork networkContainerLoadStaticDefault() {
 }
 
 Future<String> httpGet(String url, int timeoutMs) async {
-  var dio = Dio();
-  dio.options.connectTimeout = Duration(milliseconds: timeoutMs);
-  dio.options.sendTimeout = Duration(milliseconds: timeoutMs);
-  dio.options.receiveTimeout = Duration(milliseconds: timeoutMs);
-  final response = await dio.get(url);
-  if (response.statusCode == 200) {
-    if (response.data == null) {
-      return "";
+  //print("HTTP GET $url");
+  CancelToken cancelToken = CancelToken();
+  int statusCode = -1;
+  try {
+    var dio = Dio();
+    dio.options.connectTimeout = Duration(milliseconds: timeoutMs);
+    dio.options.sendTimeout = Duration(milliseconds: timeoutMs);
+    dio.options.receiveTimeout = Duration(milliseconds: timeoutMs);
+    final response = await dio.get(url, cancelToken: cancelToken);
+    statusCode = response.statusCode ?? -2;
+    if (statusCode == 200) {
+      if (response.data == null) {
+        cancelToken.cancel();
+        return "";
+      }
+      cancelToken.cancel();
+      return response.data;
     }
-    return response.data;
+  } catch (ex) {
+    cancelToken.cancel();
+    rethrow;
   }
-  throw "status code: ${response.statusCode}";
+  throw "status code: $statusCode";
 }
 
 Future<XchgNetwork> networkContainerLoadFromInternet() async {
@@ -52,18 +63,27 @@ Future<XchgNetwork> networkContainerLoadFromInternet() async {
       n.debugSource = initialPoint;
       networks.add(n);
     } catch (ex) {
-      print("initial points error: $ex");
+      print("");
+      print("-------------------------------------------------------------");
+      print("------------------- initial points error: $ex $initialPoint");
+      print("-------------------------------------------------------------");
+      print("");
     }
   }
 
   // No fresh networks - use default static network
   if (networks.isEmpty) {
+    print("using default network ${network.timestamp}");
     return network;
   }
 
   for (var n in networks) {
     if (n.timestamp >= network.timestamp) {
       network = n;
+      if (network.timestamp != n.timestamp) {
+        print(
+            "=== CHANGING NETWORK from ${network.timestamp} -> ${n.timestamp}");
+      }
     }
   }
 
