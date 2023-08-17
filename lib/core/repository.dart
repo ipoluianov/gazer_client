@@ -56,6 +56,8 @@ Future<void> loadPeer() async {
   if (peerInited) {
     return;
   }
+  //await Future.delayed(Duration(milliseconds: 5000));
+
   try {
     var keyPair = await getKeyPair();
     await loadAppearance();

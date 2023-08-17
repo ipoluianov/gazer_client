@@ -438,7 +438,7 @@ class Peer {
     CallResult? res;
     res = CallResult();
 
-    print("Call $remoteAddress");
+    // print("Call $remoteAddress");
 
     // Update network file
     checkNetwork();

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -35,6 +36,7 @@ class MainFormSt extends State<MainForm> {
 
   bool peerLoaded = false;
   void initPeer() async {
+    await Future.delayed(const Duration(milliseconds: 500));
     loadPeer().then((value) {
       setState(() {
         peerLoaded = true;
@@ -47,7 +49,6 @@ class MainFormSt extends State<MainForm> {
               arguments: NodeFormArgument(value));
           return;
         }
-
         loadNodesList();
       });
     });
@@ -58,7 +59,9 @@ class MainFormSt extends State<MainForm> {
     print("================ initState ==============");
 
     super.initState();
+
     initPeer();
+
     requestVersion();
   }
 
@@ -189,7 +192,20 @@ class MainFormSt extends State<MainForm> {
 
   Widget buildContent(BuildContext context) {
     if (loading) {
-      return const Text("Loading ...");
+      return Expanded(
+        child: Container(
+          color: Colors.black26,
+          child: const Center(
+              child: Text(
+            "loading",
+            style: TextStyle(
+              color: Colors.blue,
+              fontFamily: "BrunoAce",
+              fontSize: 36,
+            ),
+          )),
+        ),
+      );
     }
 
     if (connections.isNotEmpty) {
@@ -230,30 +246,36 @@ class MainFormSt extends State<MainForm> {
           version = packageInfo!.version;
         }
 
+        List<Widget> actions = [];
+
+        if (!loading) {
+          actions = <Widget>[
+            buildActionButton(
+              context,
+              Icons.add,
+              "Add Node",
+              () {
+                addNode(true);
+              },
+            ),
+            buildActionButton(
+              context,
+              Icons.refresh,
+              "Refresh",
+              () {
+                updateCounter++;
+                loadNodesList();
+              },
+            ),
+          ];
+        }
+
         return Scaffold(
           appBar: TitleBar(
             null,
             "Nodes Gazer.Cloud",
             version: version,
-            actions: <Widget>[
-              buildActionButton(
-                context,
-                Icons.add,
-                "Add Node",
-                () {
-                  addNode(true);
-                },
-              ),
-              buildActionButton(
-                context,
-                Icons.refresh,
-                "Refresh",
-                () {
-                  updateCounter++;
-                  loadNodesList();
-                },
-              ),
-            ],
+            actions: actions,
           ),
           body: Container(
             color: DesignColors.mainBackgroundColor,
