@@ -7,6 +7,7 @@ import 'package:gazer_client/core/gazer_local_client.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../core/design.dart';
@@ -37,6 +38,18 @@ class NodeAddFormSt extends State<NodeAddForm> {
   @override
   void initState() {
     super.initState();
+
+    requestVersion();
+  }
+
+  PackageInfo? packageInfo;
+
+  void requestVersion() {
+    PackageInfo.fromPlatform().then((value) {
+      setState(() {
+        packageInfo = value;
+      });
+    }).catchError((err) {});
   }
 
   @override
@@ -303,10 +316,17 @@ class NodeAddFormSt extends State<NodeAddForm> {
         bool showLeft = !narrow;
         bool showBottom = narrow;
 
+        String version = "";
+
+        if (packageInfo != null) {
+          version = packageInfo!.version;
+        }
+
         return Scaffold(
           appBar: TitleBar(
-            Connection.makeDefault(),
+            null,
             "Connect To Node",
+            version: version,
           ),
           body: Container(
             color: DesignColors.mainBackgroundColor,

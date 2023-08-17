@@ -113,7 +113,8 @@ class BillingDB {
 
     BillingForAddress billingForClient = get(network, clientAddress);
     BillingForAddress billingForServer = get(network, serverAddress);
-    double percentsClient = 1;
+
+    double percentsClient = 2;
     bool premiumDetected = false;
     for (var bi in billingForClient.billingInfoFromRouters.values) {
       double p = 0;
@@ -127,7 +128,7 @@ class BillingDB {
         }
       }
     }
-    double percentsServer = 1;
+    double percentsServer = 2;
     for (var bi in billingForServer.billingInfoFromRouters.values) {
       double p = 0;
       if (bi.limit > 0) {
@@ -139,6 +140,14 @@ class BillingDB {
           percentsServer = p;
         }
       }
+    }
+
+    if (percentsClient > 1) {
+      percentsClient = -1;
+    }
+
+    if (percentsServer > 1) {
+      percentsServer = -1;
     }
 
     double percents = max(percentsClient, percentsServer);

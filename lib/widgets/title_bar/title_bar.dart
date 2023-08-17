@@ -161,7 +161,13 @@ class TitleBarSt extends State<TitleBar> {
     // isPremium = true;
 
     double value = 0;
+    bool isUnknown = false;
     value = billingInfo.percents;
+
+    if (value < 0) {
+      isUnknown = true;
+      value = 0;
+    }
 
     Color colorOfValue = Colors.green;
 
@@ -181,6 +187,10 @@ class TitleBarSt extends State<TitleBar> {
       }
     }
 
+    if (isUnknown) {
+      colorOfValue = Colors.transparent;
+    }
+
     Widget innerWidget = CircularProgressIndicator(
       value: value / 100,
       color: colorOfValue,
@@ -190,7 +200,7 @@ class TitleBarSt extends State<TitleBar> {
       child: Text(
         "${(value).round()}%",
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 10),
+        style: TextStyle(fontSize: 10, color: colorOfValue),
       ),
     );
 
@@ -216,6 +226,10 @@ class TitleBarSt extends State<TitleBar> {
         );
         percentsText = Container();
       }
+    }
+
+    if (isUnknown) {
+      percentsText = Container();
     }
 
     if (isPremium) {

@@ -245,7 +245,7 @@ class Peer {
   BillingSummary billingInfoForAddress(String address) {
     String localAddress = addressForPublicKey(keyPair.publicKey);
 
-    var summary = billingDB.getSummaryForAddresses(
+    BillingSummary summary = billingDB.getSummaryForAddresses(
         network, localAddress, address, usingLocalRouter(address));
     return summary;
   }
