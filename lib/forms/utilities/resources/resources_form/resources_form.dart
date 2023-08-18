@@ -11,6 +11,7 @@ import 'package:gazer_client/core/navigation/bottom_navigator.dart';
 import 'package:gazer_client/core/navigation/left_navigator.dart';
 import 'package:gazer_client/core/navigation/navigation.dart';
 import 'package:gazer_client/core/navigation/route_generator.dart';
+import 'package:gazer_client/widgets/error_dialog/error_dialog.dart';
 import 'package:gazer_client/widgets/error_widget/error_block.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
 import 'package:gazer_client/widgets/title_widget/title_widget.dart';
@@ -443,6 +444,8 @@ class ResourcesFormSt extends State<ResourcesForm> {
                             )
                                 .then((value) {
                               load();
+                            }).catchError((err) {
+                              showErrorDialog(context, "$err");
                             });
                           }
                           //Navigator.pop(context, e);
@@ -466,6 +469,8 @@ class ResourcesFormSt extends State<ResourcesForm> {
                               .client(widget.arg.connection)
                               .resPropSet(e.id, {"folder": ""}).then((value) {
                             load();
+                          }).catchError((err) {
+                            showErrorDialog(context, "$err");
                           });
                         },
                         () {
@@ -479,7 +484,7 @@ class ResourcesFormSt extends State<ResourcesForm> {
                             //print("load after remove");
                             load();
                           }).catchError((err) {
-                            //print("remove: error: $err");
+                            showErrorDialog(context, "$err");
                           });
                         },
                         key: Key(widget.arg.type + "item_card_" + e.id),
@@ -491,6 +496,8 @@ class ResourcesFormSt extends State<ResourcesForm> {
                           Repository().client(widget.arg.connection).resPropSet(
                               details.data.id, {"folder": e.id}).then((value) {
                             load();
+                          }).catchError((err) {
+                            showErrorDialog(context, "$err");
                           });
                         }
                       }

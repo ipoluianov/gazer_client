@@ -8,6 +8,7 @@ import 'package:gazer_client/core/navigation/bottom_navigator.dart';
 import 'package:gazer_client/core/navigation/left_navigator.dart';
 import 'package:gazer_client/core/navigation/navigation.dart';
 import 'package:gazer_client/core/navigation/route_generator.dart';
+import 'package:gazer_client/widgets/error_dialog/error_dialog.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
 import 'package:gazer_client/widgets/title_widget/title_widget.dart';
 
@@ -111,7 +112,11 @@ class ResourceItemAddFormSt extends State<ResourceItemAddForm> {
       var addResult = value;
       client.resPropSet(value.id, {"folder": widget.arg.folder}).then((value) {
         Navigator.of(context).pop(addResult);
+      }).catchError((err) {
+        showErrorDialog(context, "$err");
       });
+    }).catchError((err) {
+      showErrorDialog(context, "$err");
     });
   }
 

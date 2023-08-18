@@ -47,10 +47,13 @@ class BillingForAddress {
     latestRequest = DateTime.now();
     var routers = network.getNodesAddressesByAddress(address);
     for (var router in routers) {
-      httpGet("http://$router/api/billing?addr=${address.replaceAll("#", "")}",
-              1000)
-          .then((value) {
+      String url =
+          "http://$router/api/billing?addr=${address.replaceAll("#", "")}";
+      print("BILLING URL $url");
+      String v = "";
+      httpGet(url, 1000).then((value) {
         //print(value);
+        v = value;
 
         var jsonObject = jsonDecode(value);
         var billingObject = BillingFromRouter.fromJson(jsonObject);
@@ -59,7 +62,7 @@ class BillingForAddress {
         billingObject.dt = DateTime.now();
         billingInfoFromRouters[router] = billingObject;
       }).catchError((err) {
-        print("Billing request error: $err");
+        print("Billing request error: $url $err");
       });
     }
   }
@@ -114,7 +117,7 @@ class BillingDB {
     BillingForAddress billingForClient = get(network, clientAddress);
     BillingForAddress billingForServer = get(network, serverAddress);
 
-    double percentsClient = 2;
+    double percentsClient = 1;
     bool premiumDetected = false;
     for (var bi in billingForClient.billingInfoFromRouters.values) {
       double p = 0;
@@ -128,7 +131,7 @@ class BillingDB {
         }
       }
     }
-    double percentsServer = 2;
+    double percentsServer = 1;
     for (var bi in billingForServer.billingInfoFromRouters.values) {
       double p = 0;
       if (bi.limit > 0) {

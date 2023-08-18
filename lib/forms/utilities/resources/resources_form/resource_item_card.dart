@@ -11,6 +11,8 @@ import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/widgets/borders/border_01_item.dart';
 
+import '../../../../widgets/error_dialog/error_dialog.dart';
+
 class ResourceItemCard extends StatefulWidget {
   final Connection conn;
   final ResListItemItemResponse resItem;
@@ -23,7 +25,15 @@ class ResourceItemCard extends StatefulWidget {
   final Function onRemove;
 
   const ResourceItemCard(
-      this.conn, this.resItem, this.iconData, this.children, this.onNavigate, this.onRename, this.onFolderUp, this.onNeedUpdate, this.onRemove,
+      this.conn,
+      this.resItem,
+      this.iconData,
+      this.children,
+      this.onNavigate,
+      this.onRename,
+      this.onFolderUp,
+      this.onNeedUpdate,
+      this.onRemove,
       {Key? key})
       : super(key: key);
 
@@ -49,7 +59,9 @@ class ResourceItemCardState extends State<ResourceItemCard> {
       res.add(Row(
         children: [
           Icon(
-            widget.children[i].type.endsWith("_folder") ? Icons.folder_open : widget.iconData,
+            widget.children[i].type.endsWith("_folder")
+                ? Icons.folder_open
+                : widget.iconData,
             size: 14,
             color: DesignColors.fore1(),
           ),
@@ -83,8 +95,12 @@ class ResourceItemCardState extends State<ResourceItemCard> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Icon(
-          widget.resItem.type.endsWith("_folder") ? Icons.folder_open : widget.iconData,
-          color: !widget.resItem.type.endsWith("_folder") ? DesignColors.fore() : DesignColors.fore1(),
+          widget.resItem.type.endsWith("_folder")
+              ? Icons.folder_open
+              : widget.iconData,
+          color: !widget.resItem.type.endsWith("_folder")
+              ? DesignColors.fore()
+              : DesignColors.fore1(),
           size: 36,
         ),
         Expanded(
@@ -96,7 +112,11 @@ class ResourceItemCardState extends State<ResourceItemCard> {
               children: [
                 Text(
                   widget.resItem.getProp("name"),
-                  style: TextStyle(fontSize: 14, decoration: TextDecoration.none, color: DesignColors.fore(), fontWeight: FontWeight.normal),
+                  style: TextStyle(
+                      fontSize: 14,
+                      decoration: TextDecoration.none,
+                      color: DesignColors.fore(),
+                      fontWeight: FontWeight.normal),
                   overflow: TextOverflow.fade,
                 ),
               ],
@@ -128,13 +148,21 @@ class ResourceItemCardState extends State<ResourceItemCard> {
         onPressed: () {
           Repository()
               .client(widget.conn)
-              .resPropSet(widget.resItem.id, widget.resItem.getProp("favorite").isNotEmpty ? {"favorite": ""} : {"favorite": "1"})
+              .resPropSet(
+                  widget.resItem.id,
+                  widget.resItem.getProp("favorite").isNotEmpty
+                      ? {"favorite": ""}
+                      : {"favorite": "1"})
               .then((value) {
             widget.onNeedUpdate();
+          }).catchError((err) {
+            showErrorDialog(context, "$err");
           });
         },
         icon: const Icon(Icons.favorite),
-        color: widget.resItem.getProp("favorite").isNotEmpty ? DesignColors.accent() : DesignColors.fore2(),
+        color: widget.resItem.getProp("favorite").isNotEmpty
+            ? DesignColors.accent()
+            : DesignColors.fore2(),
       ));
     } else {
       actionWidgets.add(
@@ -150,39 +178,44 @@ class ResourceItemCardState extends State<ResourceItemCard> {
     actionWidgets.add(Expanded(child: Container()));
 
     actionWidgets.add(
-      PopupMenuButton(onSelected: (str) {
-        if (str == "remove") {
-          if (widget.children.isEmpty) {
-            showAlertDialog(context);
-          } else {
-            showCanNotRemoveDialog(context);
+      PopupMenuButton(
+        onSelected: (str) {
+          if (str == "remove") {
+            if (widget.children.isEmpty) {
+              showAlertDialog(context);
+            } else {
+              showCanNotRemoveDialog(context);
+            }
           }
-        }
 
-        if (str == "change") {
-          widget.onRename();
-        }
+          if (str == "change") {
+            widget.onRename();
+          }
 
-        if (str == "up") {
-          widget.onFolderUp();
-        }
-      }, itemBuilder: (context) {
-        return <PopupMenuEntry<String>>[
-          const PopupMenuItem<String>(
-            value: "change",
-            child: Text('Change'),
-          ),
-          const PopupMenuItem<String>(
-            value: "remove",
-            child: Text('Remove'),
-          ),
-          const PopupMenuItem<String>(
-            value: "up",
-            child: Text('Move to root folder'),
-          ),
-        ];
-      },
-        icon: Icon(Icons.menu, color: DesignColors.fore(),),
+          if (str == "up") {
+            widget.onFolderUp();
+          }
+        },
+        itemBuilder: (context) {
+          return <PopupMenuEntry<String>>[
+            const PopupMenuItem<String>(
+              value: "change",
+              child: Text('Change'),
+            ),
+            const PopupMenuItem<String>(
+              value: "remove",
+              child: Text('Remove'),
+            ),
+            const PopupMenuItem<String>(
+              value: "up",
+              child: Text('Move to root folder'),
+            ),
+          ];
+        },
+        icon: Icon(
+          Icons.menu,
+          color: DesignColors.fore(),
+        ),
         color: DesignColors.back(),
       ),
     );
@@ -281,7 +314,8 @@ class ResourceItemCardState extends State<ResourceItemCard> {
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: const Text("Confirmation"),
-      content: Text("Would you like to remove [${widget.resItem.getProp("name")}]?"),
+      content:
+          Text("Would you like to remove [${widget.resItem.getProp("name")}]?"),
       actions: [
         continueButton,
         cancelButton,

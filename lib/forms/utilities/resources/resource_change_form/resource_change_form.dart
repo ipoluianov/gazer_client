@@ -9,6 +9,8 @@ import 'package:gazer_client/core/navigation/route_generator.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
 import 'package:gazer_client/widgets/title_widget/title_widget.dart';
 
+import '../../../../widgets/error_dialog/error_dialog.dart';
+
 class ResourceChangeForm extends StatefulWidget {
   final ResourceChangeFormArgument arg;
   const ResourceChangeForm(this.arg, {Key? key}) : super(key: key);
@@ -33,7 +35,8 @@ class ResourceChangeFormSt extends State<ResourceChangeForm> {
   TextEditingController textEditingControllerName = TextEditingController();
 
   String description = "";
-  TextEditingController textEditingControllerDescription = TextEditingController();
+  TextEditingController textEditingControllerDescription =
+      TextEditingController();
 
   bool loaded = false;
   bool loading = false;
@@ -88,8 +91,11 @@ class ResourceChangeFormSt extends State<ResourceChangeForm> {
 
   void save() {
     var client = Repository().client(widget.arg.connection);
-    client.resPropSet(widget.arg.id, {"name": name, "description": description}).then((value) {
+    client.resPropSet(widget.arg.id,
+        {"name": name, "description": description}).then((value) {
       Navigator.of(context).pop();
+    }).catchError((err) {
+      showErrorDialog(context, "$err");
     });
   }
 
@@ -104,7 +110,10 @@ class ResourceChangeFormSt extends State<ResourceChangeForm> {
         return Scaffold(
           appBar: TitleBar(
             widget.arg.connection,
-            "Rename " + (widget.arg.resInfo.type.endsWith("_folder") ? "Folder" : widget.arg.typeName),
+            "Rename " +
+                (widget.arg.resInfo.type.endsWith("_folder")
+                    ? "Folder"
+                    : widget.arg.typeName),
             actions: [
               Padding(
                 padding: const EdgeInsets.all(10),

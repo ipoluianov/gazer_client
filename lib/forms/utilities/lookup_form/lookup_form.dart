@@ -64,6 +64,7 @@ class LookupFormSt extends State<LookupForm> {
   late ServiceLookupResponse lookupResponse;
   List<ServiceLookupRowResponse> filteredRows = [];
 
+  String errorText = "";
   int selectedIndex = 1;
   String lookupSelectedItem = "";
   String lookupSelectedItem2 = "";
@@ -85,6 +86,10 @@ class LookupFormSt extends State<LookupForm> {
         lookupResponse = value;
         loaded = true;
         applyFilter();
+      });
+    }).catchError((err) {
+      setState(() {
+        errorText = err.toString();
       });
     });
   }
@@ -114,8 +119,19 @@ class LookupFormSt extends State<LookupForm> {
   }
 
   Widget buildContent(BuildContext context) {
+    if (errorText.isNotEmpty) {
+      return Expanded(
+        child: Center(
+          child: Text(
+            errorText,
+            style: const TextStyle(color: Colors.red, fontSize: 36),
+          ),
+        ),
+      );
+    }
+
     if (!loaded) {
-      return Text("loading ...");
+      return const Text("loading ...");
     }
 
     List<ServiceLookupColumnResponse> columns = [];

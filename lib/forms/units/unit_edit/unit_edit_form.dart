@@ -218,7 +218,7 @@ class UnitEditFormSt extends State<UnitEditForm> {
           );
         },
       ).catchError((err) {
-        showErrorDialog(context, "Error", "$err");
+        showErrorDialog(context, "$err");
       });
     } else {
       client.unitsSetConfig(widget.arg.unitId, name, conf).then(
@@ -227,7 +227,7 @@ class UnitEditFormSt extends State<UnitEditForm> {
         },
       ).catchError(
         (err) {
-          showErrorDialog(context, "Error", "$err");
+          showErrorDialog(context, "$err");
         },
       );
     }

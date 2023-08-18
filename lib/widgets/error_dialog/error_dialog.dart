@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-Future<void> showErrorDialog(BuildContext context, String header, String text) async {
+Future<void> showErrorDialog(BuildContext context, String text) async {
   return showDialog<void>(
     context: context,
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text(header),
+        title: const Text("Error"),
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[

@@ -12,6 +12,7 @@ import 'package:gazer_client/widgets/borders/border_01_item.dart';
 import 'package:gazer_client/widgets/borders/border_08_item_list_item.dart';
 import 'package:gazer_client/core/navigation/navigation.dart';
 import 'package:gazer_client/forms/units/unit_form/widget_dataitem_detail.dart';
+import 'package:gazer_client/widgets/error_dialog/error_dialog.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_settings.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_settings_area.dart';
@@ -492,6 +493,8 @@ class UnitFormSt extends State<UnitForm> {
                           .unitsStart([widget.arg.unitId]).then((value) {
                         //cubit.load(widget.arg.connection, widget.arg.unitId);
                         updateItems();
+                      }).catchError((err) {
+                        showErrorDialog(context, "$err");
                       });
                     })
                   : Container(),
@@ -501,6 +504,8 @@ class UnitFormSt extends State<UnitForm> {
                           .client(widget.arg.connection)
                           .unitsStop([widget.arg.unitId]).then((value) {
                         updateItems();
+                      }).catchError((err) {
+                        showErrorDialog(context, "$err");
                       });
                     })
                   : Container(),

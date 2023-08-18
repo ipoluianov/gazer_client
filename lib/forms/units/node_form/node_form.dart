@@ -7,6 +7,7 @@ import 'package:gazer_client/core/protocol/unit/unit_state_all.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/navigation/bottom_navigator.dart';
 import 'package:gazer_client/core/navigation/left_navigator.dart';
+import 'package:gazer_client/widgets/error_dialog/error_dialog.dart';
 import 'package:gazer_client/widgets/load_indicator/load_indicator.dart';
 import 'package:gazer_client/core/navigation/navigation.dart';
 import 'package:gazer_client/forms/units/node_form/unit_card.dart';
@@ -44,7 +45,10 @@ class NodeFormSt extends State<NodeForm> {
 
   bool loading = false;
   bool loaded = false;
+
   String loadingError = "";
+  String operationError = "";
+
   List<UnitStateAllItemResponse> items = [];
 
   ScrollController scrollController1 = ScrollController();
@@ -97,6 +101,8 @@ class NodeFormSt extends State<NodeForm> {
       ids.add(e.unitId);
       Repository().client(widget.arg.connection).unitsRemove(ids).then((value) {
         load();
+      }).catchError((err) {
+        showErrorDialog(context, err.toString());
       });
     });
   }

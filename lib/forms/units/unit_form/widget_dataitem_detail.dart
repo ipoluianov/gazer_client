@@ -20,6 +20,8 @@ import 'package:gazer_client/widgets/borders/border_08_item_list_item.dart';
 import 'package:gazer_client/widgets/borders/border_09_left_navigator_main.dart';
 import 'package:intl/intl.dart';
 
+import '../../../widgets/error_dialog/error_dialog.dart';
+
 class WidgetDataItemDetail extends StatefulWidget {
   final Connection connection;
   final GazerLocalClient client;
@@ -96,21 +98,21 @@ class WidgetDataItemDetailState extends State<WidgetDataItemDetail> {
                   padding: const EdgeInsets.all(10),
                   child: Row(
                     children: [
-                      buildActionButton(context, Icons.settings, "Properties",
+                      /*buildActionButton(context, Icons.settings, "Properties",
                           () {
                         Navigator.pushNamed(context, "/data_item_properties",
                             arguments: DataItemPropertiesFormArgument(
                                 widget.connection,
                                 widget.item.id,
                                 widget.item.name));
-                      }),
-                      buildActionButton(
+                      }),*/
+                      /*buildActionButton(
                           context, Icons.table_rows_outlined, "Export to CSV",
                           () {
                         Navigator.pushNamed(context, "/data_item_history_table",
                             arguments: DataItemHistoryTableFormArgument(
                                 widget.connection, widget.item.name));
-                      }),
+                      }),*/
                       buildActionButton(
                           context, Icons.ac_unit, "Set as MainItem", () {
                         //Navigator.pushNamed(context, "/data_item_properties", arguments: DataItemPropertiesFormArgument(widget.connection, widget.item.id, widget.item.name));
@@ -118,6 +120,8 @@ class WidgetDataItemDetailState extends State<WidgetDataItemDetail> {
                             widget.unitId,
                             {"main_item": widget.item.name}).then((value) {
                           widget.onMainItemChanged();
+                        }).catchError((err) {
+                          showErrorDialog(context, "$err");
                         });
                       }),
                       buildActionButton(
@@ -178,6 +182,8 @@ class WidgetDataItemDetailState extends State<WidgetDataItemDetail> {
                         .dataItemWrite(widget.item.name, txtWriteValue)
                         .then((value) {
                       Navigator.pop(context);
+                    }).catchError((err) {
+                      showErrorDialog(context, "$err");
                     });
                   });
                 },
@@ -209,6 +215,8 @@ class WidgetDataItemDetailState extends State<WidgetDataItemDetail> {
               .getNode(widget.connection)
               .clearItemCache(widget.item.name);
           Navigator.of(context).pop();
+        }).catchError((err) {
+          showErrorDialog(context, "$err");
         });
       },
     );
