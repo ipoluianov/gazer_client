@@ -49,7 +49,7 @@ class BillingForAddress {
     for (var router in routers) {
       String url =
           "http://$router/api/billing?addr=${address.replaceAll("#", "")}";
-      print("BILLING URL $url");
+      //print("BILLING URL $url");
       String v = "";
       httpGet(url, 1000).then((value) {
         //print(value);
@@ -62,7 +62,7 @@ class BillingForAddress {
         billingObject.dt = DateTime.now();
         billingInfoFromRouters[router] = billingObject;
       }).catchError((err) {
-        print("Billing request error: $url $err");
+        //print("Billing request error: $url $err");
       });
     }
   }

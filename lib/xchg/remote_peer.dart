@@ -71,7 +71,7 @@ class RemotePeer {
       if (t != null) {
         t.transportType = transaction.transportType;
         if (t.transportType.contains("x01.")) {
-          print("transaction type: ${t.transportType}");
+          //print("transaction type: ${t.transportType}");
         }
       }
       if (transaction.error == "") {

@@ -549,6 +549,10 @@ class MapView {
       moveModeMap = true;
     }
     startMovingOffset = lastTapOffset!;
+
+    if (lastDeviceType == PointerDeviceKind.touch) {
+      startMovingOffset = offsetDoNotUse;
+    }
     defaultView = false;
     autoZoom = false;
     //print("scroll ${offset.dx} ${offset.dy}");
@@ -720,6 +724,7 @@ class MapView {
     //print("onPointerDown");
     MapItem? item = itemUnderPoint(offset, true, false);
     if (item != null) {
+      print("=== SET LAST $offset === onPointerDown");
       lastTapOffset = offset;
       movingItemStartOffset = Offset(
           (offset.dx - _displayOffset.dx) / instance.zoom - item.getDouble("x"),

@@ -460,7 +460,7 @@ class MapFormSt extends State<MapForm> {
                     //map.setTargetDisplayOffset(event.localPosition);
                   },
                   child: GestureDetector(
-                    onHorizontalDragStart: (DragStartDetails ev) {
+                    /*onHorizontalDragStart: (DragStartDetails ev) {
                       print(
                           "GestureDetector::onHorizontalDragStart ${ev.kind} ${ev.globalPosition}");
                       if (ev.kind != null) {
@@ -495,7 +495,7 @@ class MapFormSt extends State<MapForm> {
                       setState(() {
                         map.stopMoving(1);
                       });
-                    },
+                    },*/
                     onTapDown: (details) {
                       print("GestureDetector::onTapDown");
                       FocusScope.of(context).requestFocus(_focusNode);
