@@ -5,7 +5,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/gazer_local_client.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
+import 'package:gazer_client/widgets/error_dialog/error_dialog.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
+import 'package:gazer_client/xchg/network_container.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -57,14 +59,20 @@ class NodeAddFormSt extends State<NodeAddForm> {
     super.dispose();
   }
 
-  void tryToAddNode() {
-    List<String> parts = _txtControllerAccessData.text.split("_");
+  void tryToAddNode(String accessData) {
+    List<String> parts = accessData.split("_");
     if (parts.length == 2) {
       addNode(parts[0], parts[1]).then((conn) {
         if (conn != null) {
           Navigator.pop(context, conn);
+          return;
         }
+        showErrorDialog(context, "Wrong Access Data (1)");
+      }).catchError((err) {
+        showErrorDialog(context, "$err");
       });
+    } else {
+      showErrorDialog(context, "Wrong Access Data (2)");
     }
   }
 
@@ -77,7 +85,7 @@ class NodeAddFormSt extends State<NodeAddForm> {
           height: 36,
           child: ElevatedButton(
             onPressed: () {
-              tryToAddNode();
+              tryToAddNode(_txtControllerAccessData.text);
             },
             child: const Text("Add node"),
           ),
@@ -90,17 +98,24 @@ class NodeAddFormSt extends State<NodeAddForm> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        OutlinedButton(
+        TextButton(
           onPressed: () {
             setState(() {
               usingScanner = true;
             });
           },
           child: Container(
+            margin: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: DesignColors.fore(),
+              ),
+            ),
             padding: const EdgeInsets.all(20),
-            child: const Icon(
+            child: Icon(
               Icons.qr_code,
               size: 72,
+              color: DesignColors.fore(),
             ),
           ),
         ),
@@ -124,7 +139,19 @@ class NodeAddFormSt extends State<NodeAddForm> {
           ),
         ),
         buildAddNodeButton(),
-        buildAddLocal(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            buildAddLocal(),
+            buildAddDemo(),
+          ],
+        ),
+        Center(
+          child: Container(
+            padding: EdgeInsets.only(top: 30),
+            child: Text("Scan QR Code"),
+          ),
+        ),
         buildScanButton(),
       ],
     );
@@ -150,7 +177,7 @@ class NodeAddFormSt extends State<NodeAddForm> {
               debugPrint('Barcode found! ${barcode.rawValue}');
             }
           },
-        )
+        ),
       ],
     );
   }
@@ -202,29 +229,36 @@ class NodeAddFormSt extends State<NodeAddForm> {
   }
 
   Widget buildAddLocal() {
-    return Center(
-      child: Container(
-        margin: const EdgeInsets.all(10),
-        padding: const EdgeInsets.only(top: 20),
-        child: MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: GestureDetector(
-            onTap: () {
-              //_txtControllerHost.text = "localhost";
-              //_txtControllerUser.text = "admin";
-              loadLocalAdminPassword().then((result) {
-                _txtControllerAccessData.text = "${result[0]}_${result[1]}";
-                /*_txtControllerHost.text = result[0];
-                _txtControllerUser.text = result[1];*/
-              });
-            },
-            child: const Text(
-              "Load local node default credentials",
-              style: TextStyle(
-                  decoration: TextDecoration.underline, color: Colors.blue),
-            ),
-          ),
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: OutlinedButton(
+        onPressed: () {
+          loadLocalAdminPassword().then((result) {
+            String accessData = "${result[0]}_${result[1]}";
+            _txtControllerAccessData.text = accessData;
+            tryToAddNode(accessData);
+          });
+        },
+        child: Text("ADD LOCAL NODE"),
+      ),
+    );
+  }
+
+  Widget buildAddDemo() {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: OutlinedButton(
+        onPressed: () {
+          httpGet("https://gazer.cloud/demo/demo.txt", 1000).then((value) {
+            setState(() {
+              _txtControllerAccessData.text = value;
+            });
+            tryToAddNode(value);
+          }).catchError((err) {
+            showErrorDialog(context, "$err");
+          });
+        },
+        child: const Text("ADD DEMO NODE"),
       ),
     );
   }
@@ -294,7 +328,7 @@ class NodeAddFormSt extends State<NodeAddForm> {
                 _txtControllerAccessData.text = barcode.rawValue!;
                 usingScanner = false;
               });
-              tryToAddNode();
+              tryToAddNode(_txtControllerAccessData.text);
             }
           }
         },
@@ -325,7 +359,7 @@ class NodeAddFormSt extends State<NodeAddForm> {
         return Scaffold(
           appBar: TitleBar(
             null,
-            "Connect To Node",
+            "Add Node",
             version: version,
           ),
           body: Container(

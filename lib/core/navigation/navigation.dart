@@ -72,9 +72,15 @@ Widget buildActionButtonFull(
 
 Widget buildHomeButton(context) {
   return Container(
-      padding: const EdgeInsets.only(left: 5),
-      child: buildActionButton(context, Icons.list_alt, "All Nodes", () {
+    padding: const EdgeInsets.only(left: 5),
+    child: buildActionButton(
+      context,
+      Icons.home_outlined,
+      "List of Nodes",
+      () {
         Navigator.of(context).popUntil((route) => route.isFirst);
         Navigator.popAndPushNamed(context, "/", arguments: MainFormArgument());
-      }));
+      },
+    ),
+  );
 }
