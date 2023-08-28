@@ -148,8 +148,8 @@ class NodeAddFormSt extends State<NodeAddForm> {
         ),
         Center(
           child: Container(
-            padding: EdgeInsets.only(top: 30),
-            child: Text("Scan QR Code"),
+            padding: const EdgeInsets.only(top: 30),
+            child: const Text("Scan QR Code"),
           ),
         ),
         buildScanButton(),
