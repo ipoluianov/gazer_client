@@ -125,6 +125,8 @@ class UnitCardState extends State<UnitCard> {
                                 ),
                                 Container(
                                   //margin: const EdgeInsets.only(top: 10),
+                                  constraints:
+                                      const BoxConstraints(maxHeight: 30),
                                   padding: const EdgeInsets.all(3),
                                   child: Text(
                                     valueAndUOM,

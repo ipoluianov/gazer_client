@@ -11,6 +11,7 @@ import '../map_items/map_item_decoration/map_item_decoration_material_icon01.dar
 import '../map_items/map_item_single/chart/map_item_chart_02.dart';
 import '../map_items/map_item_single/gauge/map_item_gauge_02.dart';
 import '../map_items/map_item_single/progress/map_item_progress_01.dart';
+import '../map_items/map_item_single/text/map_item_text_03.dart';
 import 'map_item.dart';
 import '../map_items/map_item_control/map_item_button.dart';
 import '../map_items/map_item_single/chart/map_item_chart.dart';
@@ -32,6 +33,9 @@ class MapItemsLibrary {
     });
     registerItem(MapItemText02.sType, MapItemText02.sName, "text", (c) {
       return MapItemText02(c);
+    });
+    registerItem(MapItemText03.sType, MapItemText03.sName, "text", (c) {
+      return MapItemText03(c);
     });
     registerItem(MapItemUnitTable01.sType, MapItemUnitTable01.sName, "text",
         (c) {

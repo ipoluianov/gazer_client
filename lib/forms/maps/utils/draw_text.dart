@@ -90,16 +90,21 @@ enum TextVAlign {
   bottom,
 }
 
-MapItemPropGroup textAppearanceGroup({textColorDefault = "{fore}"}) {
+MapItemPropGroup textAppearanceGroup(
+    {textColorDefault = "{fore}",
+    halign = "center",
+    fontFamily = "Roboto",
+    fontSize = "20"}) {
   List<MapItemPropItem> props = [];
   props.add(MapItemPropItem(
-      "", "font_family", "Font Family", "font_family", "Roboto"));
-  props.add(MapItemPropItem("", "font_size", "Font Size", "font_size", "20"));
+      "", "font_family", "Font Family", "font_family", fontFamily));
+  props.add(
+      MapItemPropItem("", "font_size", "Font Size", "font_size", fontSize));
   props.add(
       MapItemPropItem("", "font_weight", "Font Weight", "font_weight", "400"));
   props.add(MapItemPropItem(
       "", "text_color", "Text Color", "color", textColorDefault));
-  props.add(MapItemPropItem("", "h_align", "Hor Align", "halign", "center"));
+  props.add(MapItemPropItem("", "h_align", "Hor Align", "halign", halign));
   return MapItemPropGroup("Text Appearance", false, props);
 }
 

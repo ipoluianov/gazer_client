@@ -63,6 +63,9 @@ class MapItemText02 extends MapItemSingle {
 
     var padding = z(10);
 
+    canvas.save();
+    canvas.clipRect(Rect.fromLTWH(
+        getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), getDoubleZ("h")));
     drawText(
       canvas,
       getDoubleZ("x") + padding,
@@ -92,6 +95,7 @@ class MapItemText02 extends MapItemSingle {
         TextAlign.right,
         fontFamily,
         fontWeight);
+    canvas.restore();
     drawPost(canvas, size);
   }
 
