@@ -9,6 +9,7 @@ import 'package:gazer_client/forms/units/unit_add_form/unit_add_form.dart';
 import 'package:gazer_client/forms/units/unit_edit/unit_edit_form.dart';
 import 'package:gazer_client/forms/units/unit_form/unit_form.dart';
 import 'package:gazer_client/forms/utilities/resources/resources_form/resources_form.dart';
+import 'package:wakelock/wakelock.dart';
 
 import '../../forms/chart_groups/chart_group_form/chart_group_form.dart';
 import '../../forms/mores/access_form/access_form.dart';
@@ -66,6 +67,18 @@ class RouteGenerator {
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     processRouteArguments(settings);
+
+    // keep the device screen awake
+    switch (settings.name) {
+      case '/maps':
+      case '/map':
+        Wakelock.enable();
+        break;
+      default:
+        Wakelock.disable();
+        break;
+    }
+
     switch (settings.name) {
       case '/':
         Repository().navIndex = NavIndex.units;

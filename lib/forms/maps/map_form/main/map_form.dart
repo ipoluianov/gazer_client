@@ -434,10 +434,14 @@ class MapFormSt extends State<MapForm> {
                     setState(() {
                       map.onPointerDown(ev.localPosition);
                     });
+                    declareUserInput();
                   },
-                  onPointerMove: (PointerMoveEvent ev) {},
+                  onPointerMove: (PointerMoveEvent ev) {
+                    declareUserInput();
+                  },
                   onPointerUp: (PointerUpEvent ev) {
                     print("Listener::onPointerUp");
+                    declareUserInput();
 
                     setState(() {
                       map.onPointerUp(ev.localPosition);
@@ -445,6 +449,7 @@ class MapFormSt extends State<MapForm> {
                   },
                   onPointerSignal: (pointerSignal) {
                     // print("Listener::onPointerSignal");
+                    declareUserInput();
                     if (pointerSignal is PointerScrollEvent) {
                       print(
                           "----------------- Listener::onPointerSignal ${pointerSignal.scrollDelta}");
@@ -455,6 +460,7 @@ class MapFormSt extends State<MapForm> {
                   onPointerHover: (event) {
                     //print("hover: ${event.localPosition}");
                     //map.lastHoverOffset = event.localPosition;
+                    declareUserInput();
                     map.onHover(event.localPosition);
                     //map.lastTapOffset = event.localPosition;
                     //map.setTargetDisplayOffset(event.localPosition);
@@ -498,6 +504,7 @@ class MapFormSt extends State<MapForm> {
                     },*/
                     onTapDown: (details) {
                       print("GestureDetector::onTapDown");
+                      declareUserInput();
                       FocusScope.of(context).requestFocus(_focusNode);
                       setState(() {
                         map.tapDown(details.localPosition, context);
@@ -505,19 +512,21 @@ class MapFormSt extends State<MapForm> {
                     },
                     onTapUp: (details) {
                       print("GestureDetector::onTapUp");
+                      declareUserInput();
                       setState(() {
                         map.tapUp(details.localPosition, context);
                       });
                     },
                     onScaleStart: (details) {
                       print("GestureDetector::onScaleStart");
+                      declareUserInput();
                       FocusScope.of(context).requestFocus(_focusNode);
                       map.startMoving(
                           details.pointerCount, details.localFocalPoint);
                     },
                     onScaleUpdate: (details) {
                       print("GestureDetector::onScaleUpdate");
-
+                      declareUserInput();
                       map.updateMoving(details.pointerCount,
                           details.localFocalPoint, details.scale);
                     },
@@ -629,7 +638,9 @@ class MapFormSt extends State<MapForm> {
               Container(
                 constraints: const BoxConstraints(maxHeight: 55),
                 child: fullScreen
-                    ? Opacity(opacity: 0.2, child: buildMapToolbar(context))
+                    ? Opacity(
+                        opacity: fullScreenOpacityToolbar(),
+                        child: buildMapToolbar(context))
                     : Container(),
               ),
             ],
@@ -637,6 +648,24 @@ class MapFormSt extends State<MapForm> {
         ),
       ],
     );
+  }
+
+  DateTime lastUserInputDT_ = DateTime.now();
+  double fullScreenOpacityToolbar() {
+    double result = 1;
+    if (DateTime.now().difference(lastUserInputDT_).inMilliseconds > 2500) {
+      result = 0.5;
+    }
+    if (DateTime.now().difference(lastUserInputDT_).inMilliseconds > 5000) {
+      result = 0.1;
+    }
+    return result;
+  }
+
+  void declareUserInput() {
+    setState(() {
+      lastUserInputDT_ = DateTime.now();
+    });
   }
 
   Widget buildFullScreen(BuildContext context) {
