@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.gazer_client">
+    package="cloud.gazer.gazer_client">
    <application
         android:label="gazer_client"
         android:name="${applicationName}"
