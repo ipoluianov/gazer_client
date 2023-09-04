@@ -48,13 +48,16 @@ class MapItemDecorationClock01 extends MapItemSingle {
     try {
       DateTime time = DateTime.now();
       if (getBool("time_remote")) {
-        //time = time.toUtc();
         var lastServiceInfo = Repository().client(connection).lastServiceInfo;
         if (lastServiceInfo != null) {
           int? nsUnixTime = int.tryParse(lastServiceInfo.time);
           if (nsUnixTime != null) {
             time = DateTime.fromMicrosecondsSinceEpoch(nsUnixTime ~/ 1000);
+          } else {
+            throw "nsUnixTime == null";
           }
+        } else {
+          throw "no information from server";
         }
       }
       if (getBool("time_utc")) {
