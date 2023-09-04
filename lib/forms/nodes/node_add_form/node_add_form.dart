@@ -1,16 +1,12 @@
-import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:gazer_client/core/gazer_local_client.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/widgets/error_dialog/error_dialog.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
 import 'package:gazer_client/xchg/network_container.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../../../core/design.dart';
 import '../../../core/navigation/route_generator.dart';
@@ -31,9 +27,6 @@ class NodeAddFormSt extends State<NodeAddForm> {
 
   final TextEditingController _txtControllerAccessData =
       TextEditingController();
-  //final TextEditingController _txtControllerHost = TextEditingController();
-  //final TextEditingController _txtControllerUser = TextEditingController();
-  //final TextEditingController _txtControllerPassword = TextEditingController();
 
   String connectionError = "";
 
@@ -129,20 +122,20 @@ class NodeAddFormSt extends State<NodeAddForm> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
-          child: TextField(
-            autofocus: true,
-            controller: _txtControllerAccessData,
-            decoration: const InputDecoration(
-              labelText: "Access Data",
-            ),
+        TextField(
+          autofocus: true,
+          controller: _txtControllerAccessData,
+          decoration: const InputDecoration(
+            labelText: "Access Data",
           ),
         ),
         buildAddNodeButton(),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            buildAddLocal(),
+            (Platform.isWindows || Platform.isLinux)
+                ? buildAddLocal()
+                : Container(),
             buildAddDemo(),
           ],
         ),
@@ -172,7 +165,7 @@ class NodeAddFormSt extends State<NodeAddForm> {
           controller: cameraController,
           onDetect: (capture) {
             final List<Barcode> barcodes = capture.barcodes;
-            final Uint8List? image = capture.image;
+            //final Uint8List? image = capture.image;
             for (final barcode in barcodes) {
               debugPrint('Barcode found! ${barcode.rawValue}');
             }
@@ -182,39 +175,6 @@ class NodeAddFormSt extends State<NodeAddForm> {
     );
   }
 
-  /*Widget buildMode2() {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      //constraints: BoxConstraints(minWidth: 250, minHeight: 300),
-      child: Column(
-        children: [
-          SizedBox(
-            width: 200,
-            child: TextField(
-              autofocus: true,
-              controller: _txtControllerHost,
-              decoration: const InputDecoration(
-                labelText: "Address",
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          SizedBox(
-            width: 200,
-            child: TextField(
-              controller: _txtControllerUser,
-              decoration: const InputDecoration(
-                labelText: "AccessKey",
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }*/
-
   Widget buildMode() {
     if (mode == 0) {
       return buildMode0();
@@ -222,9 +182,6 @@ class NodeAddFormSt extends State<NodeAddForm> {
     if (mode == 1) {
       return buildMode1();
     }
-    /*if (mode == 2) {
-      return buildMode2();
-    }*/
     return buildMode0();
   }
 
@@ -239,7 +196,7 @@ class NodeAddFormSt extends State<NodeAddForm> {
             tryToAddNode(accessData);
           });
         },
-        child: Text("ADD LOCAL NODE"),
+        child: const Text("ADD LOCAL NODE"),
       ),
     );
   }
@@ -274,7 +231,6 @@ class NodeAddFormSt extends State<NodeAddForm> {
 
   MobileScannerController cameraController = MobileScannerController();
 
-  @override
   Widget buildQRCodeScanner(BuildContext context) {
     return Scaffold(
       appBar: TitleBar(
@@ -286,7 +242,7 @@ class NodeAddFormSt extends State<NodeAddForm> {
             icon: ValueListenableBuilder(
               valueListenable: cameraController.torchState,
               builder: (context, state, child) {
-                switch (state as TorchState) {
+                switch (state) {
                   case TorchState.off:
                     return const Icon(Icons.flash_off, color: Colors.grey);
                   case TorchState.on:
@@ -302,7 +258,7 @@ class NodeAddFormSt extends State<NodeAddForm> {
             icon: ValueListenableBuilder(
               valueListenable: cameraController.cameraFacingState,
               builder: (context, state, child) {
-                switch (state as CameraFacing) {
+                switch (state) {
                   case CameraFacing.front:
                     return const Icon(Icons.camera_front);
                   case CameraFacing.back:
@@ -320,7 +276,7 @@ class NodeAddFormSt extends State<NodeAddForm> {
         controller: cameraController,
         onDetect: (capture) {
           final List<Barcode> barcodes = capture.barcodes;
-          final Uint8List? image = capture.image;
+          //final Uint8List? image = capture.image;
           for (final barcode in barcodes) {
             //debugPrint('Barcode found! ${barcode.rawValue}');
             if (barcode.rawValue != null) {
@@ -346,9 +302,9 @@ class NodeAddFormSt extends State<NodeAddForm> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        bool narrow = constraints.maxWidth < 600;
-        bool showLeft = !narrow;
-        bool showBottom = narrow;
+        //bool narrow = constraints.maxWidth < 600;
+        //bool showLeft = !narrow;
+        //bool showBottom = narrow;
 
         String version = "";
 
@@ -384,7 +340,7 @@ class NodeAddFormSt extends State<NodeAddForm> {
   }
 
   String homeDirectory() {
-    String os = Platform.operatingSystem;
+    //String os = Platform.operatingSystem;
     String? home = "";
     Map<String, String> envVars = Platform.environment;
     if (Platform.isMacOS) {
