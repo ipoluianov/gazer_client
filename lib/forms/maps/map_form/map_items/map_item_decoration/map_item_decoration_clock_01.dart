@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/maps/map_form/map_items/map_item_single/map_item_single.dart';
 import 'package:intl/intl.dart';
@@ -46,6 +47,16 @@ class MapItemDecorationClock01 extends MapItemSingle {
     String text = "";
     try {
       DateTime time = DateTime.now();
+      if (getBool("time_remote")) {
+        //time = time.toUtc();
+        var lastServiceInfo = Repository().client(connection).lastServiceInfo;
+        if (lastServiceInfo != null) {
+          int? nsUnixTime = int.tryParse(lastServiceInfo.time);
+          if (nsUnixTime != null) {
+            time = DateTime.fromMicrosecondsSinceEpoch(nsUnixTime ~/ 1000);
+          }
+        }
+      }
       if (getBool("time_utc")) {
         time = time.toUtc();
       }
@@ -83,6 +94,8 @@ class MapItemDecorationClock01 extends MapItemSingle {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem(
           "", "time_format", "Time Format", "text", "HH:mm:ss"));
+      props.add(
+          MapItemPropItem("", "time_remote", "Remote Time", "bool", "false"));
       props.add(MapItemPropItem("", "time_utc", "UTC Time", "bool", "false"));
       props.add(MapItemPropItem(
           "", "time_hour_shift", "Time shift (hours)", "double", "0"));
