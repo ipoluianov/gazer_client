@@ -11,8 +11,10 @@ class BillingFormItem extends StatefulWidget {
   final String displayName;
   final bool usingLocalRouter;
   final bool isPremium;
+  final String buttonText;
+  final Color buttonColor;
   const BillingFormItem(this.address, this.items, this.displayName,
-      this.usingLocalRouter, this.isPremium,
+      this.usingLocalRouter, this.isPremium, this.buttonText, this.buttonColor,
       {Key? key})
       : super(key: key);
 
@@ -78,13 +80,13 @@ class BillingFormItemState extends State<BillingFormItem>
         launchUrl(url);
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.green,
+        backgroundColor: widget.buttonColor,
       ),
-      child: const Padding(
-        padding: EdgeInsets.all(10),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
         child: Text(
-          "Buy PREMIUM",
-          style: TextStyle(
+          widget.buttonText,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 20,
             fontFamily: "RobotoMono",

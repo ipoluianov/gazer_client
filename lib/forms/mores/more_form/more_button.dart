@@ -94,7 +94,7 @@ class MoreButtonState extends State<MoreButton> with TickerProviderStateMixin {
                       ),
                       Flexible(
                         child: Container(
-                          padding: const EdgeInsets.only(left: 0),
+                          padding: const EdgeInsets.only(left: 0, top: 6),
                           child: Text(
                             widget.name,
                             overflow: TextOverflow.fade,

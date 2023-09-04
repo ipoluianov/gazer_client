@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/navigation/bottom_navigator.dart';
 import 'package:gazer_client/core/navigation/left_navigator.dart';
@@ -63,19 +64,20 @@ class MoreFormSt extends State<MoreForm> {
                             child: Wrap(
                               children: [
                                 MoreButton(() {
-                                  Navigator.pushNamed(context, "/access",
-                                      arguments: AccessFormArgument(
-                                          widget.arg.connection));
-                                },
-                                    "Access",
-                                    const Icon(Icons.shield_outlined, size: 48),
-                                    0),
-                                MoreButton(() {
                                   Navigator.pushNamed(context, "/guest_access",
                                       arguments: GuestAccessFormArgument(
                                           widget.arg.connection));
                                 },
-                                    "Guest Access",
+                                    "Share\r\nGUEST Access",
+                                    const Icon(cupertino.CupertinoIcons.share,
+                                        size: 48),
+                                    0),
+                                MoreButton(() {
+                                  Navigator.pushNamed(context, "/access",
+                                      arguments: AccessFormArgument(
+                                          widget.arg.connection));
+                                },
+                                    "Share\r\nFULL Access",
                                     const Icon(Icons.shield_outlined, size: 48),
                                     0),
                                 MoreButton(() {
@@ -83,7 +85,7 @@ class MoreFormSt extends State<MoreForm> {
                                       arguments: BillingFormArgument(
                                           widget.arg.connection));
                                 },
-                                    "Remote Access",
+                                    "PREMIUM",
                                     const Icon(Icons.auto_awesome, size: 48),
                                     0),
                                 MoreButton(() {

@@ -55,7 +55,8 @@ class BillingFormSt extends State<BillingForm> {
     });
   }
 
-  Widget buildAddressBlock(String address, String name) {
+  Widget buildAddressBlock(
+      String address, String name, String buttonText, Color buttonColor) {
     var usingLocalRouter =
         Repository().client(widget.arg.connection).usingLocalRouter();
     var billingDB = Repository().client(widget.arg.connection).billingDB();
@@ -70,7 +71,8 @@ class BillingFormSt extends State<BillingForm> {
     loadedItems.sort((i, j) {
       return i.router.compareTo(j.router);
     });
-    return BillingFormItem(address, loadedItems, name, usingLocalRouter, false);
+    return BillingFormItem(address, loadedItems, name, usingLocalRouter, false,
+        buttonText, buttonColor);
   }
 
   ScrollController scrollController = ScrollController();
@@ -79,16 +81,30 @@ class BillingFormSt extends State<BillingForm> {
   Widget build(BuildContext context) {
     List<Widget> innerWidgets = [];
 
-    innerWidgets.add(buildAddressBlock(
-        Repository().client(widget.arg.connection).address, "Remote Node"));
-    innerWidgets.add(buildAddressBlock(
+    innerWidgets.add(
+      buildAddressBlock(
+        Repository().client(widget.arg.connection).address,
+        "REMOTE NODE",
+        "Buy PREMIUM",
+        Colors.green,
+      ),
+    );
+    /*innerWidgets.add(
+      buildAddressBlock(
         Repository().client(widget.arg.connection).localAddress(),
-        "This Client"));
+        "This Client",
+        "buy premium\r\nfor THIS CLIENT",
+        Colors.blue,
+      ),
+    );*/
 
-    Widget innerWidget = SingleChildScrollView(
-      controller: scrollController,
-      child: Wrap(
-        children: innerWidgets,
+    Widget innerWidget = Container(
+      padding: const EdgeInsets.only(top: 50),
+      child: SingleChildScrollView(
+        controller: scrollController,
+        child: Column(
+          children: innerWidgets,
+        ),
       ),
     );
 
@@ -101,7 +117,7 @@ class BillingFormSt extends State<BillingForm> {
         return Scaffold(
           appBar: TitleBar(
             widget.arg.connection,
-            "Remote Access",
+            "PREMIUM",
             actions: <Widget>[
               buildHomeButton(context),
             ],
