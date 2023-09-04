@@ -43,7 +43,7 @@ class Border10Painter extends CustomPainter {
   List<Offset> buildPoints(Rect rect) {
     List<Offset> points = [];
     var cornerRadius = calcCornerRadius();
-    var topRegion = rect.width / 3 - cornerRadius / 2;
+    var topRegion = (rect.width - cornerRadius * 2) / 3;
 
     points.add(Offset(rect.left, rect.top + cornerRadius));
     points.add(Offset(rect.left + topRegion, rect.top + cornerRadius));
@@ -55,13 +55,14 @@ class Border10Painter extends CustomPainter {
         rect.top + cornerRadius));
 
     points.add(Offset(
-        rect.left +
-            topRegion +
-            cornerRadius +
-            topRegion +
-            cornerRadius +
-            topRegion,
-        rect.top + cornerRadius));
+      rect.left +
+          topRegion +
+          cornerRadius +
+          topRegion +
+          cornerRadius +
+          topRegion,
+      rect.top + cornerRadius,
+    ));
 
     points.add(Offset(rect.right, rect.bottom));
 
