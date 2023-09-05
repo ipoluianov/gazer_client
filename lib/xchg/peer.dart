@@ -44,7 +44,7 @@ class Peer {
 
   Peer(AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>? privKey,
       this.useLocalRouter, this.networkId) {
-    print("PEER CREATED! local: ${useLocalRouter}");
+    print("PEER CREATED! local: $useLocalRouter networkId: $networkId");
 
     if (privKey == null) {
       AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> pair =

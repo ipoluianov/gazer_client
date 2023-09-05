@@ -127,6 +127,8 @@ class MainFormSt extends State<MainForm> {
                       wsRemoveConnection(e.id).then((value) {
                         loadNodesList();
                       });
+                    }, (Connection conn) {
+                      editNode(conn);
                     }, key: Key(e.id + updateCounter.toString()));
                   }).toList(),
                 ),
@@ -226,6 +228,21 @@ class MainFormSt extends State<MainForm> {
           Navigator.of(context).pop();
           Navigator.pushNamed(context, "/node",
               arguments: NodeFormArgument(value));
+        }
+      },
+    );
+  }
+
+  void editNode(Connection conn) {
+    Navigator.pushNamed(context, "/node_edit",
+            arguments: NodeEditFormArgument(conn))
+        .then(
+      (value) {
+        updateCounter++;
+        loadNodesList();
+        if (value is Connection) {
+          //Navigator.of(context).popUntil((route) => route.isFirst);
+          //Navigator.of(context).pop();
         }
       },
     );

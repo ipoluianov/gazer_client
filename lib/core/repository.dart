@@ -49,13 +49,13 @@ class Repository {
 
   GazerLocalClient client(Connection conn) {
     String clientKey =
-        "${conn.address} / ${conn.sessionKey} / ${conn.transport}";
+        "${conn.address} / ${conn.sessionKey} / ${conn.transport} / ${conn.networkId}";
     if (clients.containsKey(clientKey)) {
       GazerLocalClient? client = clients[clientKey];
       return client!;
     } else {
-      GazerLocalClient client = GazerLocalClient(
-          clientKey, conn.transport, conn.address, conn.sessionKey, "");
+      GazerLocalClient client = GazerLocalClient(clientKey, conn.transport,
+          conn.address, conn.sessionKey, conn.networkId);
       clients[clientKey] = client;
       print("Created client: $clientKey");
       return client;

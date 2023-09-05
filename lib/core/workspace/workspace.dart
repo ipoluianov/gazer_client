@@ -12,14 +12,17 @@ class Connection {
   String transport;
   String address;
   String sessionKey;
+  String networkId;
 
-  Connection(this.id, this.transport, this.address, this.sessionKey);
+  Connection(
+      this.id, this.transport, this.address, this.sessionKey, this.networkId);
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'transport': transport,
         'address': address,
         'session_key': sessionKey,
+        'network_id': networkId,
       };
 
   factory Connection.fromJson(Map<String, dynamic> json) {
@@ -28,11 +31,12 @@ class Connection {
       json['transport'],
       json['address'],
       json['session_key'],
+      json.containsKey('network_id') ? json['network_id'] : "",
     );
   }
 
   factory Connection.makeDefault() {
-    return Connection("", "", "", "");
+    return Connection("", "", "", "", "");
   }
 }
 
@@ -117,6 +121,20 @@ Future<void> wsAddConnection(Connection connection) async {
   prefs.setBool("node_client_added_connection", true);
   var ws = await readWorkspace();
   ws.connections.add(connection);
+  saveWorkspace(ws);
+}
+
+Future<void> wsEditConnection(Connection connection) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setBool("node_client_added_connection", true);
+  var ws = await readWorkspace();
+  for (var conn in ws.connections) {
+    if (conn.id == connection.id) {
+      conn.address = connection.address;
+      conn.sessionKey = connection.sessionKey;
+      conn.networkId = connection.networkId;
+    }
+  }
   saveWorkspace(ws);
 }
 

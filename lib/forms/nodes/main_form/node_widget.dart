@@ -5,13 +5,16 @@ import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
 import '../../../core/design.dart';
+import '../../../core/navigation/route_generator.dart';
 import '../../../widgets/borders/border_10_node_item.dart';
 
 class NodeWidget extends StatefulWidget {
   final Connection conn;
   final Function() onNavigate;
   final Function() onRemove;
-  const NodeWidget(this.conn, this.onNavigate, this.onRemove, {Key? key})
+  final Function(Connection conn) onChange;
+  const NodeWidget(this.conn, this.onNavigate, this.onRemove, this.onChange,
+      {Key? key})
       : super(key: key);
 
   @override
@@ -246,7 +249,7 @@ class NodeWidgetSt extends State<NodeWidget> {
                               }
 
                               if (str == "change") {
-                                //widget.onRename();
+                                widget.onChange(widget.conn);
                               }
                             },
                             itemBuilder: (context) {

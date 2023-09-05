@@ -20,10 +20,33 @@ Future<Connection?> addNode(String address, String accessKey) async {
     return null;
   }
 
-  var conn = Connection(
-      UniqueKey().toString(), cl.transport, cl.address, cl.accessKey);
+  var conn = Connection(UniqueKey().toString(), cl.transport, cl.address,
+      cl.accessKey, cl.networkId);
 
   await wsAddConnection(conn);
+  return conn;
+}
+
+Future<Connection?> editNode(
+    String id, String address, String accessKey, String networkId) async {
+  final GazerLocalClient cl = GazerLocalClient(id, "", "", "", networkId);
+  cl.transport = "http/local";
+  cl.address = address;
+  cl.accessKey = accessKey;
+  cl.networkId = networkId;
+
+  if (cl.address.length != 49) {
+    return null;
+  }
+
+  if (cl.address[0] != '#') {
+    return null;
+  }
+
+  var conn =
+      Connection(id, cl.transport, cl.address, cl.accessKey, cl.networkId);
+
+  await wsEditConnection(conn);
   return conn;
 }
 
