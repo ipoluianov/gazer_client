@@ -49,11 +49,10 @@ dependencies:
   flutter_colorpicker: ^1.0.3
   file_picker: ^5.2.5
   expandable: ^5.0.1
-  package_info_plus: ^4.0.2
+  package_info_plus: ^3.1.2
   qr_flutter: ^4.0.0
   mobile_scanner: ^3.2.0
-  device_info_plus: ^9.0.2
-  wakelock: ^0.4.0
+  wakelock: ^0.6.2
 
 dev_dependencies:
   flutter_test:
