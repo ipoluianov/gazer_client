@@ -43,6 +43,7 @@ class GazerLocalClient {
   String id;
   String transport;
   String address;
+  String networkId;
   String accessKey;
   String repeater = "";
   bool active = false;
@@ -54,10 +55,11 @@ class GazerLocalClient {
   String nodeGuestKey = "";
   String lastError = "";
   int errorsCounter = 0;
-  GazerLocalClient(this.id, this.transport, this.address, this.accessKey);
+  GazerLocalClient(
+      this.id, this.transport, this.address, this.accessKey, this.networkId);
 
   String localAddress() {
-    return Repository().peer.address();
+    return Repository().peer(networkId).address();
   }
 
   bool connected() {
@@ -65,17 +67,18 @@ class GazerLocalClient {
   }
 
   BillingSummary billingInfo() {
-    BillingSummary result = Repository().peer.billingInfoForAddress(address);
+    BillingSummary result =
+        Repository().peer(networkId).billingInfoForAddress(address);
     return result;
   }
 
   BillingDB billingDB() {
-    BillingDB result = Repository().peer.billingDB;
+    BillingDB result = Repository().peer(networkId).billingDB;
     return result;
   }
 
   bool usingLocalRouter() {
-    return Repository().peer.usingLocalRouter(address);
+    return Repository().peer(networkId).usingLocalRouter(address);
   }
 
   ////////////////////////////////////////////////////////
@@ -473,8 +476,8 @@ class GazerLocalClient {
     try {
       // Gazer request body
       var reqString = jsonEncode(request);
-      var res = await Repository().peer.call(address, accessKey, function,
-          Uint8List.fromList(utf8.encode(reqString)));
+      var res = await Repository().peer(networkId).call(address, accessKey,
+          function, Uint8List.fromList(utf8.encode(reqString)));
 
       if (!res.isError()) {
         String s = utf8.decode(res.data);
@@ -502,7 +505,7 @@ class GazerLocalClient {
   }
 
   String linkInformation() {
-    return Repository().peer.remotePeerTransport(address);
+    return Repository().peer(networkId).remotePeerTransport(address);
   }
 
 ///////////////////////////////////////

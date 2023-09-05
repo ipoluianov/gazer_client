@@ -38,11 +38,12 @@ class Peer {
   Map<int, Session> sessionsById = {};
   late Timer _timer;
   bool useLocalRouter = false;
+  String networkId = "";
 
   Map<String, String> addressByName = {};
 
   Peer(AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>? privKey,
-      this.useLocalRouter) {
+      this.useLocalRouter, this.networkId) {
     print("PEER CREATED! local: ${useLocalRouter}");
 
     if (privKey == null) {

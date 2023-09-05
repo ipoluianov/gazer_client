@@ -25,22 +25,37 @@ class Repository {
   NavIndex navIndex = NavIndex.units;
   //XchgConnection xchg = XchgConnection("gruvl3znuewl3gslgkz6aaebya4j5hvd2lcgu3i4lvj263ze", "pass");
 
+  late AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> mainKeyPair;
   bool peerLoaded = false;
-  Peer peer = Peer(null, false);
+  Peer peerMainNet = Peer(null, false, "");
+  Map<String, Peer> peers = {};
 
   void initPeer(AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey> keyPair) {
-    peer = Peer(keyPair, false);
+    mainKeyPair = keyPair;
+    peerMainNet = Peer(keyPair, false, "");
+  }
+
+  Peer peer(String networkId) {
+    if (networkId.isEmpty) {
+      return peerMainNet;
+    }
+    if (peers.containsKey(networkId)) {
+      return peers[networkId]!;
+    }
+    var p = Peer(mainKeyPair, false, networkId);
+    peers[networkId] = p;
+    return p;
   }
 
   GazerLocalClient client(Connection conn) {
     String clientKey =
-        conn.address + " / " + conn.sessionKey + " / " + conn.transport;
+        "${conn.address} / ${conn.sessionKey} / ${conn.transport}";
     if (clients.containsKey(clientKey)) {
       GazerLocalClient? client = clients[clientKey];
       return client!;
     } else {
       GazerLocalClient client = GazerLocalClient(
-          clientKey, conn.transport, conn.address, conn.sessionKey);
+          clientKey, conn.transport, conn.address, conn.sessionKey, "");
       clients[clientKey] = client;
       print("Created client: $clientKey");
       return client;

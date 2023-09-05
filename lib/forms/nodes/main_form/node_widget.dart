@@ -239,12 +239,33 @@ class NodeWidgetSt extends State<NodeWidget> {
                               ],
                             ),
                           ),
-                          IconButton(
-                            onPressed: () {
-                              showAlertDialog(context);
+                          PopupMenuButton(
+                            onSelected: (str) {
+                              if (str == "remove") {
+                                showAlertDialog(context);
+                              }
+
+                              if (str == "change") {
+                                //widget.onRename();
+                              }
                             },
-                            icon: const Icon(Icons.delete),
-                            color: DesignColors.fore2(),
+                            itemBuilder: (context) {
+                              return <PopupMenuEntry<String>>[
+                                const PopupMenuItem<String>(
+                                  value: "change",
+                                  child: Text('Change'),
+                                ),
+                                const PopupMenuItem<String>(
+                                  value: "remove",
+                                  child: Text('Remove'),
+                                ),
+                              ];
+                            },
+                            icon: Icon(
+                              Icons.menu,
+                              color: DesignColors.fore2(),
+                            ),
+                            color: DesignColors.back2(),
                           ),
                         ],
                       ),
@@ -306,11 +327,6 @@ class NodeWidgetSt extends State<NodeWidget> {
                             fontSize: 12, color: Colors.white60),
                       ),
                     ),
-                    IconButton(
-                        onPressed: () {
-                          showAlertDialog(context);
-                        },
-                        icon: const Icon(Icons.delete))
                   ],
                 )
               ],

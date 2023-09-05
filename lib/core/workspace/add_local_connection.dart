@@ -7,7 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<Connection?> addNode(String address, String accessKey) async {
-  final GazerLocalClient cl = GazerLocalClient("new", "", "", "");
+  final GazerLocalClient cl = GazerLocalClient("new", "", "", "", "");
   cl.transport = "http/local";
   cl.address = address;
   cl.accessKey = accessKey;
