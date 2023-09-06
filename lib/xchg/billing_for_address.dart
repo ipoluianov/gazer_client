@@ -98,8 +98,12 @@ class BillingDB {
     }
   }
 
-  BillingSummary getSummaryForAddresses(XchgNetwork? network,
-      String clientAddress, String serverAddress, bool usingLocalRouter) {
+  BillingSummary getSummaryForAddresses(
+      XchgNetwork? network,
+      String clientAddress,
+      String serverAddress,
+      bool usingLocalRouter,
+      bool usingDirectConnection) {
     clear();
     BillingSummary result = BillingSummary();
 
@@ -110,6 +114,17 @@ class BillingDB {
       result.counter = 0;
       result.percents = 0;
       result.usingLocalRouter = true;
+      result.isPremium = false;
+      return result;
+    }
+
+    if (usingDirectConnection) {
+      result.clientAddress = clientAddress;
+      result.serverAddress = serverAddress;
+      result.limit = 1000000000;
+      result.counter = 0;
+      result.percents = 0;
+      result.usingLocalRouter = false;
       result.isPremium = false;
       return result;
     }

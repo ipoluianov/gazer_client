@@ -152,6 +152,12 @@ class TitleBarSt extends State<TitleBar> {
       usingLocalRouter =
           Repository().client(widget.connection!).usingLocalRouter();
     }
+    bool usingDirectConnection = false;
+    if (widget.connection != null) {
+      usingDirectConnection =
+          Repository().client(widget.connection!).usingDirectConnection();
+    }
+
     if (widget.connection != null) {
       billingInfo = Repository().client(widget.connection!).billingInfo();
     }
@@ -208,6 +214,17 @@ class TitleBarSt extends State<TitleBar> {
       innerWidget = const Center(
         child: Icon(
           Icons.radar,
+          size: 32,
+          color: Colors.green,
+        ),
+      );
+      percentsText = Container();
+    }
+
+    if (usingDirectConnection) {
+      innerWidget = const Center(
+        child: Icon(
+          Icons.lan,
           size: 32,
           color: Colors.green,
         ),

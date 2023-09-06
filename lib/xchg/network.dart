@@ -42,6 +42,8 @@ class XchgNetwork {
   List<String> initialPoints = [];
   List<XchgNetworkRange> ranges = [];
 
+  bool isDirectConnection = false;
+
   /////////////////////////
   String debugSource = "";
   /////////////////////////
@@ -77,6 +79,7 @@ class XchgNetwork {
 
   factory XchgNetwork.directAddressRouter(String address) {
     var network = XchgNetwork("DirectAddressRouter", 0, [], []);
+    network.isDirectConnection = true;
     for (int i = 0; i < 16; i++) {
       XchgNetworkRange range = XchgNetworkRange(i.toRadixString(16), []);
       range.prefix = i.toRadixString(16);

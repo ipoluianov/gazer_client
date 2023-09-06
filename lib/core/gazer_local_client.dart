@@ -81,6 +81,10 @@ class GazerLocalClient {
     return Repository().peer(networkId).usingLocalRouter(address);
   }
 
+  bool usingDirectConnection() {
+    return Repository().peer(networkId).usingDirectConnection();
+  }
+
   ////////////////////////////////////////////////////////
   //// Units
   ////////////////////////////////////////////////////////

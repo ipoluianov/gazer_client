@@ -75,6 +75,15 @@ class Peer {
     return remotePeer.usingLocalRouter();
   }
 
+  bool usingDirectConnection() {
+    if (networkId.isNotEmpty) {
+      if (networkId.startsWith("addr#")) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   void requestIncomingFramesFromInternet() {
     checkNetwork();
     if (network != null) {
@@ -244,10 +253,20 @@ class Peer {
 
   BillingDB billingDB = BillingDB();
   BillingSummary billingInfoForAddress(String address) {
+    bool isDirectConnection = false;
+    if (network != null) {
+      isDirectConnection = network!.isDirectConnection;
+    }
+
     String localAddress = addressForPublicKey(keyPair.publicKey);
 
     BillingSummary summary = billingDB.getSummaryForAddresses(
-        network, localAddress, address, usingLocalRouter(address));
+      network,
+      localAddress,
+      address,
+      usingLocalRouter(address),
+      isDirectConnection,
+    );
     return summary;
   }
 
