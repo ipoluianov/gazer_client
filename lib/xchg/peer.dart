@@ -398,6 +398,15 @@ class Peer {
   }
 
   void checkNetwork() {
+    if (networkId.isNotEmpty) {
+      if (networkId.startsWith("addr#")) {
+        network =
+            XchgNetwork.directAddressRouter(networkId.replaceAll("addr#", ""));
+        return;
+      }
+      return;
+    }
+
     var diffSec = lastNetworkUpdateTime.difference(DateTime.now()).inSeconds;
     if (network == null || diffSec.abs() > 10) {
       updateNetwork();

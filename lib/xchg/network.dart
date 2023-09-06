@@ -75,6 +75,18 @@ class XchgNetwork {
     ]);
   }
 
+  factory XchgNetwork.directAddressRouter(String address) {
+    var network = XchgNetwork("DirectAddressRouter", 0, [], []);
+    for (int i = 0; i < 16; i++) {
+      XchgNetworkRange range = XchgNetworkRange(i.toRadixString(16), []);
+      range.prefix = i.toRadixString(16);
+      range.hosts.add(XchgNetworkHost("$address:42001", range.prefix));
+      range.hosts.add(XchgNetworkHost("$address:42002", range.prefix));
+      network.ranges.add(range);
+    }
+    return network;
+  }
+
   factory XchgNetwork.fromJson(Map<String, dynamic> json) {
     return XchgNetwork(
       json['name'] ?? "",
