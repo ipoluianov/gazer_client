@@ -8,7 +8,7 @@ import 'package:pointycastle/asymmetric/api.dart';
 
 import '../xchg/peer.dart';
 
-enum NavIndex { units, charts, maps, more }
+enum NavIndex { home, units, charts, maps, more }
 
 class Repository {
   static final Repository _singleton = Repository._internal();

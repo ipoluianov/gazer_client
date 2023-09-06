@@ -12,6 +12,7 @@ import 'package:gazer_client/forms/utilities/resources/resources_form/resources_
 import 'package:wakelock/wakelock.dart';
 
 import '../../forms/chart_groups/chart_group_form/chart_group_form.dart';
+import '../../forms/home/home.dart';
 import '../../forms/mores/access_form/access_form.dart';
 import '../../forms/mores/appearance_form/appearance_form.dart';
 import '../../forms/mores/billing_form/billing_form.dart';
@@ -125,6 +126,19 @@ class RouteGenerator {
               Animation<double> secondaryAnimation) {
             return ChartGroupForm(
               settings.arguments as ChartGroupFormArgument,
+            );
+          },
+          transitionsBuilder: transBuilder,
+          transitionDuration: transDuration(),
+          reverseTransitionDuration: transDuration(),
+        );
+      case '/home':
+        Repository().navIndex = NavIndex.home;
+        return PageRouteBuilder(
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
+            return HomeForm(
+              settings.arguments as HomeFormArgument,
             );
           },
           transitionsBuilder: transBuilder,
@@ -429,6 +443,11 @@ class ChartGroupRenameFormArgument {
 class MoreFormArgument {
   Connection connection;
   MoreFormArgument(this.connection);
+}
+
+class HomeFormArgument {
+  Connection connection;
+  HomeFormArgument(this.connection);
 }
 
 class AboutFormArgument {

@@ -28,14 +28,16 @@ bool navIsCurrentForLeftMenuItem(context, int index) {
 
 int navCurrentIndex(context) {
   switch (Repository().navIndex) {
-    case NavIndex.units:
+    case NavIndex.home:
       return 0;
-    case NavIndex.charts:
+    case NavIndex.units:
       return 1;
-    case NavIndex.maps:
+    case NavIndex.charts:
       return 2;
-    case NavIndex.more:
+    case NavIndex.maps:
       return 3;
+    case NavIndex.more:
+      return 4;
   }
 }
 

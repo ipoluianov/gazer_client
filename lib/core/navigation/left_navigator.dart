@@ -26,6 +26,7 @@ class LeftNavigator extends StatelessWidget {
   }
 
   Widget buildLeftBar(context) {
+    bool showHome = true;
     bool showUnits = true;
     bool showCharts = true;
     bool showMaps = true;
@@ -33,6 +34,7 @@ class LeftNavigator extends StatelessWidget {
 
     switch (navCurrentPath(context)) {
       case "/":
+        showHome = false;
         showUnits = false;
         showCharts = false;
         showMaps = false;
@@ -42,19 +44,29 @@ class LeftNavigator extends StatelessWidget {
 
     return Container(
       width: 120,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           //color: Colors.black12,
           ),
       child: Stack(
         children: [
           Border09Painter.build(false),
           Container(
-            padding: EdgeInsets.all(6),
+            padding: const EdgeInsets.all(6),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                showHome
+                    ? buildLeftBarButton(context, 0, "Home", Icons.apps, () {
+                        Navigator.of(context)
+                            .popUntil((route) => route.isFirst);
+                        Navigator.of(context).pop();
+                        Navigator.pushNamed(context, "/home",
+                            arguments: HomeFormArgument(
+                                Repository().lastSelectedConnection));
+                      })
+                    : Container(),
                 showUnits
-                    ? buildLeftBarButton(context, 0, "Units", Icons.blur_on,
+                    ? buildLeftBarButton(context, 1, "Units", Icons.blur_on,
                         () {
                         Navigator.of(context)
                             .popUntil((route) => route.isFirst);
@@ -66,7 +78,7 @@ class LeftNavigator extends StatelessWidget {
                     : Container(),
                 showCharts
                     ? buildLeftBarButton(
-                        context, 1, "Charts", Icons.stacked_line_chart, () {
+                        context, 2, "Charts", Icons.stacked_line_chart, () {
                         Navigator.of(context)
                             .popUntil((route) => route.isFirst);
                         Navigator.of(context).pop();
@@ -78,7 +90,7 @@ class LeftNavigator extends StatelessWidget {
                       })
                     : Container(),
                 showMaps
-                    ? buildLeftBarButton(context, 2, "Maps", Icons.layers, () {
+                    ? buildLeftBarButton(context, 3, "Maps", Icons.layers, () {
                         Navigator.of(context)
                             .popUntil((route) => route.isFirst);
                         Navigator.of(context).pop();
@@ -90,7 +102,7 @@ class LeftNavigator extends StatelessWidget {
                       })
                     : Container(),
                 showMore
-                    ? buildLeftBarButton(context, 3, "More", Icons.more_horiz,
+                    ? buildLeftBarButton(context, 4, "More", Icons.more_horiz,
                         () {
                         Navigator.of(context)
                             .popUntil((route) => route.isFirst);

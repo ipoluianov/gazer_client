@@ -56,6 +56,7 @@ class BottomNavigator extends StatelessWidget {
   }
 
   Widget buildBottomBar(context) {
+    bool showHome = true;
     bool showUnits = true;
     bool showCharts = true;
     bool showMaps = true;
@@ -63,6 +64,7 @@ class BottomNavigator extends StatelessWidget {
 
     switch (navCurrentPath(context)) {
       case "/":
+        showHome = false;
         showUnits = false;
         showCharts = false;
         showMaps = false;
@@ -83,8 +85,17 @@ class BottomNavigator extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          showHome
+              ? buildBottomBarButton(context, 0, "Home", Icons.apps, () {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  Navigator.of(context).pop();
+                  Navigator.pushNamed(context, "/home",
+                      arguments: HomeFormArgument(
+                          Repository().lastSelectedConnection));
+                })
+              : Container(),
           showUnits
-              ? buildBottomBarButton(context, 0, "Units", Icons.blur_on, () {
+              ? buildBottomBarButton(context, 1, "Units", Icons.blur_on, () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                   Navigator.of(context).pop();
                   Navigator.pushNamed(context, "/node",
@@ -94,7 +105,7 @@ class BottomNavigator extends StatelessWidget {
               : Container(),
           showCharts
               ? buildBottomBarButton(
-                  context, 1, "Charts", Icons.stacked_line_chart, () {
+                  context, 2, "Charts", Icons.stacked_line_chart, () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                   Navigator.of(context).pop();
                   Navigator.pushNamed(
@@ -105,7 +116,7 @@ class BottomNavigator extends StatelessWidget {
                 })
               : Container(),
           showMaps
-              ? buildBottomBarButton(context, 2, "Maps", Icons.layers, () {
+              ? buildBottomBarButton(context, 3, "Maps", Icons.layers, () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                   Navigator.of(context).pop();
                   Navigator.pushNamed(
@@ -116,7 +127,7 @@ class BottomNavigator extends StatelessWidget {
                 })
               : Container(),
           showMore
-              ? buildBottomBarButton(context, 3, "More", Icons.more_horiz, () {
+              ? buildBottomBarButton(context, 4, "More", Icons.more_horiz, () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                   Navigator.of(context).pop();
                   Navigator.pushNamed(context, "/more",
