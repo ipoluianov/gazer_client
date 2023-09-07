@@ -34,6 +34,7 @@ import '../../forms/units/node_form/node_form.dart';
 class RouteGenerator {
   static void processRouteArguments(RouteSettings settings) {
     if (settings.name == "/" ||
+        settings.name == "/home" ||
         settings.name == "/node" ||
         settings.name == "/chart_groups" ||
         settings.name == "/chart_group" ||
@@ -42,6 +43,11 @@ class RouteGenerator {
         settings.name == "/map" ||
         settings.name == "/users") {
       Repository().lastPath = settings.name!;
+    }
+
+    if (settings.arguments is HomeFormArgument) {
+      Repository().lastSelectedConnection =
+          (settings.arguments as HomeFormArgument).connection;
     }
 
     if (settings.arguments is NodeFormArgument) {

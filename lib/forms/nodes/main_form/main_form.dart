@@ -121,8 +121,8 @@ class MainFormSt extends State<MainForm> {
                     return NodeWidget(e, () {
                       Navigator.of(context).popUntil((route) => route.isFirst);
                       Navigator.of(context).pop();
-                      Navigator.pushNamed(context, "/node",
-                          arguments: NodeFormArgument(e));
+                      Navigator.pushNamed(context, "/home",
+                          arguments: HomeFormArgument(e));
                     }, () {
                       wsRemoveConnection(e.id).then((value) {
                         loadNodesList();

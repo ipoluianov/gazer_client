@@ -29,25 +29,16 @@ class HomeFormSt extends State<HomeForm> {
 
   Widget buildItem(HomeItem innerItem) {
     List<Widget> ws = [];
-    if (innerItem.title().isNotEmpty) {
-      ws.add(Text(
-        innerItem.title(),
-        style: const TextStyle(fontSize: 24),
-      ));
-      ws.add(Container(
-        constraints: const BoxConstraints(minHeight: 1),
-        color: DesignColors.fore1(),
-      ));
-    }
+    ws.add(
+      Container(
+        constraints: const BoxConstraints(minHeight: 6),
+        color: Colors.transparent,
+      ),
+    );
     ws.add(innerItem);
 
     return Container(
       margin: const EdgeInsets.only(top: 10, bottom: 20, left: 10, right: 10),
-      decoration: BoxDecoration(
-          border: Border.all(
-        width: 0,
-        //color: DesignColors.fore2(),
-      )),
       //constraints: BoxConstraints(maxWidth: 500),
       child: Row(
         children: [
@@ -65,7 +56,6 @@ class HomeFormSt extends State<HomeForm> {
   List<Widget> items() {
     return [
       buildItem(HomeItemNodeInfo(widget.arg, "")),
-      buildItem(HomeItemUnitItems(widget.arg, "u2")),
     ];
   }
 
@@ -80,7 +70,7 @@ class HomeFormSt extends State<HomeForm> {
         return Scaffold(
           appBar: TitleBar(
             widget.arg.connection,
-            "More",
+            "Node",
             actions: <Widget>[
               buildHomeButton(context),
             ],

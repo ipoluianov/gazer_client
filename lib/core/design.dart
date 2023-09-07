@@ -74,7 +74,7 @@ class DesignColors {
       mainBackgroundColor = _back;
 
       _good = const Color(0xFF008800);
-      _bad = const Color(0xFFBF360C);
+      _bad = Color.fromARGB(255, 235, 6, 6);
       _warning = const Color(0xFFFF7700);
     }
     if (code == "green") {
@@ -89,7 +89,7 @@ class DesignColors {
       mainBackgroundColor = _back;
 
       _good = const Color(0xFF008800);
-      _bad = const Color(0xFFBF360C);
+      _bad = Color.fromARGB(255, 235, 6, 6);
       _warning = const Color(0xFFFF7700);
     }
     if (code == "turquoise") {
@@ -104,7 +104,7 @@ class DesignColors {
       mainBackgroundColor = _back;
 
       _good = const Color(0xFF008800);
-      _bad = const Color(0xFFBF360C);
+      _bad = Color.fromARGB(255, 235, 6, 6);
       _warning = const Color(0xFFFF7700);
     }
     if (code == "yellow") {
@@ -119,7 +119,7 @@ class DesignColors {
       mainBackgroundColor = _back;
 
       _good = const Color(0xFF008800);
-      _bad = const Color(0xFFBF360C);
+      _bad = Color.fromARGB(255, 235, 6, 6);
       _warning = const Color(0xFFFF7700);
     }
     if (code == "white") {
@@ -134,7 +134,7 @@ class DesignColors {
       mainBackgroundColor = _back;
 
       _good = const Color(0xFF008800);
-      _bad = const Color(0xFFBF360C);
+      _bad = Color.fromARGB(255, 235, 6, 6);
       _warning = const Color(0xFFFF7700);
     }
   }
