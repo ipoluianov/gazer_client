@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/repository.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../core/gazer_local_client.dart';
 import '../../core/gazer_style.dart';
 import '../../core/protocol/unit/unit_state_all.dart';
+import '../../core/tools/place_holders.dart';
 import 'home_item.dart';
 
 class HomeItemNodeInfo extends HomeItem {
@@ -107,10 +109,53 @@ class HomeItemNodeInfoState extends State<HomeItemNodeInfo> {
     return const Text("-------------");
   }
 
+  Widget loadingPlaceHolder() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade500,
+      highlightColor: Colors.grey.shade100,
+      period: Duration(milliseconds: 1000),
+      enabled: true,
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            const ContentPlaceholder(
+              lineType: ContentLineType.threeLines,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget loadingItem() {
+    return Shimmer.fromColors(
+        baseColor: Colors.grey.shade800,
+        highlightColor: Colors.grey.shade400,
+        period: const Duration(milliseconds: 1000),
+        enabled: true,
+        child: Container(
+            width: 300,
+            height: 50,
+            color: Colors.black,
+            margin: const EdgeInsets.all(6)));
+  }
+
   Widget buildUnits(BuildContext context) {
     List<Widget> widgets = [];
+    List<UnitStateAllItemResponse> itemsToDisplay = [];
 
-    for (var unit in items) {
+    if (loaded) {
+      itemsToDisplay = items;
+    } else {
+      for (int i = 0; i < 6; i++) {
+        widgets.add(loadingItem());
+      }
+    }
+
+    for (var unit in itemsToDisplay) {
       String itemShortName = unit.mainItem.replaceAll("${unit.unitId}/", "");
 
       widgets.add(
@@ -156,6 +201,7 @@ class HomeItemNodeInfoState extends State<HomeItemNodeInfo> {
         ),
       );
     }
+
     return Container(
       margin: const EdgeInsets.only(top: 10),
       child: Wrap(
