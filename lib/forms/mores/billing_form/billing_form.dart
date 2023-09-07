@@ -89,14 +89,14 @@ class BillingFormSt extends State<BillingForm> {
         Colors.green,
       ),
     );
-    /*innerWidgets.add(
+    innerWidgets.add(
       buildAddressBlock(
         Repository().client(widget.arg.connection).localAddress(),
         "This Client",
         "buy premium\r\nfor THIS CLIENT",
         Colors.blue,
       ),
-    );*/
+    );
 
     Widget innerWidget = Container(
       padding: const EdgeInsets.only(top: 50),

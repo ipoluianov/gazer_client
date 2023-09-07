@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -31,13 +33,28 @@ class BillingFormItemState extends State<BillingFormItem>
     return buildUnit();
   }
 
+  late Timer timerUpdate_;
+  bool blinker = false;
+
+  @override
+  void initState() {
+    super.initState();
+    timerUpdate_ = Timer.periodic(const Duration(milliseconds: 250), (timer) {
+      setState(() {
+        blinker = !blinker;
+      });
+    });
+  }
+
   @override
   void dispose() {
+    timerUpdate_.cancel();
     super.dispose();
   }
 
   Widget buildUnit() {
     double iconSize = 72;
+    String message = "";
 
     Widget iconLocal = Container(
       padding: const EdgeInsets.only(right: 20),
@@ -66,9 +83,21 @@ class BillingFormItemState extends State<BillingFormItem>
       log.add("Premium Level Is Detected");
     }
 
+    bool overflow = false;
+
     if (!widget.usingLocalRouter && !widget.isPremium) {
       log.add("Limited");
       logColor = Colors.deepOrange;
+
+      for (var item in widget.items) {
+        if (item.counter > item.limit) {
+          overflow = true;
+        }
+      }
+
+      if (overflow) {
+        message = "- LIMIT EXCEEDED -";
+      }
     }
 
     String addressForRequest = widget.address.replaceAll("#", "");
@@ -107,6 +136,7 @@ class BillingFormItemState extends State<BillingFormItem>
           ),
         ),
       );
+      message = "";
     }
 
     return Container(
@@ -114,7 +144,7 @@ class BillingFormItemState extends State<BillingFormItem>
       child: Container(
         padding: const EdgeInsets.all(10),
         width: 480,
-        height: 360,
+        height: 420,
         child: Stack(
           children: [
             Border01Painter.build(false),
@@ -137,7 +167,14 @@ class BillingFormItemState extends State<BillingFormItem>
                     child: Column(
                       children: widget.items.map((e) {
                         return Text("${e.router} = ${e.counter} / ${e.limit}",
-                            style: const TextStyle(color: Colors.grey));
+                            style: TextStyle(
+                                fontWeight: overflow
+                                    ? FontWeight.w600
+                                    : FontWeight.w300,
+                                fontSize: overflow ? 20 : 14,
+                                color: overflow
+                                    ? (DesignColors.bad())
+                                    : Colors.grey));
                       }).toList(),
                     ),
                   ),
@@ -169,6 +206,17 @@ class BillingFormItemState extends State<BillingFormItem>
                     widget.displayName,
                     style: TextStyle(
                       color: DesignColors.fore(),
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Text(
+                    message,
+                    style: TextStyle(
+                      color: blinker ? Colors.transparent : DesignColors.bad(),
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
