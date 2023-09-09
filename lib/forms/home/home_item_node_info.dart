@@ -31,6 +31,7 @@ class HomeItemNodeInfoState extends State<HomeItemNodeInfo> {
   @override
   void initState() {
     super.initState();
+    load();
     timerUpdate_ = Timer.periodic(const Duration(seconds: 1), (timer) {
       load();
     });
@@ -130,17 +131,57 @@ class HomeItemNodeInfoState extends State<HomeItemNodeInfo> {
     );
   }
 
+  Widget buildUnit(String unitName, String itemName, String value, String uom) {
+    return Container(
+      //color: DesignColors.back2(),
+      margin: const EdgeInsets.only(
+        left: 0,
+        top: 0,
+        bottom: 12,
+        right: 6,
+      ),
+      constraints: const BoxConstraints(minWidth: 300, maxWidth: 300),
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(
+            width: 3,
+            color: colorByUOM(uom),
+          ),
+        ),
+      ),
+      padding: const EdgeInsets.only(left: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            unitName,
+            style: TextStyle(
+              overflow: TextOverflow.ellipsis,
+              color: DesignColors.fore(),
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            "$itemName = $value $uom",
+            style: TextStyle(
+              overflow: TextOverflow.ellipsis,
+              color: colorByUOM(uom),
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget loadingItem() {
     return Shimmer.fromColors(
-        baseColor: Colors.grey.shade800,
-        highlightColor: Colors.grey.shade400,
-        period: const Duration(milliseconds: 1000),
-        enabled: true,
-        child: Container(
-            width: 300,
-            height: 50,
-            color: Colors.black,
-            margin: const EdgeInsets.all(6)));
+      baseColor: Colors.grey.shade800,
+      highlightColor: Colors.grey.shade400,
+      period: const Duration(milliseconds: 1000),
+      enabled: true,
+      child: buildUnit("Unit Name", "Item Name", "Value", "UOM"),
+    );
   }
 
   Widget buildUnits(BuildContext context) {
@@ -158,48 +199,8 @@ class HomeItemNodeInfoState extends State<HomeItemNodeInfo> {
     for (var unit in itemsToDisplay) {
       String itemShortName = unit.mainItem.replaceAll("${unit.unitId}/", "");
 
-      widgets.add(
-        Container(
-          //color: DesignColors.back2(),
-          margin: const EdgeInsets.only(
-            left: 0,
-            top: 0,
-            bottom: 12,
-            right: 6,
-          ),
-          constraints: const BoxConstraints(minWidth: 300, maxWidth: 300),
-          decoration: BoxDecoration(
-            border: Border(
-              left: BorderSide(
-                width: 3,
-                color: colorByUOM(unit.uom),
-              ),
-            ),
-          ),
-          padding: const EdgeInsets.only(left: 6),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                unit.unitName,
-                style: TextStyle(
-                  overflow: TextOverflow.ellipsis,
-                  color: DesignColors.fore(),
-                  fontSize: 16,
-                ),
-              ),
-              Text(
-                "$itemShortName = ${unit.value} ${unit.uom}",
-                style: TextStyle(
-                  overflow: TextOverflow.ellipsis,
-                  color: colorByUOM(unit.uom),
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      widgets
+          .add(buildUnit(unit.unitName, itemShortName, unit.value, unit.uom));
     }
 
     return Container(
