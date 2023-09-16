@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -102,11 +103,43 @@ class BillingFormItemState extends State<BillingFormItem>
 
     String addressForRequest = widget.address.replaceAll("#", "");
 
+    void buyPremiumIOS() {
+      var url = Uri.parse(
+          "dapp://gazer.cloud/action/buy-premium/?addr=$addressForRequest");
+      print("running ... $url");
+      launchUrl(url).catchError((err) {
+        _showAlertDialog("Error", "Error: $err");
+      }).then((value) {
+        if (!value) {
+          _showAlertDialog("Message", "MetaMask application not found");
+        }
+        print("RESULT: $value");
+      });
+    }
+
+    void buyPremiumDesktop() {
+      var url = Uri.parse(
+          "https://gazer.cloud/action/buy-premium/?addr=$addressForRequest");
+      print("running ... $url");
+      launchUrl(url).catchError((err) {
+        print("ERROR: $err");
+      }).then((value) {
+        print("RESULT: $value");
+      });
+    }
+
     Widget buyPremiumButton = ElevatedButton(
       onPressed: () {
-        var url = Uri.parse(
-            "https://gazer.cloud/action/buy-premium/?addr=$addressForRequest");
-        launchUrl(url);
+        if (Platform.isIOS) {
+          buyPremiumIOS();
+          return;
+        }
+        if (Platform.isAndroid) {
+          buyPremiumIOS();
+          return;
+        }
+
+        buyPremiumDesktop();
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: widget.buttonColor,
@@ -229,6 +262,33 @@ class BillingFormItemState extends State<BillingFormItem>
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _showAlertDialog(String title, String text) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(text),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
