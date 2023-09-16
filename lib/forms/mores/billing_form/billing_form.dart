@@ -61,18 +61,22 @@ class BillingFormSt extends State<BillingForm> {
         Repository().client(widget.arg.connection).usingLocalRouter();
     var billingDB = Repository().client(widget.arg.connection).billingDB();
     List<BillingFromRouter> loadedItems = [];
+    var isPremium = false;
     for (var q in billingDB.entries.values) {
       for (var w in q.billingInfoFromRouters.values) {
         if (w.address == address) {
           loadedItems.add(w);
+          if (w.limit >= 1000000000) {
+            isPremium = true;
+          }
         }
       }
     }
     loadedItems.sort((i, j) {
       return i.router.compareTo(j.router);
     });
-    return BillingFormItem(address, loadedItems, name, usingLocalRouter, false,
-        buttonText, buttonColor);
+    return BillingFormItem(address, loadedItems, name, usingLocalRouter,
+        isPremium, buttonText, buttonColor);
   }
 
   ScrollController scrollController = ScrollController();
