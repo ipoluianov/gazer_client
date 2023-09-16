@@ -48,8 +48,8 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requires access to the photo library for QRID.</string>
+	<string>The app only requires access to the photo library to read QR codes when adding new nodes. The application does not use or save original photos.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>To capture profile photo please grant camera access</string>
+	<string>The app only needs camera access to read QR codes when adding new nodes. The application does not use or save original photos.</string>
 </dict>
 </plist>
