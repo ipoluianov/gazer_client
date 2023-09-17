@@ -104,10 +104,13 @@ class BillingFormSt extends State<BillingForm> {
 
     Widget innerWidget = Container(
       padding: const EdgeInsets.only(top: 50),
-      child: SingleChildScrollView(
+      child: DesignColors.buildScrollBar(
         controller: scrollController,
-        child: Column(
-          children: innerWidgets,
+        child: SingleChildScrollView(
+          controller: scrollController,
+          child: Column(
+            children: innerWidgets,
+          ),
         ),
       ),
     );

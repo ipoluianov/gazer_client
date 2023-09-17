@@ -87,9 +87,8 @@ class HomeFormSt extends State<HomeForm> {
                     children: [
                       LeftNavigator(showLeft),
                       Expanded(
-                        child: Scrollbar(
+                        child: DesignColors.buildScrollBar(
                           controller: _scrollController,
-                          thumbVisibility: true,
                           child: SingleChildScrollView(
                             controller: _scrollController,
                             child: Wrap(

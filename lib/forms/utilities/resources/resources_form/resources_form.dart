@@ -205,9 +205,8 @@ class ResourcesFormSt extends State<ResourcesForm> {
 
   Widget buildEmptyNodeList(context) {
     return Expanded(
-      child: Scrollbar(
+      child: DesignColors.buildScrollBar(
         controller: scrollController1,
-        thumbVisibility: true,
         child: SingleChildScrollView(
           controller: scrollController1,
           child: Column(
@@ -402,9 +401,8 @@ class ResourcesFormSt extends State<ResourcesForm> {
     }
 
     return Expanded(
-      child: Scrollbar(
+      child: DesignColors.buildScrollBar(
         controller: scrollController2,
-        thumbVisibility: true,
         child: SingleChildScrollView(
           controller: scrollController2,
           child: Container(

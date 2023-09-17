@@ -106,9 +106,8 @@ class MainFormSt extends State<MainForm> {
 
   Widget buildNodeList(BuildContext context) {
     return Expanded(
-      child: Scrollbar(
+      child: DesignColors.buildScrollBar(
         controller: scrollController1,
-        thumbVisibility: false,
         child: SingleChildScrollView(
           controller: scrollController1,
           child: Column(
@@ -142,9 +141,8 @@ class MainFormSt extends State<MainForm> {
 
   Widget buildEmptyNodeList(context) {
     return Expanded(
-      child: Scrollbar(
+      child: DesignColors.buildScrollBar(
         controller: scrollController2,
-        thumbVisibility: true,
         child: SingleChildScrollView(
           controller: scrollController2,
           child: Column(

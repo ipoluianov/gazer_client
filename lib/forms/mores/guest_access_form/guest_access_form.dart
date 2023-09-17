@@ -119,7 +119,7 @@ class GuestAccessFormSt extends State<GuestAccessForm> {
                     children: [
                       LeftNavigator(showLeft),
                       Expanded(
-                        child: Scrollbar(
+                        child: DesignColors.buildScrollBar(
                           controller: scrollController,
                           child: SingleChildScrollView(
                             controller: scrollController,
