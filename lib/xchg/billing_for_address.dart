@@ -31,6 +31,7 @@ class BillingSummary {
   double percents = 0;
   bool usingLocalRouter = false;
   bool isPremium = false;
+  bool isReceived = false;
 }
 
 class BillingForAddress {
@@ -115,6 +116,7 @@ class BillingDB {
       result.percents = 0;
       result.usingLocalRouter = true;
       result.isPremium = false;
+      result.isReceived = true;
       return result;
     }
 
@@ -126,6 +128,7 @@ class BillingDB {
       result.percents = 0;
       result.usingLocalRouter = false;
       result.isPremium = false;
+      result.isReceived = true;
       return result;
     }
 
@@ -134,7 +137,9 @@ class BillingDB {
 
     double percentsClient = 1;
     bool premiumDetected = false;
+    bool received = false;
     for (var bi in billingForClient.billingInfoFromRouters.values) {
+      received = true;
       double p = 0;
       if (bi.limit > 0) {
         if (bi.limit == 1000000000) {
@@ -148,6 +153,7 @@ class BillingDB {
     }
     double percentsServer = 1;
     for (var bi in billingForServer.billingInfoFromRouters.values) {
+      received = true;
       double p = 0;
       if (bi.limit > 0) {
         if (bi.limit == 1000000000) {
@@ -174,6 +180,7 @@ class BillingDB {
     result.percents = percents * 100;
     //result.usingLocalRouter = false;
     result.isPremium = premiumDetected;
+    result.isReceived = received;
     return result;
   }
 }

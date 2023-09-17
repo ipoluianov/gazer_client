@@ -98,7 +98,7 @@ class TitleBarSt extends State<TitleBar> {
     }
   }
 
-  Widget billing() {
+  Widget subheader() {
     BillingSummary billingInfo = BillingSummary();
 
     String text = "";
@@ -266,6 +266,19 @@ class TitleBarSt extends State<TitleBar> {
       percentsText = Container();
     }
 
+    //billingInfo.isReceived = false;
+
+    if (!billingInfo.isReceived && widget.connection != null) {
+      innerWidget = const Center(
+        child: Icon(
+          Icons.circle,
+          size: 32,
+          color: Color.fromARGB(50, 150, 150, 150),
+        ),
+      );
+      percentsText = Container();
+    }
+
     return GestureDetector(
       onTap: () {
         if (widget.connection != null) {
@@ -340,7 +353,7 @@ class TitleBarSt extends State<TitleBar> {
                             child: Container(
                               //color: Colors.cyan,
                               alignment: Alignment.topLeft,
-                              child: billing(),
+                              child: subheader(),
                             ),
                           ),
                         ],
