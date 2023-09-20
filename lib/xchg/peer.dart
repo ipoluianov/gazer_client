@@ -162,11 +162,18 @@ class Peer {
     }
     updatingNetwork = true;
     try {
-      network = await networkContainerLoadFromInternet();
+      var networkFromInternet = await networkContainerLoadFromInternet();
+
+      int existingNetworkTimestamp = 0;
       if (network != null) {
-        /*print(
-            "networkContainerLoadFromInternet ok ${network!.name} source:${network!.debugSource}");*/
+        existingNetworkTimestamp = network!.timestamp;
       }
+
+      network = networkFromInternet;
+      /*if (network == null ||
+          networkFromInternet.timestamp > existingNetworkTimestamp) {
+        network = networkFromInternet;
+      }*/
     } catch (ex) {
       print("networkContainerLoadFromInternet ex $ex");
     }
