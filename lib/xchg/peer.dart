@@ -169,11 +169,11 @@ class Peer {
         existingNetworkTimestamp = network!.timestamp;
       }
 
-      network = networkFromInternet;
-      /*if (network == null ||
+      //network = networkFromInternet;
+      if (network == null ||
           networkFromInternet.timestamp > existingNetworkTimestamp) {
         network = networkFromInternet;
-      }*/
+      }
     } catch (ex) {
       print("networkContainerLoadFromInternet ex $ex");
     }
