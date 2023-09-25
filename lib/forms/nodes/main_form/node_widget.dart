@@ -38,8 +38,7 @@ class NodeWidgetSt extends State<NodeWidget> {
   void initState() {
     super.initState();
     setState(() {
-      //nodeName = widget.conn.address;
-      nodeName = "...";
+      nodeName = widget.conn.lastName;
     });
     Repository().client(widget.conn).infoReceived =
         false; // Reset info in connection
@@ -79,6 +78,10 @@ class NodeWidgetSt extends State<NodeWidget> {
     });
     Repository().client(widget.conn).serviceInfo().then((value) {
       if (mounted) {
+        if (widget.conn.lastName != value.nodeName) {
+          widget.conn.lastName = value.nodeName;
+          wsEditConnection(widget.conn);
+        }
         setState(() {
           nodeName = value.nodeName;
           status = value.version;

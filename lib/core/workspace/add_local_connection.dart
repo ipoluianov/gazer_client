@@ -21,7 +21,7 @@ Future<Connection?> addNode(String address, String accessKey) async {
   }
 
   var conn = Connection(UniqueKey().toString(), cl.transport, cl.address,
-      cl.accessKey, cl.networkId);
+      cl.accessKey, cl.networkId, "");
 
   await wsAddConnection(conn);
   return conn;
@@ -44,7 +44,7 @@ Future<Connection?> editNode(
   }
 
   var conn =
-      Connection(id, cl.transport, cl.address, cl.accessKey, cl.networkId);
+      Connection(id, cl.transport, cl.address, cl.accessKey, cl.networkId, "");
 
   await wsEditConnection(conn);
   return conn;

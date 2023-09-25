@@ -13,9 +13,10 @@ class Connection {
   String address;
   String sessionKey;
   String networkId;
+  String lastName;
 
-  Connection(
-      this.id, this.transport, this.address, this.sessionKey, this.networkId);
+  Connection(this.id, this.transport, this.address, this.sessionKey,
+      this.networkId, this.lastName);
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -23,6 +24,7 @@ class Connection {
         'address': address,
         'session_key': sessionKey,
         'network_id': networkId,
+        'last_name': lastName,
       };
 
   factory Connection.fromJson(Map<String, dynamic> json) {
@@ -32,11 +34,12 @@ class Connection {
       json['address'],
       json['session_key'],
       json.containsKey('network_id') ? json['network_id'] : "",
+      json.containsKey('last_name') ? json['last_name'] : "",
     );
   }
 
   factory Connection.makeDefault() {
-    return Connection("", "", "", "", "");
+    return Connection("", "", "", "", "", "");
   }
 }
 
@@ -60,17 +63,12 @@ class CloudAccount {
 
 class Workspace {
   List<Connection> connections;
-  List<CloudAccount> cloudAccounts;
-  Workspace(this.connections, this.cloudAccounts);
-  Map<String, dynamic> toJson() =>
-      {'connections': connections, 'cloud_accounts': cloudAccounts};
+  Workspace(this.connections);
+  Map<String, dynamic> toJson() => {'connections': connections};
   factory Workspace.fromJson(Map<String, dynamic> json) {
     return Workspace(
       List<Connection>.from(
         json['connections'].map((model) => Connection.fromJson(model)),
-      ),
-      List<CloudAccount>.from(
-        json['cloud_accounts'].map((model) => CloudAccount.fromJson(model)),
       ),
     );
   }
@@ -85,7 +83,7 @@ Future<Workspace> readWorkspace() async {
     ws = Workspace.fromJson(jsonDecode(wsContent));
     return ws;
   } catch (ex) {
-    ws = Workspace([], []);
+    ws = Workspace([]);
   }
 
   return ws;
@@ -104,18 +102,6 @@ Future<void> wsSetConnection(List<Connection> connections) async {
   saveWorkspace(ws);
 }
 
-Future<void> wsSetCloudAccounts(List<CloudAccount> cloudAccounts) async {
-  var ws = await readWorkspace();
-  ws.cloudAccounts = cloudAccounts;
-  saveWorkspace(ws);
-}
-
-Future<void> wsAddCloudAccounts(CloudAccount cloudAccount) async {
-  var ws = await readWorkspace();
-  ws.cloudAccounts.add(cloudAccount);
-  saveWorkspace(ws);
-}
-
 Future<void> wsAddConnection(Connection connection) async {
   final prefs = await SharedPreferences.getInstance();
   prefs.setBool("node_client_added_connection", true);
@@ -125,6 +111,7 @@ Future<void> wsAddConnection(Connection connection) async {
 }
 
 Future<void> wsEditConnection(Connection connection) async {
+  print("Edit connection ${connection.address} '${connection.lastName}'");
   final prefs = await SharedPreferences.getInstance();
   prefs.setBool("node_client_added_connection", true);
   var ws = await readWorkspace();
@@ -133,6 +120,7 @@ Future<void> wsEditConnection(Connection connection) async {
       conn.address = connection.address;
       conn.sessionKey = connection.sessionKey;
       conn.networkId = connection.networkId;
+      conn.lastName = connection.lastName;
     }
   }
   saveWorkspace(ws);
@@ -219,9 +207,4 @@ Future<void> wsRemoveConnection(String id) async {
 Future<List<Connection>> wsGetConnections() async {
   var ws = await readWorkspace();
   return ws.connections;
-}
-
-Future<List<CloudAccount>> wsGetCloudAccounts() async {
-  var ws = await readWorkspace();
-  return ws.cloudAccounts;
 }
