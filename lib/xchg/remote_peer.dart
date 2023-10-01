@@ -342,7 +342,7 @@ class RemotePeer {
     List<Uint8List> frames = [];
 
     int offset = 0;
-    int blockSize = 524;
+    int blockSize = 1024;
     while (offset < tr.data.length) {
       int currentBlockSize = blockSize;
       int restDataLen = tr.data.length - offset;

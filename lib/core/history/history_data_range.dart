@@ -2,7 +2,7 @@ import '../protocol/dataitem/data_item_history_chart.dart';
 import '../repository.dart';
 import '../workspace/workspace.dart';
 
-const historyDataRangeSize = 100;
+const historyDataRangeSize = 20; // Points to load
 
 int historyDataRangeDuration(int groupTimeRange) {
   return historyDataRangeSize * groupTimeRange;

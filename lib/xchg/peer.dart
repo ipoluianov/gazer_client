@@ -42,6 +42,10 @@ class Peer {
 
   Map<String, String> addressByName = {};
 
+  Map<String, int> metrics = {};
+  Map<String, int> metricsLast = {};
+  Map<String, int> metricsRelease = {};
+
   Peer(AsymmetricKeyPair<RSAPublicKey, RSAPrivateKey>? privKey,
       this.useLocalRouter, this.networkId) {
     print("PEER CREATED! local: $useLocalRouter networkId: $networkId");
@@ -101,7 +105,7 @@ class Peer {
     _timer.cancel();
   }
 
-  int lastReceivedMessageId = 0;
+  Map<String, int> lastReceivedMessageId = {};
   //bool requestingFromInternet = false;
   Set<String> requestingFromInternet = {};
 
@@ -117,7 +121,13 @@ class Peer {
     requestingFromInternet.add(host);
     Uint8List localAddressBS = addressBSForPublicKey(keyPair.publicKey);
     Uint8List getMessagesRequest = Uint8List(16 + 30);
-    getMessagesRequest.buffer.asUint64List(0)[0] = lastReceivedMessageId;
+
+    int lastReceivedMessageIdRouter = 0;
+    if (lastReceivedMessageId.containsKey(host)) {
+      lastReceivedMessageIdRouter = lastReceivedMessageId[host]!;
+    }
+
+    getMessagesRequest.buffer.asUint64List(0)[0] = lastReceivedMessageIdRouter;
     getMessagesRequest.buffer.asUint64List(8)[0] = 1024 * 1024;
     copyBytes(getMessagesRequest, 16, localAddressBS);
 
@@ -125,7 +135,9 @@ class Peer {
 
     httpCall(host, "r", getMessagesRequest).then((res) {
       if (res.length >= 8) {
-        lastReceivedMessageId = res.buffer.asUint64List(0)[0];
+        lastReceivedMessageIdRouter = res.buffer.asUint64List(0)[0];
+        lastReceivedMessageId[host] = lastReceivedMessageIdRouter;
+
         int offset = 8;
         while (offset < res.length) {
           if (offset + 128 < res.length) {
@@ -180,6 +192,31 @@ class Peer {
     updatingNetwork = false;
   }
 
+  void addMetric(String code, int value) {
+    if (metrics.containsKey(code)) {
+      int oldValue = metrics[code]!;
+      metrics[code] = oldValue + value;
+    } else {
+      metrics[code] = value;
+    }
+  }
+
+  void releaseMetrics() {
+    for (String code in metrics.keys) {
+      int value = metrics[code]!;
+      int lastValue = 0;
+      if (metricsLast.containsKey(code)) {
+        lastValue = metricsLast[code]!;
+      }
+      metricsLast[code] = value;
+
+      int delta = value - lastValue;
+      metricsRelease[code] = delta;
+    }
+    metricsLast = metrics;
+    metrics = {};
+  }
+
   Map<String, Dio> httpClients = {};
 
   int wcounter = 0;
@@ -216,6 +253,10 @@ class Peer {
           'd': base64Encode(frame),
         });
 
+        //print("----- SEND: ${formData.length}");
+
+        addMetric("http-send-$routerHost-$function", formData.length);
+
         final response = await dio.post('http://$routerHost/api/$function',
             data: formData, cancelToken: cancelToken);
         cancelToken.cancel();
@@ -223,6 +264,9 @@ class Peer {
           if (response.data == null) {
             return Uint8List(0);
           }
+          addMetric("http-recv-$routerHost-$function", response.data.length);
+
+          //print("----- RCV: ${response.data.length}");
           var resStr = base64Decode(response.data);
           return resStr;
         }
