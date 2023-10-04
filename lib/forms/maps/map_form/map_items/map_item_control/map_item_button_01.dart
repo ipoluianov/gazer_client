@@ -1,16 +1,12 @@
-import 'dart:convert';
-import 'dart:math';
-import 'dart:typed_data';
 import 'dart:ui' as dart_ui;
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gazer_client/core/tools/calc_preffered_scale.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
+import '../../../../../core/repository.dart';
 import '../../main/map_item.dart';
 
-class MapItemButton extends MapItem {
+class MapItemButton01 extends MapItem {
   static const String sType = "button.01";
   static const String sName = "Button.01";
   @override
@@ -18,7 +14,7 @@ class MapItemButton extends MapItem {
     return sType;
   }
 
-  MapItemButton(Connection connection) : super(connection) {
+  MapItemButton01(Connection connection) : super(connection) {
     setDouble("font_size", 20);
   }
 
@@ -87,6 +83,9 @@ class MapItemButton extends MapItem {
   @override
   void onTapDownForItem() {
     currentValue = 0;
+    Repository()
+        .client(connection)
+        .dataItemWrite(getDataSource(), get("value"));
   }
 
   @override
@@ -98,6 +97,22 @@ class MapItemButton extends MapItem {
   @override
   List<MapItemPropGroup> propGroupsOfItem() {
     List<MapItemPropGroup> groups = [];
+    {
+      {
+        List<MapItemPropItem> props = [];
+        props.add(MapItemPropItem(
+            "", "data_source", "Data Source Item", "data_source", ""));
+        groups.add(MapItemPropGroup("Data Source", true, props));
+      }
+    }
+    {
+      {
+        List<MapItemPropItem> props = [];
+        props.add(MapItemPropItem("", "value", "Value", "text", "0"));
+        groups.add(MapItemPropGroup("Values", true, props));
+      }
+    }
+
     {
       List<MapItemPropItem> props = [];
       props

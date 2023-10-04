@@ -30,9 +30,8 @@ class MapItemSwitch extends MapItem {
     checking = true;
     checkingDT = DateTime.now();
     realValue = !realValue;
-    Repository()
-        .client(connection)
-        .dataItemWrite(getDataSource(), realValue ? "1" : "0");
+    Repository().client(connection).dataItemWrite(
+        getDataSource(), realValue ? get("value1") : get("value0"));
   }
 
   @override
@@ -99,6 +98,24 @@ class MapItemSwitch extends MapItem {
   List<MapItemPropGroup> propGroupsOfItem() {
     List<MapItemPropGroup> groups = [];
     {
+      {
+        List<MapItemPropItem> props = [];
+        props.add(MapItemPropItem(
+            "", "data_source", "Data Source Item", "data_source", ""));
+        groups.add(MapItemPropGroup("Data Source", true, props));
+      }
+    }
+
+    {
+      {
+        List<MapItemPropItem> props = [];
+        props.add(MapItemPropItem("", "value0", "Value 0", "text", "0"));
+        props.add(MapItemPropItem("", "value1", "Value 1", "text", "1"));
+        groups.add(MapItemPropGroup("Values", true, props));
+      }
+    }
+
+    {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem(
           "", "border_color", "Border Color", "color", "FF00EFFF"));
@@ -120,7 +137,7 @@ class MapItemSwitch extends MapItem {
   void tick() {
     var dsValue = dataSourceValue();
     if (!checking) {
-      realValue = (dsValue.value == "1");
+      realValue = (dsValue.value == get("value1"));
     }
 
     if (checking &&

@@ -131,7 +131,7 @@ class Peer {
     getMessagesRequest.buffer.asUint64List(8)[0] = 1024 * 1024;
     copyBytes(getMessagesRequest, 16, localAddressBS);
 
-    Uint8List res = Uint8List(0);
+    //Uint8List res = Uint8List(0);
 
     httpCall(host, "r", getMessagesRequest).then((res) {
       if (res.length >= 8) {
@@ -157,7 +157,7 @@ class Peer {
       }
       requestingFromInternet.remove(host);
     }).catchError((err) {
-      print("catchError read $err");
+      //print("catchError read $err");
       requestingFromInternet.remove(host);
     });
   }

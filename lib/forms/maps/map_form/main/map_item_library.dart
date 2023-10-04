@@ -2,6 +2,7 @@ import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/maps/map_form/map_items/map_item_group/map_item_unit_table_01.dart';
 import 'package:gazer_client/forms/maps/map_item_add_form/map_item_add_form.dart';
 
+import '../map_items/map_item_control/map_item_button_02.dart';
 import '../map_items/map_item_decoration/map_item_decoration_border_01.dart';
 import '../map_items/map_item_decoration/map_item_decoration_border_02.dart';
 import '../map_items/map_item_decoration/map_item_decoration_clock_01.dart';
@@ -13,7 +14,7 @@ import '../map_items/map_item_single/gauge/map_item_gauge_02.dart';
 import '../map_items/map_item_single/progress/map_item_progress_01.dart';
 import '../map_items/map_item_single/text/map_item_text_03.dart';
 import 'map_item.dart';
-import '../map_items/map_item_control/map_item_button.dart';
+import '../map_items/map_item_control/map_item_button_01.dart';
 import '../map_items/map_item_single/chart/map_item_chart.dart';
 import '../map_items/map_item_single/error_indicator/map_item_error_indicator.dart';
 import '../map_items/map_item_single/gauge/map_item_gauge_round.dart';
@@ -72,8 +73,11 @@ class MapItemsLibrary {
     registerItem(MapItemSwitch.sType, MapItemSwitch.sName, "", (c) {
       return MapItemSwitch(c);
     });
-    registerItem(MapItemButton.sType, MapItemButton.sName, "", (c) {
-      return MapItemButton(c);
+    registerItem(MapItemButton01.sType, MapItemButton01.sName, "", (c) {
+      return MapItemButton01(c);
+    });
+    registerItem(MapItemButton02.sType, MapItemButton02.sName, "", (c) {
+      return MapItemButton02(c);
     });
     registerItem(MapItemRunlang.sType, MapItemRunlang.sName, "", (c) {
       return MapItemRunlang(c);
