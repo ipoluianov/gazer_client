@@ -263,6 +263,44 @@ class MapFormSt extends State<MapForm> {
     );
   }
 
+  void addItemDialog() {
+    Navigator.of(context)
+        .pushNamed(
+      "/map_item_add",
+      arguments: MapItemAddFormArgument(widget.arg.connection, map),
+    )
+        .then(
+      (value) {
+        if (value != null) {
+          setState(() {
+            var res = value as MapItemAddFormResult;
+            map.currentTool = res.type;
+            map.currentToolParameter = res.parameter;
+            //print("Adding ${res.type} ${res.parameter}");
+          });
+        }
+      },
+    );
+  }
+
+  void convertItemDialog() {
+    Navigator.of(context)
+        .pushNamed(
+      "/map_item_add",
+      arguments: MapItemAddFormArgument(widget.arg.connection, map),
+    )
+        .then(
+      (value) {
+        if (value != null) {
+          setState(() {
+            var res = value as MapItemAddFormResult;
+            map.convertSelectedItemToType(res.type, res.parameter);
+          });
+        }
+      },
+    );
+  }
+
   // MapItemPropertiesWidget(MapItemPropertiesFormArgument(widget.arg.connection, selectedItem))
   Widget buildMapToolbar(BuildContext context) {
     /*if (fullScreen) {
@@ -304,42 +342,12 @@ class MapFormSt extends State<MapForm> {
         if (map.editing()) {
           rightButtons.add(
             buildActionButtonFull(context, Icons.add, "Add item", () {
-              Navigator.of(context)
-                  .pushNamed(
-                "/map_item_add",
-                arguments: MapItemAddFormArgument(widget.arg.connection, map),
-              )
-                  .then(
-                (value) {
-                  if (value != null) {
-                    setState(() {
-                      var res = value as MapItemAddFormResult;
-                      map.currentTool = res.type;
-                      map.currentToolParameter = res.parameter;
-                      //print("Adding ${res.type} ${res.parameter}");
-                    });
-                  }
-                },
-              );
+              addItemDialog();
             }, false),
           );
           rightButtons.add(
             buildActionButtonFull(context, Icons.code, "Convert item", () {
-              Navigator.of(context)
-                  .pushNamed(
-                "/map_item_add",
-                arguments: MapItemAddFormArgument(widget.arg.connection, map),
-              )
-                  .then(
-                (value) {
-                  if (value != null) {
-                    setState(() {
-                      var res = value as MapItemAddFormResult;
-                      map.convertSelectedItemToType(res.type, res.parameter);
-                    });
-                  }
-                },
-              );
+              convertItemDialog();
             }, false),
           );
           rightButtons.add(buildActionButton(
@@ -360,21 +368,68 @@ class MapFormSt extends State<MapForm> {
           rightButtons.add(buildActionButton(context, Icons.paste, "Paste", () {
             map.pasteFromClipboard();
           }));
-          rightButtons.add(buildActionButtonFull(
-              context, Icons.more_horiz, "Item Properties", () {
-            var item = map.currentItem();
-            if (item != null) {
-              Navigator.of(context)
-                  .pushNamed(
-                "/map_item_properties",
-                arguments: MapItemPropertiesFormArgument(
-                    widget.arg.connection, map.currentItem()!),
-              )
-                  .then((value) {
-                setState(() {});
-              });
-            }
-          }, false));
+          rightButtons.add(PopupMenuButton(
+            itemBuilder: (context) => <PopupMenuEntry>[
+              PopupMenuItem(
+                value: 'make_it_square',
+                child: const Text('Make it square'),
+                onTap: () {
+                  execCommand('make_it_square');
+                },
+              ),
+              PopupMenuItem(
+                value: 'add',
+                child: const Text('Add item'),
+                onTap: () {
+                  execCommand('add');
+                },
+              ),
+              PopupMenuItem(
+                value: 'convert',
+                child: const Text('Convert item'),
+                onTap: () {
+                  execCommand('convert');
+                },
+              ),
+              const PopupMenuDivider(),
+              PopupMenuItem(
+                value: 'copy',
+                child: const Text('Copy'),
+                onTap: () {
+                  execCommand('copy');
+                },
+              ),
+              PopupMenuItem(
+                value: 'paste',
+                child: const Text('Paste'),
+                onTap: () {
+                  execCommand('paste');
+                },
+              ),
+              const PopupMenuDivider(),
+              PopupMenuItem(
+                value: 'up',
+                child: const Text('Bring Item Up'),
+                onTap: () {
+                  execCommand('up');
+                },
+              ),
+              PopupMenuItem(
+                value: 'down',
+                child: const Text('Bring Item Down'),
+                onTap: () {
+                  execCommand('down');
+                },
+              ),
+              PopupMenuItem(
+                value: 'remove',
+                child: const Text('Remove Selected Item'),
+                onTap: () {
+                  execCommand('remove');
+                },
+              ),
+            ],
+          ));
         }
         leftButtons.add(Expanded(child: Container()));
         leftButtons.addAll(rightButtons);
@@ -392,6 +447,37 @@ class MapFormSt extends State<MapForm> {
         );
       },
     );
+  }
+
+  void execCommand(String cmd) {
+    if (cmd == 'make_it_square') {
+      map.cmdSelectedItem(cmd);
+    }
+    if (cmd == 'add') {
+      Future.delayed(const Duration(milliseconds: 500)).then((value) {
+        addItemDialog();
+      });
+    }
+    if (cmd == 'convert') {
+      Future.delayed(const Duration(milliseconds: 500)).then((value) {
+        convertItemDialog();
+      });
+    }
+    if (cmd == 'remove') {
+      map.removeSelectedItem();
+    }
+    if (cmd == 'up') {
+      map.upSelectedItem();
+    }
+    if (cmd == 'down') {
+      map.downSelectedItem();
+    }
+    if (cmd == 'copy') {
+      map.copySelectedItem();
+    }
+    if (cmd == 'paste') {
+      map.pasteFromClipboard();
+    }
   }
 
   MouseCursor mapCursor() {

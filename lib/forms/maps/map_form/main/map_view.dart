@@ -334,6 +334,20 @@ class MapView {
     return _displayOffset;
   }
 
+  void cmdSelectedItem(String cmd) {
+    if (cmd == 'make_it_square') {
+      for (var item in instance.items) {
+        if (item.selected) {
+          var w = item.get("w");
+          //var h = item.get("h");
+          item.set("w", w);
+          item.set("h", w);
+          break;
+        }
+      }
+    }
+  }
+
   void removeSelectedItem() {
     instance.items.removeWhere((element) {
       return element.selected;
@@ -465,7 +479,7 @@ class MapView {
 
     if (currentTool != "") {
       drawText(canvas, 0, 0, size.width, size.height,
-          "Click to add $currentTool", 36, Colors.white30, TextAlign.left);
+          "Click to add $currentTool", 36, Colors.yellow, TextAlign.left);
     }
 
     while (mapViewLog.length > 10) {
