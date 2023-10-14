@@ -14,11 +14,6 @@ class HomeItemUnitItems extends HomeItem {
   State<StatefulWidget> createState() {
     return HomeItemUnitItemsState();
   }
-
-  @override
-  String title() {
-    return "name";
-  }
 }
 
 class HomeItemUnitItemsState extends State<HomeItemUnitItems> {

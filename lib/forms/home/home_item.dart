@@ -17,10 +17,18 @@ abstract class HomeItem extends StatefulWidget {
       ),
     );
 
-    ws.add(Text(
-      text,
-      style: const TextStyle(fontSize: 24, fontFamily: "RobotoMono"),
-    ));
+    ws.add(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            text,
+            style: const TextStyle(fontSize: 24, fontFamily: "RobotoMono"),
+          ),
+          //IconButton(onPressed: () {}, icon: const Icon(Icons.settings))
+        ],
+      ),
+    );
 
     ws.add(
       Container(

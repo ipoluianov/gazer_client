@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart' as cupertino;
 import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/navigation/bottom_navigator.dart';
 import 'package:gazer_client/core/navigation/left_navigator.dart';
@@ -9,10 +6,8 @@ import 'package:gazer_client/core/navigation/navigation.dart';
 import 'package:gazer_client/core/navigation/route_generator.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
 
-import '../../../core/repository.dart';
 import 'home_item.dart';
 import 'home_item_node_info.dart';
-import 'home_item_unit_items.dart';
 
 class HomeForm extends StatefulWidget {
   final HomeFormArgument arg;
@@ -109,9 +104,6 @@ class HomeFormSt extends State<HomeForm> {
     );
   }
 
-  String txtNodeName = "";
-  final TextEditingController _textFieldController = TextEditingController();
-
   int currentTitleKey = 0;
   void incrementTitleKey() {
     setState(() {
@@ -120,49 +112,6 @@ class HomeFormSt extends State<HomeForm> {
   }
 
   String getCurrentTitleKey() {
-    return "units_" + currentTitleKey.toString();
-  }
-
-  Future<void> _displayNodeNameDialog(BuildContext context) async {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Rename node'),
-            content: TextField(
-              autofocus: true,
-              onChanged: (value) {
-                setState(() {
-                  txtNodeName = value;
-                });
-              },
-              controller: _textFieldController,
-              decoration: const InputDecoration(hintText: "Node Name"),
-            ),
-            actions: <Widget>[
-              OutlinedButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  setState(() {
-                    Repository()
-                        .client(widget.arg.connection)
-                        .serviceSetNodeName(txtNodeName)
-                        .then((value) {
-                      Navigator.pop(context);
-                    });
-                  });
-                },
-              ),
-              OutlinedButton(
-                child: const Text('CANCEL'),
-                onPressed: () {
-                  setState(() {
-                    Navigator.pop(context);
-                  });
-                },
-              ),
-            ],
-          );
-        });
+    return "units_$currentTitleKey";
   }
 }

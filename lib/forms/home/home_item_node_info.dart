@@ -18,11 +18,6 @@ class HomeItemNodeInfo extends HomeItem {
   State<StatefulWidget> createState() {
     return HomeItemNodeInfoState();
   }
-
-  @override
-  String title() {
-    return "Node Information";
-  }
 }
 
 class HomeItemNodeInfoState extends State<HomeItemNodeInfo> {
@@ -114,15 +109,15 @@ class HomeItemNodeInfoState extends State<HomeItemNodeInfo> {
     return Shimmer.fromColors(
       baseColor: Colors.grey.shade500,
       highlightColor: Colors.grey.shade100,
-      period: Duration(milliseconds: 1000),
+      period: const Duration(milliseconds: 1000),
       enabled: true,
       child: SingleChildScrollView(
         physics: const NeverScrollableScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
-          children: [
-            const ContentPlaceholder(
+          children: const [
+            ContentPlaceholder(
               lineType: ContentLineType.threeLines,
             ),
           ],
