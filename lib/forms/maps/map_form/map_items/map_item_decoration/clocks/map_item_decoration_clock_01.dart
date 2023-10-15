@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/forms/maps/map_form/map_items/map_item_single/map_item_single.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../utils/draw_text.dart';
 import '../../../main/map_item.dart';
+import '../map_item_decoration.dart';
 
-class MapItemDecorationClock01 extends MapItemSingle {
+class MapItemDecorationClock01 extends MapItemDecoration {
   static const String sType = "decoration.clock.01";
   static const String sName = "Decoration.clock.01";
   @override
@@ -92,7 +92,7 @@ class MapItemDecorationClock01 extends MapItemSingle {
   @override
   List<MapItemPropGroup> propGroupsOfItem() {
     List<MapItemPropGroup> groups = [];
-    //groups.addAll(super.propGroupsOfItem());
+    groups.addAll(super.propGroupsOfItem());
     {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem(

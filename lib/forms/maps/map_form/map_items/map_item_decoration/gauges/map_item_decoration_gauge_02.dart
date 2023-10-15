@@ -1,17 +1,15 @@
 import 'dart:math';
-import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/forms/maps/map_form/map_items/map_item_single/map_item_single.dart';
 
 import '../../../../utils/draw_dashes.dart';
 import '../../../../utils/draw_text.dart';
 import '../../../../utils/ticker.dart';
 import '../../../main/map_item.dart';
+import '../map_item_decoration.dart';
 
-class MapItemDecorationGauge02 extends MapItemSingle {
+class MapItemDecorationGauge02 extends MapItemDecoration {
   static const String sType = "decoration.gauge.02";
   static const String sName = "Decoration.gauge.02";
   @override

@@ -2,14 +2,14 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
-import 'package:gazer_client/forms/maps/map_form/map_items/map_item_single/map_item_single.dart';
 
 import '../../../../utils/draw_dashes.dart';
 import '../../../../utils/draw_text.dart';
 import '../../../../utils/ticker.dart';
 import '../../../main/map_item.dart';
+import '../map_item_decoration.dart';
 
-class MapItemDecorationGauge01 extends MapItemSingle {
+class MapItemDecorationGauge01 extends MapItemDecoration {
   static const String sType = "decoration.gauge.01";
   static const String sName = "Decoration.gauge.01";
   @override
@@ -44,54 +44,10 @@ class MapItemDecorationGauge01 extends MapItemSingle {
     tick2.max = 2 * pi;
     tick2.periodMs = getDouble("decor_period_2").toInt();
 
-    String activityCondition = get("activity_condition");
-    String activityValue = get("activity_value");
-    bool activityEnabled = false;
-    String value = dataSourceValue().value;
-    String uom = dataSourceValue().uom;
-    if (activityCondition == "") {
-      activityEnabled = true;
-    }
-    if (activityCondition == "==" && activityValue == dataSourceValue().value) {
-      activityEnabled = true;
-    }
+    bool acEnabled = activityEnabled();
 
-    if (activityCondition == ">" ||
-        activityCondition == ">=" ||
-        activityCondition == "<" ||
-        activityCondition == "<=") {
-      double? valueAsDouble = double.tryParse(value);
-      double? activityValueAsDouble = double.tryParse(activityValue);
-      if (valueAsDouble != null && activityValueAsDouble != null) {
-        if (activityCondition == ">") {
-          if (valueAsDouble > activityValueAsDouble) {
-            activityEnabled = true;
-          }
-        }
-        if (activityCondition == ">=") {
-          if (valueAsDouble >= activityValueAsDouble) {
-            activityEnabled = true;
-          }
-        }
-        if (activityCondition == "<") {
-          if (valueAsDouble < activityValueAsDouble) {
-            activityEnabled = true;
-          }
-        }
-        if (activityCondition == "<=") {
-          if (valueAsDouble <= activityValueAsDouble) {
-            activityEnabled = true;
-          }
-        }
-      }
-    }
-
-    if (activityCondition == "valid" && uom != "error") {
-      activityEnabled = true;
-    }
-
-    tick1.setEnabled(activityEnabled);
-    tick2.setEnabled(activityEnabled);
+    tick1.setEnabled(acEnabled);
+    tick2.setEnabled(acEnabled);
 
     drawPre(canvas, size);
 
@@ -102,7 +58,7 @@ class MapItemDecorationGauge01 extends MapItemSingle {
     if (getDoubleZ("h") < minSize) minSize = getDoubleZ("h");
 
     Color decColor = getColor("decor_color");
-    if (!activityEnabled) {
+    if (!acEnabled) {
       decColor = getColor("decor_color_disabled");
     }
 
@@ -158,13 +114,6 @@ class MapItemDecorationGauge01 extends MapItemSingle {
   List<MapItemPropGroup> propGroupsOfItem() {
     List<MapItemPropGroup> groups = [];
     groups.addAll(super.propGroupsOfItem());
-    {
-      List<MapItemPropItem> props = [];
-      props.add(MapItemPropItem("", "activity_condition", "Activity Condition",
-          "options:==:<:<=:>:>=:valid", "=="));
-      props.add(MapItemPropItem("", "activity_value", "Value", "text", "0"));
-      groups.add(MapItemPropGroup("State", true, props));
-    }
     {
       List<MapItemPropItem> props = [];
       props.add(
