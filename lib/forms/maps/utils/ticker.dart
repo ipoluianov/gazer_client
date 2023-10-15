@@ -14,7 +14,9 @@ class Ticker {
   double k = 0;
   double kTarget = 0;
 
-  Ticker();
+  Ticker() {
+    dtLastTick = DateTime.now();
+  }
 
   void setEnabled(bool en) {
     enabled_ = en;

@@ -9,6 +9,7 @@ import '../map_items/map_item_decoration/clocks/map_item_decoration_clock_01.dar
 import '../map_items/map_item_decoration/gauges/map_item_decoration_gauge_01.dart';
 import '../map_items/map_item_decoration/gauges/map_item_decoration_gauge_02.dart';
 import '../map_items/map_item_decoration/pictures/map_item_decoration_material_icon01.dart';
+import '../map_items/map_item_decoration/tubes/map_item_decoration_tube_01.dart';
 import '../map_items/map_item_single/chart/map_item_chart_02.dart';
 import '../map_items/map_item_single/gauge/map_item_gauge_02.dart';
 import '../map_items/map_item_single/progress/map_item_progress_01.dart';
@@ -111,6 +112,10 @@ class MapItemsLibrary {
     registerItem(MapItemDecorationMaterialIcon01.sType,
         MapItemDecorationMaterialIcon01.sName, "decoration", (c) {
       return MapItemDecorationMaterialIcon01(c);
+    });
+    registerItem(MapItemDecorationTube01.sType, MapItemDecorationTube01.sName,
+        "decoration", (c) {
+      return MapItemDecorationTube01(c);
     });
   }
 

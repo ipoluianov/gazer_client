@@ -92,7 +92,7 @@ class MapItemDecorationClock01 extends MapItemDecoration {
   @override
   List<MapItemPropGroup> propGroupsOfItem() {
     List<MapItemPropGroup> groups = [];
-    groups.addAll(super.propGroupsOfItem());
+    // groups.addAll(super.propGroupsOfItem());
     {
       List<MapItemPropItem> props = [];
       props.add(MapItemPropItem(

@@ -48,7 +48,10 @@ abstract class MapItemDecoration extends MapItemSingle {
       }
     }
 
-    if (activityCondition == "valid" && uom != "error") {
+    if (activityCondition == "uom != error" && uom != "error") {
+      activityEnabled = true;
+    }
+    if (activityCondition == "always") {
       activityEnabled = true;
     }
     return activityEnabled;
@@ -57,13 +60,12 @@ abstract class MapItemDecoration extends MapItemSingle {
   @override
   List<MapItemPropGroup> propGroupsOfItem() {
     List<MapItemPropGroup> groups = super.propGroupsOfItem();
-    groups.addAll(super.propGroupsOfItem());
     {
       List<MapItemPropItem> props = [];
-      props.add(MapItemPropItem("", "activity_condition", "Activity Condition",
-          "options:==:<:<=:>:>=:valid", "=="));
+      props.add(MapItemPropItem("", "activity_condition", "Condition",
+          "options:always:==:<:<=:>:>=:uom != error", "always"));
       props.add(MapItemPropItem("", "activity_value", "Value", "text", "0"));
-      groups.add(MapItemPropGroup("State", true, props));
+      groups.add(MapItemPropGroup("Activity", true, props));
     }
     return groups;
   }

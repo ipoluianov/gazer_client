@@ -39,13 +39,10 @@ class MapItemDecorationGauge01 extends MapItemDecoration {
     tick1.min = 0;
     tick1.max = 2 * pi;
     tick1.periodMs = getDouble("decor_period_1").toInt();
-
     tick2.min = 0;
     tick2.max = 2 * pi;
     tick2.periodMs = getDouble("decor_period_2").toInt();
-
     bool acEnabled = activityEnabled();
-
     tick1.setEnabled(acEnabled);
     tick2.setEnabled(acEnabled);
 
@@ -116,10 +113,10 @@ class MapItemDecorationGauge01 extends MapItemDecoration {
     groups.addAll(super.propGroupsOfItem());
     {
       List<MapItemPropItem> props = [];
-      props.add(
-          MapItemPropItem("", "decor_color", "Color", "color", "FF00EFFF"));
       props.add(MapItemPropItem(
-          "", "decor_color_disabled", "Color", "color", "FF555555"));
+          "", "decor_color", "Active Color", "color", "FF00EFFF"));
+      props.add(MapItemPropItem(
+          "", "decor_color_disabled", "Passive Color", "color", "FF555555"));
       props.add(
           MapItemPropItem("", "decor_period_1", "Period 1", "double", "20000"));
       props.add(

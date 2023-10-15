@@ -36,15 +36,15 @@ class MapItemDecorationGauge02 extends MapItemDecoration {
 
   @override
   void draw(Canvas canvas, Size size, List<String> parentMaps) {
-    //Ticker tick3 = Ticker(0, 1, 1000);
-
     tick1.min = 0;
     tick1.max = 2 * pi;
     tick1.periodMs = getDouble("decor_period_1").toInt();
-
     tick2.min = 0;
     tick2.max = 2 * pi;
     tick2.periodMs = getDouble("decor_period_2").toInt();
+    bool acEnabled = activityEnabled();
+    tick1.setEnabled(acEnabled);
+    tick2.setEnabled(acEnabled);
 
     drawPre(canvas, size);
 
@@ -55,6 +55,9 @@ class MapItemDecorationGauge02 extends MapItemDecoration {
     if (getDoubleZ("h") < minSize) minSize = getDoubleZ("h");
 
     Color decColor = getColor("decor_color");
+    if (!acEnabled) {
+      decColor = getColor("decor_color_disabled");
+    }
 
     drawDashes(
       canvas,
@@ -138,8 +141,10 @@ class MapItemDecorationGauge02 extends MapItemDecoration {
     groups.addAll(super.propGroupsOfItem());
     {
       List<MapItemPropItem> props = [];
-      props.add(
-          MapItemPropItem("", "decor_color", "Color", "color", "FF00EFFF"));
+      props.add(MapItemPropItem(
+          "", "decor_color", "Active Color", "color", "FF00EFFF"));
+      props.add(MapItemPropItem(
+          "", "decor_color_disabled", "Passive Color", "color", "FF555555"));
       props.add(
           MapItemPropItem("", "decor_period_1", "Period 1", "double", "20000"));
       props.add(
