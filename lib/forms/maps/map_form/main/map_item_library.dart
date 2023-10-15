@@ -3,12 +3,12 @@ import 'package:gazer_client/forms/maps/map_form/map_items/map_item_group/map_it
 import 'package:gazer_client/forms/maps/map_item_add_form/map_item_add_form.dart';
 
 import '../map_items/map_item_control/map_item_button_02.dart';
-import '../map_items/map_item_decoration/map_item_decoration_border_01.dart';
-import '../map_items/map_item_decoration/map_item_decoration_border_02.dart';
-import '../map_items/map_item_decoration/map_item_decoration_clock_01.dart';
-import '../map_items/map_item_decoration/map_item_decoration_gauge_01.dart';
-import '../map_items/map_item_decoration/map_item_decoration_gauge_02.dart';
-import '../map_items/map_item_decoration/map_item_decoration_material_icon01.dart';
+import '../map_items/map_item_decoration/borders/map_item_decoration_border_01.dart';
+import '../map_items/map_item_decoration/borders/map_item_decoration_border_02.dart';
+import '../map_items/map_item_decoration/clocks/map_item_decoration_clock_01.dart';
+import '../map_items/map_item_decoration/gauges/map_item_decoration_gauge_01.dart';
+import '../map_items/map_item_decoration/gauges/map_item_decoration_gauge_02.dart';
+import '../map_items/map_item_decoration/pictures/map_item_decoration_material_icon01.dart';
 import '../map_items/map_item_single/chart/map_item_chart_02.dart';
 import '../map_items/map_item_single/gauge/map_item_gauge_02.dart';
 import '../map_items/map_item_single/progress/map_item_progress_01.dart';

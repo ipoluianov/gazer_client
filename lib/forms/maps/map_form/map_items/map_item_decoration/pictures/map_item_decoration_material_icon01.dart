@@ -3,8 +3,8 @@ import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/forms/maps/map_form/map_items/map_item_single/map_item_single.dart';
 import 'package:gazer_client/forms/maps/utils/material_icons.dart';
 
-import '../../../utils/draw_text.dart';
-import '../../main/map_item.dart';
+import '../../../../utils/draw_text.dart';
+import '../../../main/map_item.dart';
 
 class MapItemDecorationMaterialIcon01 extends MapItemSingle {
   static const String sType = "decoration.material_icon.01";

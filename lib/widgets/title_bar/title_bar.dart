@@ -232,6 +232,17 @@ class TitleBarSt extends State<TitleBar> {
       percentsText = Container();
     }
 
+    if (isPremium) {
+      innerWidget = const Center(
+        child: Icon(
+          Icons.auto_awesome,
+          size: 32,
+          color: Colors.green,
+        ),
+      );
+      percentsText = Container();
+    }
+
     if (widget.connection != null) {
       if (!Repository().client(widget.connection!).connected()) {
         innerWidget = const Center(
@@ -246,17 +257,6 @@ class TitleBarSt extends State<TitleBar> {
     }
 
     if (isUnknown) {
-      percentsText = Container();
-    }
-
-    if (isPremium) {
-      innerWidget = const Center(
-        child: Icon(
-          Icons.auto_awesome,
-          size: 32,
-          color: Colors.green,
-        ),
-      );
       percentsText = Container();
     }
 
