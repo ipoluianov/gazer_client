@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 
-import '../../../../utils/draw_dashes.dart';
 import '../../../../utils/draw_text.dart';
 import '../../../../utils/ticker.dart';
 import '../../../main/map_item.dart';
@@ -227,7 +226,7 @@ class MapItemDecorationTube01 extends MapItemDecoration {
     if (lastRandomGenDT.difference(DateTime.now()).inMilliseconds.abs() >
         rndChangePeriod.round()) {
       if (rndValues.isNotEmpty) {
-        rndValues[rnd.nextInt(10000) % rndValues.length] = rnd.nextInt(255);
+        //rndValues[rnd.nextInt(10000) % rndValues.length] = rnd.nextInt(255);
       }
       lastRandomGenDT = DateTime.now();
     }
