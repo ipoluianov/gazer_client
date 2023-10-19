@@ -16,17 +16,7 @@ class MapItemDecorationTube01 extends MapItemDecoration {
     return sType;
   }
 
-  MapItemDecorationTube01(Connection connection) : super(connection) {
-    rndValues = [];
-    for (int i = 0; i < 100; i++) {
-      rndValues.add(rnd.nextInt(255));
-    }
-  }
-
-  int rndValue(int index) {
-    int realIndex = index % rndValues.length;
-    return rndValues[realIndex];
-  }
+  MapItemDecorationTube01(Connection connection) : super(connection) {}
 
   @override
   void setDefaultsForItem() {
@@ -40,26 +30,32 @@ class MapItemDecorationTube01 extends MapItemDecoration {
         rect.right - padding, rect.bottom - padding);
   }
 
-  List<Ticker> ticks = [];
+  List<MapItemDecorationTube01Item> items_ = [];
 
   Random rnd = Random(DateTime.now().microsecondsSinceEpoch);
   //int currentRandom = 0;
 
-  List<int> rndValues = [];
-
   int lastPeriod = 0;
 
-  void initTickers(int count) {
+  void initTickers(int count, double size, int period) {
     int period = getDouble("decor_period_1").toInt();
-    if (count != ticks.length || period != lastPeriod) {
-      ticks.clear();
+    if (count != items_.length || period != lastPeriod) {
+      items_.clear();
+      double yOffset = 0;
+      var ta = getTextAppearance(this);
+
       for (int i = 0; i < count; i++) {
-        var t = Ticker();
-        t.min = 0;
-        t.max = 1;
-        t.periodMs = period + rnd.nextInt((period * 1).round());
-        t.valueMs = rnd.nextInt(period);
-        ticks.add(t);
+        var t = MapItemDecorationTube01Item(
+          yOffset,
+          period,
+          get("decor_values"),
+          ta.fontSize,
+          getColor("decor_color"),
+          getColor("decor_color_disabled"),
+          ta.fontFamily,
+        );
+        items_.add(t);
+        yOffset = yOffset + size;
       }
       lastPeriod = period;
     }
@@ -114,11 +110,15 @@ class MapItemDecorationTube01 extends MapItemDecoration {
     canvas.clipRect(Rect.fromLTWH(
         mainRect.left, mainRect.top + padding, mainRect.width, efHeight));
 
-    initTickers((efHeight / itemSize).round() + 1);
-    for (int i = 0; i < ticks.length; i++) {
-      ticks[i].setEnabled(acEnabled);
+    initTickers((efHeight / itemSize).round() + 1, itemSize,
+        getDouble("decor_period_1").round());
+    var clientRect = Rect.fromLTWH(mainRect.left, mainRect.top + padding,
+        mainRect.width, mainRect.height - padding * 2);
+    for (int i = 0; i < items_.length; i++) {
+      items_[i].setEnabled(acEnabled);
+      items_[i].draw(canvas, clientRect);
     }
-    for (double offset = padding;
+    /*for (double offset = padding;
         offset < padding + efHeight;
         offset += itemSize) {
       double val = 0;
@@ -176,7 +176,7 @@ class MapItemDecorationTube01 extends MapItemDecoration {
         hIndex++;
       }
       index++;
-    }
+    }*/
     canvas.restore();
 
     drawPost(canvas, size);
@@ -215,23 +215,86 @@ class MapItemDecorationTube01 extends MapItemDecoration {
 
   @override
   void tick() {
-    double tickK = 0;
-
-    for (int i = 0; i < ticks.length; i++) {
-      ticks[i].tick();
-      tickK = ticks[i].k;
-    }
-
-    double rndChangePeriod = getDouble("decor_period_2") + 10000 * (1 - tickK);
-    if (lastRandomGenDT.difference(DateTime.now()).inMilliseconds.abs() >
-        rndChangePeriod.round()) {
-      if (rndValues.isNotEmpty) {
-        //rndValues[rnd.nextInt(10000) % rndValues.length] = rnd.nextInt(255);
-      }
-      lastRandomGenDT = DateTime.now();
+    for (int i = 0; i < items_.length; i++) {
+      items_[i].ticker.tick();
     }
   }
 
   @override
   void resetToEndOfAnimation() {}
+}
+
+class MapItemDecorationTube01Item {
+  Ticker ticker = Ticker();
+  double yOffset_ = 0;
+  Random rnd = Random(DateTime.now().microsecondsSinceEpoch);
+
+  Color colorActive_ = Colors.black;
+  Color colorPassive_ = Colors.black;
+
+  String decorValues_ = "";
+  double size_ = 1;
+  String fontFamily_ = "";
+
+  MapItemDecorationTube01Item(double yOffset, int period, String decorValues,
+      double size, Color colorActive, Color colorPassive, String fontFamily) {
+    ticker.min = 0;
+    ticker.max = 1;
+    ticker.periodMs = period + rnd.nextInt((period * 0.2).round());
+    ticker.valueMs = rnd.nextInt(ticker.periodMs);
+    yOffset_ = yOffset;
+    colorActive_ = colorActive;
+    colorPassive_ = colorPassive;
+    decorValues_ = decorValues;
+    size_ = size;
+    fontFamily_ = fontFamily;
+  }
+
+  void setEnabled(en) {
+    ticker.setEnabled(en);
+  }
+
+  void draw(Canvas canvas, Rect rect) {
+    /*canvas.drawRect(
+        Rect.fromLTWH(rect.left + rect.width * ticker.value(),
+            rect.top + yOffset_, 10, 10),
+        Paint()
+          ..color = Colors.yellow
+          ..style = PaintingStyle.fill);*/
+
+    String text = "";
+    int num = 123;
+    num = num & 0xFF;
+    if (decorValues_ == "HEX") {
+      text = num.toRadixString(16);
+    }
+    if (decorValues_ == "BIN") {
+      text = num.toRadixString(2);
+    }
+    if (decorValues_ == "HEX") {
+      while (text.length < 2) {
+        text = "0$text";
+      }
+    }
+    if (decorValues_ == "BIN") {
+      while (text.length < 8) {
+        text = "0$text";
+      }
+    }
+    text = text.toUpperCase();
+    drawText(
+      canvas,
+      rect.left + rect.width * ticker.value(),
+      rect.top + yOffset_,
+      rect.width * 2,
+      size_,
+      text,
+      size_,
+      ticker.enabled_ ? colorActive_ : colorPassive_,
+      TextVAlign.middle,
+      TextAlign.left,
+      fontFamily_,
+      size_.round(),
+    );
+  }
 }
