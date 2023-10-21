@@ -8,7 +8,7 @@ import '../../core/protocol/unit/unit_state.dart';
 import 'home_item.dart';
 
 class HomeItemUnitItems extends HomeItem {
-  const HomeItemUnitItems(super.arg, super.config, {super.key});
+  HomeItemUnitItems(super.arg, super.config, {super.key});
 
   @override
   State<StatefulWidget> createState() {

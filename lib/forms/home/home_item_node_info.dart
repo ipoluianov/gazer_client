@@ -12,7 +12,7 @@ import '../../core/tools/place_holders.dart';
 import 'home_item.dart';
 
 class HomeItemNodeInfo extends HomeItem {
-  const HomeItemNodeInfo(super.arg, super.config, {super.key});
+  HomeItemNodeInfo(super.arg, super.config, {super.key});
 
   @override
   State<StatefulWidget> createState() {

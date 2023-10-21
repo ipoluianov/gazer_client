@@ -7,6 +7,7 @@ import 'package:gazer_client/core/navigation/route_generator.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
 
 import 'home_item.dart';
+import 'home_item_map.dart';
 import 'home_item_node_info.dart';
 
 class HomeForm extends StatefulWidget {
@@ -51,6 +52,7 @@ class HomeFormSt extends State<HomeForm> {
   List<Widget> items() {
     return [
       buildItem(HomeItemNodeInfo(widget.arg, "")),
+      buildItem(HomeItemMap(widget.arg, "")),
     ];
   }
 

@@ -6,7 +6,9 @@ import '../../core/navigation/route_generator.dart';
 abstract class HomeItem extends StatefulWidget {
   final HomeFormArgument arg;
   final String config;
-  const HomeItem(this.arg, this.config, {super.key});
+  HomeItem(this.arg, this.config, {super.key});
+
+  Map<String, String> configMap = {};
 
   Widget buildH1(String text) {
     List<Widget> ws = [];
@@ -25,7 +27,7 @@ abstract class HomeItem extends StatefulWidget {
             text,
             style: const TextStyle(fontSize: 24, fontFamily: "RobotoMono"),
           ),
-          //IconButton(onPressed: () {}, icon: const Icon(Icons.settings))
+          IconButton(onPressed: () {}, icon: const Icon(Icons.settings))
         ],
       ),
     );
