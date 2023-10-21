@@ -16,12 +16,32 @@ Widget buildContentMapArea(BuildContext context, MapView settings) {
       double height = width * mapWidthHeightK;
 
       return Container(
-        child: CustomPaint(
-          painter: MapPainter(settings),
-          child: Container(
-            height: height,
+        child: Listener(
+          onPointerHover: (event) {
+            settings.onHover(event.localPosition);
+          },
+          child: MouseRegion(
+            cursor: () {
+              if (settings.hoverItem != null) {
+                if (settings.hoverItem!.hasAction()) {
+                  return SystemMouseCursors.click;
+                }
+              }
+              return SystemMouseCursors.basic;
+            }(),
+            child: GestureDetector(
+              onTapDown: (details) {
+                settings.tapDown(details.localPosition, context);
+              },
+              child: CustomPaint(
+                painter: MapPainter(settings),
+                child: Container(
+                  height: height,
+                ),
+                key: UniqueKey(),
+              ),
+            ),
           ),
-          key: UniqueKey(),
         ),
       );
     },
