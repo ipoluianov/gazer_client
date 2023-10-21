@@ -10,6 +10,10 @@ abstract class HomeItem extends StatefulWidget {
 
   Map<String, String> configMap = {};
 
+  String toJson() {
+    return "";
+  }
+
   Widget buildH1(String text) {
     List<Widget> ws = [];
     ws.add(

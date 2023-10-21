@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/navigation/bottom_navigator.dart';
@@ -22,6 +24,37 @@ class HomeForm extends StatefulWidget {
 
 class HomeFormSt extends State<HomeForm> {
   final ScrollController _scrollController = ScrollController();
+
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    load();
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      load();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  bool loading = false;
+  bool loaded = false;
+
+  void load() {
+    if (loading || loaded) {
+      return;
+    }
+
+    loading = true;
+  }
+
+  void initDefault() {}
 
   Widget buildItem(HomeItem innerItem) {
     List<Widget> ws = [];
