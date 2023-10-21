@@ -26,7 +26,7 @@ class HomeItemMapState extends State<HomeItemMap> {
   late Timer timerUpdate_;
 
   late MapView map;
-  String mapId = "45bdd0f7-145e-4771-8cfd-95ef98476570";
+  String mapId = "6fa151ee-db0f-4d08-b112-3f6b9974f903";
 
   void load() {
     map.initMapInstance(widget.arg.connection);
@@ -42,7 +42,9 @@ class HomeItemMapState extends State<HomeItemMap> {
     map = MapView(widget.arg.connection);
     load();
     timerUpdate_ = Timer.periodic(const Duration(milliseconds: 40), (timer) {
-      map.tick();
+      setState(() {
+        map.tick();
+      });
     });
   }
 

@@ -23,6 +23,7 @@ class ResourceItemCard extends StatefulWidget {
   final Function onFolderUp;
   final Function onNeedUpdate;
   final Function onRemove;
+  final Function onGetInfo;
 
   const ResourceItemCard(
       this.conn,
@@ -34,6 +35,7 @@ class ResourceItemCard extends StatefulWidget {
       this.onFolderUp,
       this.onNeedUpdate,
       this.onRemove,
+      this.onGetInfo,
       {Key? key})
       : super(key: key);
 
@@ -195,6 +197,10 @@ class ResourceItemCardState extends State<ResourceItemCard> {
           if (str == "up") {
             widget.onFolderUp();
           }
+
+          if (str == "info") {
+            widget.onGetInfo();
+          }
         },
         itemBuilder: (context) {
           return <PopupMenuEntry<String>>[
@@ -208,7 +214,11 @@ class ResourceItemCardState extends State<ResourceItemCard> {
             ),
             const PopupMenuItem<String>(
               value: "up",
-              child: Text('Move to root folder'),
+              child: Text('Move To Root Folder'),
+            ),
+            const PopupMenuItem<String>(
+              value: "info",
+              child: Text('Get Info'),
             ),
           ];
         },

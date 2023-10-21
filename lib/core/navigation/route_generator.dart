@@ -21,6 +21,7 @@ import '../../forms/nodes/node_edit_form/node_edit_form.dart';
 import '../../forms/units/data_item_history_table_form/data_item_history_table_form.dart';
 import '../../forms/units/data_item_properties/data_item_properties.dart';
 import '../../forms/utilities/lookup_form/lookup_form.dart';
+import '../../forms/utilities/resources/resource_info_form/resource_info_form.dart';
 import '../../forms/utilities/resources/resource_item_add_form/resource_item_add_form.dart';
 import '../../forms/maps/map_form/main/map_form.dart';
 import '../../forms/maps/map_form/main/map_item.dart';
@@ -290,6 +291,18 @@ class RouteGenerator {
           transitionDuration: transDuration(),
           reverseTransitionDuration: transDuration(),
         );
+      case '/resource_info':
+        return PageRouteBuilder(
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
+            return ResourceInfoForm(
+              settings.arguments as ResourceInfoFormArgument,
+            );
+          },
+          transitionsBuilder: transBuilder,
+          transitionDuration: transDuration(),
+          reverseTransitionDuration: transDuration(),
+        );
       case '/map_item_properties':
         return PageRouteBuilder(
           pageBuilder: (BuildContext context, Animation<double> animation,
@@ -541,6 +554,17 @@ class ResourceChangeFormArgument {
   String typeName;
   String typeNamePlural;
   ResourceChangeFormArgument(this.connection, this.id, this.resInfo, this.type,
+      this.typeName, this.typeNamePlural);
+}
+
+class ResourceInfoFormArgument {
+  Connection connection;
+  String id;
+  ResListItemItemResponse resInfo;
+  String type;
+  String typeName;
+  String typeNamePlural;
+  ResourceInfoFormArgument(this.connection, this.id, this.resInfo, this.type,
       this.typeName, this.typeNamePlural);
 }
 

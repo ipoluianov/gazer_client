@@ -485,6 +485,20 @@ class ResourcesFormSt extends State<ResourcesForm> {
                             showErrorDialog(context, "$err");
                           });
                         },
+                        () {
+                          Navigator.of(context)
+                              .pushNamed("/resource_info",
+                                  arguments: ResourceInfoFormArgument(
+                                      widget.arg.connection,
+                                      e.id,
+                                      e,
+                                      widget.arg.type,
+                                      widget.arg.typeName,
+                                      widget.arg.typeNamePlural))
+                              .then((value) {
+                            load();
+                          });
+                        },
                         key: Key(widget.arg.type + "item_card_" + e.id),
                       );
                     },
