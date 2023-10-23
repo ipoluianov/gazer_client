@@ -22,7 +22,7 @@ class HomeConfigItem {
   List<HomeConfigItemProp> props = [];
   HomeConfigItem(this.props);
   factory HomeConfigItem.fromJson(Map<String, dynamic> json) {
-    if (!json.containsKey("items")) {
+    if (!json.containsKey("props")) {
       return HomeConfigItem([]);
     }
     var its = List<HomeConfigItemProp>.from(
@@ -30,8 +30,17 @@ class HomeConfigItem {
     return HomeConfigItem(its);
   }
   Map<String, dynamic> toJson() => {
-        'props': props.map((e) => e.toJson()),
+        'props': props.map((e) => e.toJson()).toList(),
       };
+
+  String get(String name) {
+    for (var p in props) {
+      if (p.name == name) {
+        return p.value;
+      }
+    }
+    return "";
+  }
 }
 
 class HomeConfig {
@@ -47,5 +56,6 @@ class HomeConfig {
 
     return HomeConfig(its);
   }
-  Map<String, dynamic> toJson() => {"items": items.map((e) => e.toJson())};
+  Map<String, dynamic> toJson() =>
+      {"items": items.map((e) => e.toJson()).toList()};
 }

@@ -35,6 +35,12 @@ class ResGetByPathResponse {
     }
 
     return ResGetByPathResponse(
-        json['id'], json['name'], json['type'], cn, json['size'], json['hash']);
+      json['id'],
+      json['name'],
+      json['type'],
+      cn,
+      json['size'],
+      json['hash'],
+    );
   }
 }

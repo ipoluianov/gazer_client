@@ -15,6 +15,7 @@ import 'package:gazer_client/core/protocol/resource/resource_list.dart';
 import 'package:gazer_client/core/protocol/resource/resource_remove.dart';
 import 'package:gazer_client/core/protocol/resource/resource_rename.dart';
 import 'package:gazer_client/core/protocol/resource/resource_set.dart';
+import 'package:gazer_client/core/protocol/resource/resource_set_by_path.dart';
 import 'package:gazer_client/core/protocol/service/service_info.dart';
 import 'package:gazer_client/core/protocol/service/service_lookup.dart';
 import 'package:gazer_client/core/protocol/service/service_set_node_name.dart';
@@ -361,6 +362,17 @@ class GazerLocalClient {
       'resource_add',
       ResAddRequest(name, type, contentString),
       (Map<String, dynamic> json) => ResAddResponse.fromJson(json),
+    );
+  }
+
+  Future<ResSetByPathResponse> resSetByPath(
+      String path, String type, Uint8List content) async {
+    var contentString = const Base64Encoder().convert(content);
+
+    return fetch<ResSetByPathRequest, ResSetByPathResponse>(
+      'resource_set_by_path',
+      ResSetByPathRequest(path, type, contentString),
+      (Map<String, dynamic> json) => ResSetByPathResponse.fromJson(json),
     );
   }
 

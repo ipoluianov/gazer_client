@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:gazer_client/core/design.dart';
@@ -6,8 +8,10 @@ import 'package:gazer_client/core/navigation/bottom_navigator.dart';
 import 'package:gazer_client/core/navigation/left_navigator.dart';
 import 'package:gazer_client/core/navigation/navigation.dart';
 import 'package:gazer_client/core/navigation/route_generator.dart';
+import 'package:gazer_client/forms/home/home_config.dart';
 import 'package:gazer_client/widgets/title_bar/title_bar.dart';
 
+import '../../core/repository.dart';
 import 'home_item.dart';
 import 'home_item_map.dart';
 import 'home_item_node_info.dart';
@@ -30,10 +34,11 @@ class HomeFormSt extends State<HomeForm> {
   @override
   void initState() {
     super.initState();
-    load();
+    initDefault();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
-      load();
+      //load();
+      save();
     });
   }
 
@@ -45,16 +50,61 @@ class HomeFormSt extends State<HomeForm> {
 
   bool loading = false;
   bool loaded = false;
+  HomeConfig currentConfig = HomeConfig([]);
+
+  bool saved = false;
 
   void load() {
     if (loading || loaded) {
       return;
     }
 
+    var client = Repository().client(widget.arg.connection);
+    client.resGetByPath("/home/currentConfig", 0, 100000).then((value) {
+      print("res: $value");
+      loaded = true;
+    }).catchError((err) {
+      print("Error: $err");
+      loading = false;
+    });
+
     loading = true;
   }
 
-  void initDefault() {}
+  void save() {
+    print(saveToString());
+    if (saved) return;
+    //asdada = 4;
+
+    String content = saveToString();
+
+    var client = Repository().client(widget.arg.connection);
+    client
+        .resSetByPath(
+      "home_currentConfig",
+      "",
+      Uint8List.fromList(content.codeUnits),
+    )
+        .then((value) {
+      print("save res: $value");
+    }).catchError((err) {
+      print("save Error: $err");
+    });
+    saved = true;
+  }
+
+  void loadConfig(String config) {
+    currentConfig = HomeConfig.fromJson(jsonDecode(config));
+  }
+
+  void initDefault() {
+    loadConfig(
+        "{\"items\":[{\"props\": [ {\"name\":\"type\", \"value\":\"node_info\"}]}]}");
+  }
+
+  String saveToString() {
+    return jsonEncode(currentConfig.toJson());
+  }
 
   Widget buildItem(HomeItem innerItem) {
     List<Widget> ws = [];
@@ -83,10 +133,17 @@ class HomeFormSt extends State<HomeForm> {
   }
 
   List<Widget> items() {
-    return [
+    List<Widget> result = [];
+    for (var item in currentConfig.items) {
+      if (item.get("type") == "node_info") {
+        result.add(buildItem(HomeItemNodeInfo(widget.arg, "")));
+      }
+    }
+    return result;
+    /*return [
       buildItem(HomeItemNodeInfo(widget.arg, "")),
       buildItem(HomeItemMap(widget.arg, "")),
-    ];
+    ];*/
   }
 
   @override
