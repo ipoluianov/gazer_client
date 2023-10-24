@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gazer_client/core/protocol/resource/resource_list.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
+import 'package:gazer_client/forms/home/home_config.dart';
 import 'package:gazer_client/forms/mores/about_form/about_form.dart';
 import 'package:gazer_client/forms/nodes/main_form/main_form.dart';
 import 'package:gazer_client/forms/maps/map_form/main/map_view.dart';
@@ -13,6 +14,8 @@ import 'package:wakelock/wakelock.dart';
 
 import '../../forms/chart_groups/chart_group_form/chart_group_form.dart';
 import '../../forms/home/home.dart';
+import '../../forms/home/home_add_item.dart';
+import '../../forms/home/home_config_form.dart';
 import '../../forms/mores/access_form/access_form.dart';
 import '../../forms/mores/appearance_form/appearance_form.dart';
 import '../../forms/mores/billing_form/billing_form.dart';
@@ -146,6 +149,32 @@ class RouteGenerator {
               Animation<double> secondaryAnimation) {
             return HomeForm(
               settings.arguments as HomeFormArgument,
+            );
+          },
+          transitionsBuilder: transBuilder,
+          transitionDuration: transDuration(),
+          reverseTransitionDuration: transDuration(),
+        );
+      case '/home_add_item':
+        Repository().navIndex = NavIndex.home;
+        return PageRouteBuilder(
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
+            return HomeAddItem(
+              settings.arguments as HomeAddItemArgument,
+            );
+          },
+          transitionsBuilder: transBuilder,
+          transitionDuration: transDuration(),
+          reverseTransitionDuration: transDuration(),
+        );
+      case '/home_config_form':
+        Repository().navIndex = NavIndex.home;
+        return PageRouteBuilder(
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
+            return HomeConfigForm(
+              settings.arguments as HomeConfigFormArgument,
             );
           },
           transitionsBuilder: transBuilder,
@@ -467,6 +496,17 @@ class MoreFormArgument {
 class HomeFormArgument {
   Connection connection;
   HomeFormArgument(this.connection);
+}
+
+class HomeAddItemArgument {
+  Connection connection;
+  HomeAddItemArgument(this.connection);
+}
+
+class HomeConfigFormArgument {
+  Connection connection;
+  HomeConfigItem item;
+  HomeConfigFormArgument(this.connection, this.item);
 }
 
 class AboutFormArgument {

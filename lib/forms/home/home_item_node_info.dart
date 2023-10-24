@@ -12,7 +12,9 @@ import '../../core/tools/place_holders.dart';
 import 'home_item.dart';
 
 class HomeItemNodeInfo extends HomeItem {
-  HomeItemNodeInfo(super.arg, super.config, {super.key});
+  HomeItemNodeInfo(super.arg, super.config, super.onEdit, super.onRemove,
+      super.onUp, super.onDown,
+      {super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -217,11 +219,9 @@ class HomeItemNodeInfoState extends State<HomeItemNodeInfo> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          widget.buildH1(
-            "NODE '$nodeName'",
-          ),
+          widget.buildH1(context, "NODE '$nodeName'", true, false, true),
           buildCommonInfo(context),
-          widget.buildH1("UNITS"),
+          widget.buildH1(context, "UNITS", false, false, false),
           buildUnits(context),
         ],
       ),

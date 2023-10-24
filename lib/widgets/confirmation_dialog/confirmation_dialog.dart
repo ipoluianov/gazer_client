@@ -1,30 +1,52 @@
-
 import 'package:flutter/material.dart';
 
-Future<void> showConfirmationDialog(BuildContext context, String header, String text, Function onOk) async {
+import '../../core/design.dart';
+
+Future<void> showConfirmationDialog(
+    BuildContext context, String header, String text, Function onOk) async {
   return showDialog<void>(
     context: context,
     barrierDismissible: false, // user must tap button!
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text(header),
+        backgroundColor: DesignColors.back(),
+        shadowColor: DesignColors.fore(),
+        title: Text(
+          header,
+          style: TextStyle(
+            color: DesignColors.fore1(),
+            fontSize: 16,
+          ),
+        ),
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
-              Text(text),
+              Text(
+                text,
+                style: TextStyle(
+                  color: DesignColors.fore(),
+                  fontSize: 20,
+                ),
+              ),
             ],
           ),
         ),
         actions: <Widget>[
           ElevatedButton(
-            child: const Text('OK'),
+            child: const SizedBox(
+              width: 70,
+              child: Center(child: Text('OK')),
+            ),
             onPressed: () {
               onOk();
               Navigator.of(context).pop(true);
             },
           ),
           ElevatedButton(
-            child: const Text('Cancel'),
+            child: const SizedBox(
+              width: 70,
+              child: Center(child: Text('Cancel')),
+            ),
             onPressed: () {
               Navigator.of(context).pop();
             },

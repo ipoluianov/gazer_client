@@ -154,6 +154,8 @@ class MapItemGauge02 extends MapItemSingle {
       uom = value.uom;
     }
 
+    var txtProps = getTextAppearance(this);
+
     drawText(
       canvas,
       getDoubleZ("x") + getDoubleZ("h") + getDoubleZ("h") / 10,
@@ -161,7 +163,7 @@ class MapItemGauge02 extends MapItemSingle {
       getDoubleZ("w"),
       getDoubleZ("h") / 2,
       itemName,
-      42,
+      txtProps.fontSize,
       progressColor,
       TextVAlign.middle,
       TextAlign.left,

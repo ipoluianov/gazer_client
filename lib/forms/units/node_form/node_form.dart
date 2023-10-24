@@ -82,8 +82,9 @@ class NodeFormSt extends State<NodeForm> {
     });
   }
 
-  Widget buildUnitCard(BuildContext context, UnitStateAllItemResponse e) {
-    return UnitCard(widget.arg.connection, e, () {
+  Widget buildUnitCard(
+      BuildContext context, UnitStateAllItemResponse e, int index) {
+    return UnitCard(widget.arg.connection, index, e, () {
       setState(() {});
       Navigator.of(context)
           .pushNamed(
@@ -104,10 +105,30 @@ class NodeFormSt extends State<NodeForm> {
       }).catchError((err) {
         showErrorDialog(context, err.toString());
       });
+    }, () {
+      List<String> ids = [];
+      ids.add(e.unitId);
+      Repository().client(widget.arg.connection).unitsStart(ids).then((value) {
+        //load();
+      }).catchError((err) {
+        showErrorDialog(context, err.toString());
+      });
+    }, () {
+      List<String> ids = [];
+      ids.add(e.unitId);
+      Repository().client(widget.arg.connection).unitsStop(ids).then((value) {
+        //load();
+      }).catchError((err) {
+        showErrorDialog(context, err.toString());
+      });
     });
   }
 
   Widget buildUnitsList(BuildContext context) {
+    List<Widget> cards = [];
+    for (int i = 0; i < items.length; i++) {
+      cards.add(buildUnitCard(context, items[i], i));
+    }
     return Expanded(
       child: DesignColors.buildScrollBar(
         controller: scrollController1,
@@ -119,11 +140,7 @@ class NodeFormSt extends State<NodeForm> {
               Container(
                 padding: const EdgeInsets.all(12),
                 child: Wrap(
-                  children: items.map(
-                    (e) {
-                      return buildUnitCard(context, e);
-                    },
-                  ).toList(),
+                  children: cards,
                 ),
               ),
             ],

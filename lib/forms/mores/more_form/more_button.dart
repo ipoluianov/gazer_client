@@ -41,7 +41,7 @@ class MoreButtonState extends State<MoreButton> with TickerProviderStateMixin {
     vsync: this,
   )..animateTo(1,
       duration: Duration(
-        milliseconds: widget.index * 50,
+        milliseconds: 200 + widget.index * 40,
       ),
       curve: Curves.linear);
   late final Animation<double> _animation = CurvedAnimation(

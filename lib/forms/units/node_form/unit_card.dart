@@ -4,14 +4,19 @@ import 'package:gazer_client/core/gazer_style.dart';
 import 'package:gazer_client/core/protocol/unit/unit_state_all.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/widgets/borders/border_01_item.dart';
+import 'package:gazer_client/widgets/confirmation_dialog/confirmation_dialog.dart';
 
 class UnitCard extends StatefulWidget {
   final Connection conn;
+  final int index;
   final UnitStateAllItemResponse unitState;
   final Function onNavigate;
   final Function onRemove;
+  final Function onStart;
+  final Function onStop;
 
-  const UnitCard(this.conn, this.unitState, this.onNavigate, this.onRemove,
+  const UnitCard(this.conn, this.index, this.unitState, this.onNavigate,
+      this.onRemove, this.onStart, this.onStop,
       {Key? key})
       : super(key: key);
 
@@ -21,8 +26,27 @@ class UnitCard extends StatefulWidget {
   }
 }
 
-class UnitCardState extends State<UnitCard> {
+class UnitCardState extends State<UnitCard> with TickerProviderStateMixin {
   bool hover = false;
+
+  @override
+  void dispose() {
+    _controller.stop();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+  )..animateTo(1,
+      duration: Duration(
+        milliseconds: 200 + widget.index * 40,
+      ),
+      curve: Curves.linear);
+  late final Animation<double> _animation = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.linear,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -32,164 +56,172 @@ class UnitCardState extends State<UnitCard> {
       valueAndUOMFontSize = 16;
     }*/
 
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) {
-        setState(() {
-          hover = true;
-        });
-      },
-      onExit: (_) {
-        setState(() {
-          hover = false;
-        });
-      },
-      child: GestureDetector(
-        onTap: () {
-          widget.onNavigate();
+    return ScaleTransition(
+      scale: _animation,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) {
+          setState(() {
+            hover = true;
+          });
         },
-        child: Container(
-          margin: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5),
-          //color: Colors.black12,
+        onExit: (_) {
+          setState(() {
+            hover = false;
+          });
+        },
+        child: GestureDetector(
+          onTap: () {
+            widget.onNavigate();
+          },
           child: Container(
-            color: hover ? Colors.black12 : Colors.transparent,
-            //padding: const EdgeInsets.all(10),
-            constraints: const BoxConstraints(
-              maxWidth: 400,
-            ),
-            height: 120,
-            child: Stack(
-              children: [
-                Border01Painter.build(hover),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.blur_on,
-                            color: DesignColors.fore(),
-                          ),
-                          Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.only(left: 10),
+            margin: const EdgeInsets.only(left: 5, right: 5, top: 5, bottom: 5),
+            //color: Colors.black12,
+            child: Container(
+              color: hover ? Colors.black12 : Colors.transparent,
+              //padding: const EdgeInsets.all(10),
+              constraints: const BoxConstraints(
+                maxWidth: 400,
+              ),
+              height: 120,
+              child: Stack(
+                children: [
+                  Border01Painter.build(hover),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.blur_on,
+                              color: DesignColors.fore(),
+                            ),
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      widget.unitState.unitName,
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: DesignColors.fore()),
+                                      overflow: TextOverflow.fade,
+                                    ),
+                                    Text(
+                                      "${widget.unitState.unitId} (${widget.unitState.typeName})",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          color: DesignColors.fore2()),
+                                      overflow: TextOverflow.fade,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          height: 0.5,
+                          color: DesignColors.back1(),
+                          margin: const EdgeInsets.only(top: 10),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    widget.unitState.unitName,
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: DesignColors.fore()),
-                                    overflow: TextOverflow.fade,
+                                  Container(
+                                    //margin: const EdgeInsets.only(top: 10),
+                                    padding: const EdgeInsets.all(3),
+                                    child: Text(
+                                      widget.unitState.mainItem.replaceAll(
+                                          widget.unitState.unitId + "/", ""),
+                                      style: TextStyle(
+                                        color: DesignColors.fore1(),
+                                      ),
+                                    ),
                                   ),
-                                  Text(
-                                    "${widget.unitState.unitId} (${widget.unitState.typeName})",
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: DesignColors.fore2()),
-                                    overflow: TextOverflow.fade,
+                                  Container(
+                                    //margin: const EdgeInsets.only(top: 10),
+                                    constraints:
+                                        const BoxConstraints(maxHeight: 30),
+                                    padding: const EdgeInsets.all(3),
+                                    child: Text(
+                                      valueAndUOM,
+                                      style: TextStyle(
+                                          fontSize: valueAndUOMFontSize,
+                                          color:
+                                              colorByUOM(widget.unitState.uom),
+                                          fontWeight: fontWeightByUOM(
+                                              widget.unitState.uom)),
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        height: 0.5,
-                        color: DesignColors.back1(),
-                        margin: const EdgeInsets.only(top: 10),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  //margin: const EdgeInsets.only(top: 10),
-                                  padding: const EdgeInsets.all(3),
-                                  child: Text(
-                                    widget.unitState.mainItem.replaceAll(
-                                        widget.unitState.unitId + "/", ""),
-                                    style: TextStyle(
-                                      color: DesignColors.fore1(),
-                                    ),
+                            PopupMenuButton(
+                              shadowColor: DesignColors.fore(),
+                              elevation: 20,
+                              onSelected: (str) {
+                                if (str == "remove") {
+                                  showConfirmationDialog(
+                                      context,
+                                      "Confirmation",
+                                      "Would you like to remove [ ${widget.unitState.unitName} ]?",
+                                      () {
+                                    widget.onRemove();
+                                  });
+                                }
+
+                                if (str == "start") {
+                                  widget.onStart();
+                                }
+
+                                if (str == "stop") {
+                                  widget.onStop();
+                                }
+                              },
+                              itemBuilder: (context) {
+                                return <PopupMenuEntry<String>>[
+                                  const PopupMenuItem<String>(
+                                    value: "remove",
+                                    child: Text('Remove Unit'),
                                   ),
-                                ),
-                                Container(
-                                  //margin: const EdgeInsets.only(top: 10),
-                                  constraints:
-                                      const BoxConstraints(maxHeight: 30),
-                                  padding: const EdgeInsets.all(3),
-                                  child: Text(
-                                    valueAndUOM,
-                                    style: TextStyle(
-                                        fontSize: valueAndUOMFontSize,
-                                        color: colorByUOM(widget.unitState.uom),
-                                        fontWeight: fontWeightByUOM(
-                                            widget.unitState.uom)),
+                                  const PopupMenuItem<String>(
+                                    value: "start",
+                                    child: Text('Start Unit'),
                                   ),
-                                ),
-                              ],
+                                  const PopupMenuItem<String>(
+                                    value: "stop",
+                                    child: Text('Stop Unit'),
+                                  ),
+                                ];
+                              },
+                              icon: Icon(
+                                Icons.menu,
+                                color: DesignColors.fore(),
+                              ),
+                              color: DesignColors.back(),
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              showAlertDialog(context);
-                            },
-                            icon: const Icon(Icons.delete),
-                            color: DesignColors.fore2(),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ),
-    );
-  }
-
-  showAlertDialog(BuildContext context) {
-    // set up the buttons
-    Widget cancelButton = OutlinedButton(
-      child: const SizedBox(width: 70, child: Center(child: Text("Cancel"))),
-      onPressed: () {
-        Navigator.of(context).pop();
-      },
-    );
-    Widget continueButton = OutlinedButton(
-      child: const SizedBox(width: 70, child: Center(child: Text("Remove"))),
-      onPressed: () {
-        Navigator.of(context).pop();
-        widget.onRemove();
-      },
-    );
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: const Text("Confirmation"),
-      content: Text("Would you like to remove [${widget.unitState.unitName}]?"),
-      actions: [
-        continueButton,
-        cancelButton,
-      ],
-    );
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
     );
   }
 }

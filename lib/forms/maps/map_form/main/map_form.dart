@@ -368,68 +368,77 @@ class MapFormSt extends State<MapForm> {
           rightButtons.add(buildActionButton(context, Icons.paste, "Paste", () {
             map.pasteFromClipboard();
           }));
-          rightButtons.add(PopupMenuButton(
-            itemBuilder: (context) => <PopupMenuEntry>[
-              PopupMenuItem(
-                value: 'make_it_square',
-                child: const Text('Make it square'),
-                onTap: () {
-                  execCommand('make_it_square');
-                },
+          rightButtons.add(
+            PopupMenuButton(
+              color: DesignColors.back(),
+              shadowColor: DesignColors.fore(),
+              elevation: 20,
+              icon: Icon(
+                Icons.menu,
+                color: DesignColors.fore(),
               ),
-              PopupMenuItem(
-                value: 'add',
-                child: const Text('Add item'),
-                onTap: () {
-                  execCommand('add');
-                },
-              ),
-              PopupMenuItem(
-                value: 'convert',
-                child: const Text('Convert item'),
-                onTap: () {
-                  execCommand('convert');
-                },
-              ),
-              const PopupMenuDivider(),
-              PopupMenuItem(
-                value: 'copy',
-                child: const Text('Copy'),
-                onTap: () {
-                  execCommand('copy');
-                },
-              ),
-              PopupMenuItem(
-                value: 'paste',
-                child: const Text('Paste'),
-                onTap: () {
-                  execCommand('paste');
-                },
-              ),
-              const PopupMenuDivider(),
-              PopupMenuItem(
-                value: 'up',
-                child: const Text('Bring Item Up'),
-                onTap: () {
-                  execCommand('up');
-                },
-              ),
-              PopupMenuItem(
-                value: 'down',
-                child: const Text('Bring Item Down'),
-                onTap: () {
-                  execCommand('down');
-                },
-              ),
-              PopupMenuItem(
-                value: 'remove',
-                child: const Text('Remove Selected Item'),
-                onTap: () {
-                  execCommand('remove');
-                },
-              ),
-            ],
-          ));
+              itemBuilder: (context) => <PopupMenuEntry>[
+                PopupMenuItem(
+                  value: 'make_it_square',
+                  child: const Text('Make it square'),
+                  onTap: () {
+                    execCommand('make_it_square');
+                  },
+                ),
+                PopupMenuItem(
+                  value: 'add',
+                  child: const Text('Add item'),
+                  onTap: () {
+                    execCommand('add');
+                  },
+                ),
+                PopupMenuItem(
+                  value: 'convert',
+                  child: const Text('Convert item'),
+                  onTap: () {
+                    execCommand('convert');
+                  },
+                ),
+                const PopupMenuDivider(),
+                PopupMenuItem(
+                  value: 'copy',
+                  child: const Text('Copy'),
+                  onTap: () {
+                    execCommand('copy');
+                  },
+                ),
+                PopupMenuItem(
+                  value: 'paste',
+                  child: const Text('Paste'),
+                  onTap: () {
+                    execCommand('paste');
+                  },
+                ),
+                const PopupMenuDivider(),
+                PopupMenuItem(
+                  value: 'up',
+                  child: const Text('Bring Item Up'),
+                  onTap: () {
+                    execCommand('up');
+                  },
+                ),
+                PopupMenuItem(
+                  value: 'down',
+                  child: const Text('Bring Item Down'),
+                  onTap: () {
+                    execCommand('down');
+                  },
+                ),
+                PopupMenuItem(
+                  value: 'remove',
+                  child: const Text('Remove Selected Item'),
+                  onTap: () {
+                    execCommand('remove');
+                  },
+                ),
+              ],
+            ),
+          );
         }
         leftButtons.add(Expanded(child: Container()));
         leftButtons.addAll(rightButtons);

@@ -67,10 +67,10 @@ class MapItemsLibrary {
     /*registerItem(MapItemItem.sType, MapItemItem.sName, "", (c) {
       return MapItemItem(c);
     });*/
-    registerItem(MapItemErrorIndicator.sType, MapItemErrorIndicator.sName, "",
+    /*registerItem(MapItemErrorIndicator.sType, MapItemErrorIndicator.sName, "",
         (c) {
       return MapItemErrorIndicator(c);
-    });
+    });*/
     registerItem(MapItemSwitch.sType, MapItemSwitch.sName, "", (c) {
       return MapItemSwitch(c);
     });
@@ -80,9 +80,9 @@ class MapItemsLibrary {
     registerItem(MapItemButton02.sType, MapItemButton02.sName, "", (c) {
       return MapItemButton02(c);
     });
-    registerItem(MapItemRunlang.sType, MapItemRunlang.sName, "", (c) {
+    /*registerItem(MapItemRunlang.sType, MapItemRunlang.sName, "", (c) {
       return MapItemRunlang(c);
-    });
+    });*/
 
     registerItem(MapItemDecorationClock01.sType, MapItemDecorationClock01.sName,
         "decoration", (c) {

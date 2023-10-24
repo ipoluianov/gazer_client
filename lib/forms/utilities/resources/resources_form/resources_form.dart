@@ -400,6 +400,121 @@ class ResourcesFormSt extends State<ResourcesForm> {
       return buildEmptyNodeList(context);
     }
 
+    List<Widget> cards = [];
+
+    var itemsToShowList = itemsToShow.toList();
+
+    for (int i = 0; i < itemsToShowList.length; i++) {
+      var e = itemsToShowList[i];
+      cards.add(
+        DragTarget<ResListItemItemResponse>(
+          builder: (context, candidateData, rejectedData) {
+            return ResourceItemCard(
+              widget.arg.connection,
+              i,
+              e,
+              widget.arg.iconData,
+              itemsInFolder(e.id),
+              () {
+                if (e.type == widget.arg.type) {
+                  widget.arg.onClick(context, e);
+                }
+
+                if (e.type == widget.arg.type + "_folder") {
+                  Navigator.of(context)
+                      .pushNamed(
+                    "/select_resource",
+                    arguments: ResourcesFormArgument(
+                      widget.arg.connection,
+                      widget.arg.type,
+                      widget.arg.typeName,
+                      widget.arg.typeNamePlural,
+                      widget.arg.iconData,
+                      false,
+                      true,
+                      e.id,
+                      e.getProp("name"),
+                      widget.arg.onClick,
+                      widget.arg.onCreated,
+                    ),
+                  )
+                      .then((value) {
+                    load();
+                  }).catchError((err) {
+                    showErrorDialog(context, "$err");
+                  });
+                }
+                //Navigator.pop(context, e);
+              },
+              () {
+                Navigator.of(context)
+                    .pushNamed("/resource_rename",
+                        arguments: ResourceChangeFormArgument(
+                            widget.arg.connection,
+                            e.id,
+                            e,
+                            widget.arg.type,
+                            widget.arg.typeName,
+                            widget.arg.typeNamePlural))
+                    .then((value) {
+                  load();
+                });
+              },
+              () {
+                Repository()
+                    .client(widget.arg.connection)
+                    .resPropSet(e.id, {"folder": ""}).then((value) {
+                  load();
+                }).catchError((err) {
+                  showErrorDialog(context, "$err");
+                });
+              },
+              () {
+                load();
+              },
+              () {
+                Repository()
+                    .client(widget.arg.connection)
+                    .resRemove(e.id)
+                    .then((value) {
+                  //print("load after remove");
+                  load();
+                }).catchError((err) {
+                  showErrorDialog(context, "$err");
+                });
+              },
+              () {
+                Navigator.of(context)
+                    .pushNamed("/resource_info",
+                        arguments: ResourceInfoFormArgument(
+                            widget.arg.connection,
+                            e.id,
+                            e,
+                            widget.arg.type,
+                            widget.arg.typeName,
+                            widget.arg.typeNamePlural))
+                    .then((value) {
+                  load();
+                });
+              },
+              key: Key(widget.arg.type + "item_card_" + e.id),
+            );
+          },
+          onAcceptWithDetails: (details) {
+            if (e.type == widget.arg.type + "_folder") {
+              if (details.data.id != e.id) {
+                Repository().client(widget.arg.connection).resPropSet(
+                    details.data.id, {"folder": e.id}).then((value) {
+                  load();
+                }).catchError((err) {
+                  showErrorDialog(context, "$err");
+                });
+              }
+            }
+          },
+        ),
+      );
+    }
     return Expanded(
       child: DesignColors.buildScrollBar(
         controller: scrollController2,
@@ -408,115 +523,7 @@ class ResourcesFormSt extends State<ResourcesForm> {
           child: Container(
             padding: const EdgeInsets.all(12),
             child: Wrap(
-              children: itemsToShow.map<Widget>(
-                (e) {
-                  return DragTarget<ResListItemItemResponse>(
-                    builder: (context, candidateData, rejectedData) {
-                      return ResourceItemCard(
-                        widget.arg.connection,
-                        e,
-                        widget.arg.iconData,
-                        itemsInFolder(e.id),
-                        () {
-                          if (e.type == widget.arg.type) {
-                            widget.arg.onClick(context, e);
-                          }
-
-                          if (e.type == widget.arg.type + "_folder") {
-                            Navigator.of(context)
-                                .pushNamed(
-                              "/select_resource",
-                              arguments: ResourcesFormArgument(
-                                widget.arg.connection,
-                                widget.arg.type,
-                                widget.arg.typeName,
-                                widget.arg.typeNamePlural,
-                                widget.arg.iconData,
-                                false,
-                                true,
-                                e.id,
-                                e.getProp("name"),
-                                widget.arg.onClick,
-                                widget.arg.onCreated,
-                              ),
-                            )
-                                .then((value) {
-                              load();
-                            }).catchError((err) {
-                              showErrorDialog(context, "$err");
-                            });
-                          }
-                          //Navigator.pop(context, e);
-                        },
-                        () {
-                          Navigator.of(context)
-                              .pushNamed("/resource_rename",
-                                  arguments: ResourceChangeFormArgument(
-                                      widget.arg.connection,
-                                      e.id,
-                                      e,
-                                      widget.arg.type,
-                                      widget.arg.typeName,
-                                      widget.arg.typeNamePlural))
-                              .then((value) {
-                            load();
-                          });
-                        },
-                        () {
-                          Repository()
-                              .client(widget.arg.connection)
-                              .resPropSet(e.id, {"folder": ""}).then((value) {
-                            load();
-                          }).catchError((err) {
-                            showErrorDialog(context, "$err");
-                          });
-                        },
-                        () {
-                          load();
-                        },
-                        () {
-                          Repository()
-                              .client(widget.arg.connection)
-                              .resRemove(e.id)
-                              .then((value) {
-                            //print("load after remove");
-                            load();
-                          }).catchError((err) {
-                            showErrorDialog(context, "$err");
-                          });
-                        },
-                        () {
-                          Navigator.of(context)
-                              .pushNamed("/resource_info",
-                                  arguments: ResourceInfoFormArgument(
-                                      widget.arg.connection,
-                                      e.id,
-                                      e,
-                                      widget.arg.type,
-                                      widget.arg.typeName,
-                                      widget.arg.typeNamePlural))
-                              .then((value) {
-                            load();
-                          });
-                        },
-                        key: Key(widget.arg.type + "item_card_" + e.id),
-                      );
-                    },
-                    onAcceptWithDetails: (details) {
-                      if (e.type == widget.arg.type + "_folder") {
-                        if (details.data.id != e.id) {
-                          Repository().client(widget.arg.connection).resPropSet(
-                              details.data.id, {"folder": e.id}).then((value) {
-                            load();
-                          }).catchError((err) {
-                            showErrorDialog(context, "$err");
-                          });
-                        }
-                      }
-                    },
-                  );
-                },
-              ).toList(),
+              children: cards,
             ),
           ),
         ),

@@ -246,6 +246,7 @@ class NodeWidgetSt extends State<NodeWidget> {
                             ),
                           ),
                           PopupMenuButton(
+                            shadowColor: DesignColors.fore(),
                             onSelected: (str) {
                               if (str == "remove") {
                                 showAlertDialog(context);
@@ -257,21 +258,29 @@ class NodeWidgetSt extends State<NodeWidget> {
                             },
                             itemBuilder: (context) {
                               return <PopupMenuEntry<String>>[
-                                const PopupMenuItem<String>(
+                                PopupMenuItem<String>(
                                   value: "change",
-                                  child: Text('Change'),
+                                  child: Row(
+                                    children: [
+                                      Text('Change'),
+                                    ],
+                                  ),
                                 ),
-                                const PopupMenuItem<String>(
+                                PopupMenuItem<String>(
                                   value: "remove",
-                                  child: Text('Remove'),
+                                  child: Row(
+                                    children: [
+                                      Text('Remove'),
+                                    ],
+                                  ),
                                 ),
                               ];
                             },
                             icon: Icon(
                               Icons.menu,
-                              color: DesignColors.fore2(),
+                              color: DesignColors.fore(),
                             ),
-                            color: DesignColors.back2(),
+                            color: DesignColors.back(),
                           ),
                         ],
                       ),

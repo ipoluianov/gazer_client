@@ -58,6 +58,10 @@ class MapItemAddFormSt extends State<MapItemAddForm> {
     items = [];
     var internalMapItemTypes = MapItemsLibrary().internalMapItemTypes();
     for (var i in internalMapItemTypes) {
+      if (i.type == "map") {
+        continue;
+      }
+
       if (filter != "") {
         if (filter != i.category) {
           continue;
@@ -77,7 +81,7 @@ class MapItemAddFormSt extends State<MapItemAddForm> {
       });
     }
 
-    if (filter == "" || filter == "external") {
+    if (filter == "external") {
       Repository()
           .client(widget.arg.connection)
           .resList("map", "", 0, 10000)

@@ -41,6 +41,15 @@ class HomeConfigItem {
     }
     return "";
   }
+
+  void set(String name, String value) {
+    for (var p in props) {
+      if (p.name == name) {
+        p.value = value;
+      }
+    }
+    props.add(HomeConfigItemProp(name, value));
+  }
 }
 
 class HomeConfig {

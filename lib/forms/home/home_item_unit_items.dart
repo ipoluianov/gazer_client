@@ -8,7 +8,9 @@ import '../../core/protocol/unit/unit_state.dart';
 import 'home_item.dart';
 
 class HomeItemUnitItems extends HomeItem {
-  HomeItemUnitItems(super.arg, super.config, {super.key});
+  HomeItemUnitItems(super.arg, super.config, super.onEdit, super.onRemove,
+      super.onUp, super.onDown,
+      {super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -41,7 +43,7 @@ class HomeItemUnitItemsState extends State<HomeItemUnitItems> {
   String mainItem = "";
 
   void updateUnitInfo() {
-    if (unitInfoLoading || unitInfoLoaded) return;
+    /*if (unitInfoLoading || unitInfoLoaded) return;
     unitInfoLoading = true;
 
     unitName = widget.config;
@@ -58,7 +60,7 @@ class HomeItemUnitItemsState extends State<HomeItemUnitItems> {
     }).catchError((err) {
       unitInfoLoaded = false;
       unitInfoLoading = false;
-    });
+    });*/
   }
 
   bool unitStateLoading = false;
@@ -74,7 +76,7 @@ class HomeItemUnitItemsState extends State<HomeItemUnitItems> {
     }
     unitStateLoading = true;
 
-    GazerLocalClient client = Repository().client(widget.arg.connection);
+    /*GazerLocalClient client = Repository().client(widget.arg.connection);
     client.unitsState(widget.config).then((value) {
       if (mounted) {
         setState(() {
@@ -89,7 +91,7 @@ class HomeItemUnitItemsState extends State<HomeItemUnitItems> {
       }
     }).catchError((err) {
       unitStateLoading = false;
-    });
+    });*/
   }
 
   @override

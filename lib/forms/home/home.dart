@@ -34,11 +34,10 @@ class HomeFormSt extends State<HomeForm> {
   @override
   void initState() {
     super.initState();
-    initDefault();
+    load();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
-      //load();
-      save();
+      load();
     });
   }
 
@@ -54,26 +53,39 @@ class HomeFormSt extends State<HomeForm> {
 
   bool saved = false;
 
+  void reload() {
+    loaded = false;
+    load();
+  }
+
   void load() {
     if (loading || loaded) {
       return;
     }
-
-    var client = Repository().client(widget.arg.connection);
-    client.resGetByPath("/home/currentConfig", 0, 100000).then((value) {
-      print("res: $value");
-      loaded = true;
-    }).catchError((err) {
-      print("Error: $err");
-      loading = false;
+    setState(() {
+      loading = true;
     });
 
-    loading = true;
+    var client = Repository().client(widget.arg.connection);
+    client.resGetByPath("home_currentConfig", 0, 100000).then((value) {
+      print("--------------------- res: $value");
+      loadConfig(String.fromCharCodes(value.content));
+      loaded = true;
+      loading = false;
+    }).catchError((err) {
+      print("Error: $err");
+      if (err.toString().contains("ERR_NO_RESOURCE")) {
+        print("Init default");
+        initDefault();
+        loaded = true;
+      }
+      loading = false;
+    });
   }
 
   void save() {
     print(saveToString());
-    if (saved) return;
+    //if (saved) return;
     //asdada = 4;
 
     String content = saveToString();
@@ -87,6 +99,7 @@ class HomeFormSt extends State<HomeForm> {
     )
         .then((value) {
       print("save res: $value");
+      reload();
     }).catchError((err) {
       print("save Error: $err");
     });
@@ -95,6 +108,7 @@ class HomeFormSt extends State<HomeForm> {
 
   void loadConfig(String config) {
     currentConfig = HomeConfig.fromJson(jsonDecode(config));
+    setState(() {});
   }
 
   void initDefault() {
@@ -132,11 +146,172 @@ class HomeFormSt extends State<HomeForm> {
     );
   }
 
+  Widget buildLoading(BuildContext context) {
+    return Center(
+      child: Container(
+        color: Colors.black26,
+        child: const Center(
+            child: Text(
+          "loading",
+          style: TextStyle(
+            color: Colors.blue,
+            fontFamily: "BrunoAce",
+            fontSize: 36,
+          ),
+        )),
+      ),
+    );
+  }
+
+  void onAdd() {
+    Navigator.of(context)
+        .pushNamed(
+      "/home_add_item",
+      arguments: HomeAddItemArgument(
+        widget.arg.connection,
+      ),
+    )
+        .then((value) {
+      if (value is HomeConfigItem) {
+        if (value.get("type") == "map") {
+          Navigator.of(context)
+              .pushNamed(
+            "/home_config_form",
+            arguments: HomeConfigFormArgument(
+              widget.arg.connection,
+              value,
+            ),
+          )
+              .then((editedValue) {
+            if (editedValue is HomeConfigItem) {
+              currentConfig.items.add(editedValue);
+              setState(() {});
+              save();
+            }
+          });
+        } else {
+          currentConfig.items.add(value);
+          setState(() {});
+          save();
+        }
+      }
+    });
+  }
+
+  void onEdit(HomeConfigItem item) {
+    // home_config_form
+    Navigator.of(context)
+        .pushNamed(
+      "/home_config_form",
+      arguments: HomeConfigFormArgument(
+        widget.arg.connection,
+        item,
+      ),
+    )
+        .then((value) {
+      if (value != null) {
+        setState(() {});
+        save();
+      }
+    });
+  }
+
+  void onRemove(HomeConfigItem item) {
+    for (var i in currentConfig.items) {
+      if (i == item) {
+        setState(() {
+          currentConfig.items.remove(item);
+        });
+        save();
+        return;
+      }
+    }
+  }
+
+  void onUp(HomeConfigItem item) {
+    int foundIndex = -1;
+    for (int i = 0; i < currentConfig.items.length; i++) {
+      if (currentConfig.items[i] == item) {
+        foundIndex = i;
+        break;
+      }
+    }
+
+    if (foundIndex < 0) {
+      return;
+    }
+
+    if (foundIndex == 0) {
+      return;
+    }
+    var tempItem = currentConfig.items[foundIndex - 1];
+    currentConfig.items[foundIndex - 1] = currentConfig.items[foundIndex];
+    currentConfig.items[foundIndex] = tempItem;
+
+    setState(() {});
+    save();
+  }
+
+  void onDown(HomeConfigItem item) {
+    int foundIndex = -1;
+    for (int i = 0; i < currentConfig.items.length; i++) {
+      if (currentConfig.items[i] == item) {
+        foundIndex = i;
+        break;
+      }
+    }
+
+    if (foundIndex < 0) {
+      return;
+    }
+
+    if (foundIndex == currentConfig.items.length - 1) {
+      return;
+    }
+    var tempItem = currentConfig.items[foundIndex + 1];
+    currentConfig.items[foundIndex + 1] = currentConfig.items[foundIndex];
+    currentConfig.items[foundIndex] = tempItem;
+
+    setState(() {});
+    save();
+  }
+
   List<Widget> items() {
     List<Widget> result = [];
+
+    if (loading) {
+      result.add(buildLoading(context));
+      return result;
+    }
+
     for (var item in currentConfig.items) {
       if (item.get("type") == "node_info") {
-        result.add(buildItem(HomeItemNodeInfo(widget.arg, "")));
+        result.add(
+          buildItem(
+            HomeItemNodeInfo(
+              widget.arg,
+              item,
+              onEdit,
+              onRemove,
+              onUp,
+              onDown,
+            ),
+          ),
+        );
+      }
+      if (item.get("type") == "map") {
+        result.add(
+          buildItem(
+            HomeItemMap(
+              widget.arg,
+              item,
+              onEdit,
+              onRemove,
+              onUp,
+              onDown,
+            ),
+          ),
+        );
       }
     }
     return result;
@@ -159,6 +334,12 @@ class HomeFormSt extends State<HomeForm> {
             widget.arg.connection,
             "Node",
             actions: <Widget>[
+              loaded
+                  ? buildActionButton(
+                      context, Icons.add, "Add item to the home screen", () {
+                      onAdd();
+                    })
+                  : Container(),
               buildHomeButton(context),
             ],
             key: Key(getCurrentTitleKey()),

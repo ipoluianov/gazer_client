@@ -78,7 +78,7 @@ class MoreFormSt extends State<MoreForm> {
                                 },
                                     "Share\r\nFULL Access",
                                     const Icon(Icons.shield_outlined, size: 48),
-                                    0),
+                                    1),
                                 MoreButton(() {
                                   Navigator.pushNamed(context, "/billing",
                                       arguments: BillingFormArgument(
@@ -86,13 +86,13 @@ class MoreFormSt extends State<MoreForm> {
                                 },
                                     "PREMIUM",
                                     const Icon(Icons.auto_awesome, size: 48),
-                                    0),
+                                    2),
                                 MoreButton(() {
                                   Navigator.pushNamed(context, "/appearance",
                                       arguments: AppearanceFormArgument(
                                           widget.arg.connection));
                                 }, "Appearance",
-                                    const Icon(Icons.settings, size: 48), 0),
+                                    const Icon(Icons.settings, size: 48), 3),
                                 MoreButton(() {
                                   Repository()
                                       .client(widget.arg.connection)
@@ -105,7 +105,7 @@ class MoreFormSt extends State<MoreForm> {
                                     });
                                   }).catchError((err) {});
                                 }, "Rename node",
-                                    const Icon(Icons.abc, size: 48), 0),
+                                    const Icon(Icons.abc, size: 48), 4),
                                 MoreButton(() {
                                   Navigator.pushNamed(context, "/about",
                                       arguments: AboutFormArgument(
@@ -113,7 +113,7 @@ class MoreFormSt extends State<MoreForm> {
                                 },
                                     "About",
                                     const Icon(Icons.info_outline, size: 48),
-                                    0),
+                                    5),
                               ],
                             ),
                           ),
@@ -150,6 +150,8 @@ class MoreFormSt extends State<MoreForm> {
         context: context,
         builder: (context) {
           return AlertDialog(
+            backgroundColor: DesignColors.back(),
+            shadowColor: DesignColors.fore(),
             title: const Text('Rename node'),
             content: TextField(
               autofocus: true,
@@ -163,7 +165,10 @@ class MoreFormSt extends State<MoreForm> {
             ),
             actions: <Widget>[
               OutlinedButton(
-                child: const Text('OK'),
+                child: const SizedBox(
+                  width: 70,
+                  child: Center(child: Text('OK')),
+                ),
                 onPressed: () {
                   setState(() {
                     Repository()
@@ -176,7 +181,10 @@ class MoreFormSt extends State<MoreForm> {
                 },
               ),
               OutlinedButton(
-                child: const Text('CANCEL'),
+                child: const SizedBox(
+                  width: 70,
+                  child: Center(child: Text('Cancel')),
+                ),
                 onPressed: () {
                   setState(() {
                     Navigator.pop(context);
