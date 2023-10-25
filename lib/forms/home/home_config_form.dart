@@ -90,15 +90,7 @@ class HomeConfigFormSt extends State<HomeConfigForm> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       LeftNavigator(showLeft),
-                      Expanded(
-                        child: DesignColors.buildScrollBar(
-                          controller: _scrollController,
-                          child: SingleChildScrollView(
-                            controller: _scrollController,
-                            child: buildContent(),
-                          ),
-                        ),
-                      ),
+                      buildContent(),
                     ],
                   ),
                 ),

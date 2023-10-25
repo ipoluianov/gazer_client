@@ -261,7 +261,7 @@ class NodeWidgetSt extends State<NodeWidget> {
                                 PopupMenuItem<String>(
                                   value: "change",
                                   child: Row(
-                                    children: [
+                                    children: const [
                                       Text('Change'),
                                     ],
                                   ),
@@ -269,7 +269,7 @@ class NodeWidgetSt extends State<NodeWidget> {
                                 PopupMenuItem<String>(
                                   value: "remove",
                                   child: Row(
-                                    children: [
+                                    children: const [
                                       Text('Remove'),
                                     ],
                                   ),
