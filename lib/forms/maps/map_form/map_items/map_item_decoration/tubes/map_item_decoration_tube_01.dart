@@ -39,22 +39,32 @@ class MapItemDecorationTube01 extends MapItemDecoration {
 
   void initTickers(int count, double size, int period) {
     int period = getDouble("decor_period_1").toInt();
-    if (count != items_.length || period != lastPeriod) {
+    double width = getDoubleZ("w");
+    int countPerLine = 10;
+    double itemWidth = width / countPerLine.toDouble();
+
+    if (count * countPerLine != items_.length || period != lastPeriod) {
       items_.clear();
       double yOffset = 0;
       var ta = getTextAppearance(this);
 
       for (int i = 0; i < count; i++) {
-        var t = MapItemDecorationTube01Item(
-          yOffset,
-          period,
-          get("decor_values"),
-          ta.fontSize,
-          getColor("decor_color"),
-          getColor("decor_color_disabled"),
-          ta.fontFamily,
-        );
-        items_.add(t);
+        double lineRandom = rnd.nextInt(1000).toDouble() / 1000;
+        double linePeriod = period - rnd.nextInt(period) / 5;
+        for (int indexInRow = 0; indexInRow < countPerLine; indexInRow++) {
+          var t = MapItemDecorationTube01Item(
+            (indexInRow.toDouble() / countPerLine.toDouble()) +
+                lineRandom / countPerLine,
+            yOffset,
+            linePeriod.round(),
+            get("decor_values"),
+            ta.fontSize,
+            getColor("decor_color"),
+            getColor("decor_color_disabled"),
+            ta.fontFamily,
+          );
+          items_.add(t);
+        }
         yOffset = yOffset + size;
       }
       lastPeriod = period;
@@ -79,6 +89,8 @@ class MapItemDecorationTube01 extends MapItemDecoration {
     if (!acEnabled) {
       decColor = getColor("decor_color_disabled");
     }
+
+    int changeTimePeriodMs = getDouble("decor_period_2").round();
 
     Color borderColor = getColor("decor_border_color");
     double borderWidth = getDoubleZ("decor_border_width");
@@ -116,67 +128,8 @@ class MapItemDecorationTube01 extends MapItemDecoration {
         mainRect.width, mainRect.height - padding * 2);
     for (int i = 0; i < items_.length; i++) {
       items_[i].setEnabled(acEnabled);
-      items_[i].draw(canvas, clientRect);
+      items_[i].draw(canvas, clientRect, changeTimePeriodMs);
     }
-    /*for (double offset = padding;
-        offset < padding + efHeight;
-        offset += itemSize) {
-      double val = 0;
-      if (index >= 0 && index < ticks.length) {
-        val = ticks[index].value();
-      }
-
-      String decorValues = get("decor_values");
-      double hIncrement = itemSize * 10;
-      if (decorValues == "HEX") {
-        hIncrement = itemSize * 3;
-      }
-      if (decorValues == "BIN") {
-        hIncrement = itemSize * 10;
-      }
-
-      int hIndex = 0;
-      for (double hOffset = -mainRect.width;
-          hOffset < mainRect.width;
-          hOffset += hIncrement) {
-        String text = "";
-        int num = rndValue(index * 10 + hIndex);
-        num = num & 0xFF;
-        if (decorValues == "HEX") {
-          text = num.toRadixString(16);
-        }
-        if (decorValues == "BIN") {
-          text = num.toRadixString(2);
-        }
-        if (decorValues == "HEX") {
-          while (text.length < 2) {
-            text = "0$text";
-          }
-        }
-        if (decorValues == "BIN") {
-          while (text.length < 8) {
-            text = "0$text";
-          }
-        }
-        text = text.toUpperCase();
-        drawText(
-          canvas,
-          mainRect.left + hOffset + mainRect.width * val,
-          mainRect.top + offset,
-          mainRect.width * 2,
-          itemSize,
-          text,
-          itemSize,
-          decColor,
-          TextVAlign.middle,
-          TextAlign.left,
-          ta.fontFamily,
-          itemSize.round(),
-        );
-        hIndex++;
-      }
-      index++;
-    }*/
     canvas.restore();
 
     drawPost(canvas, size);
@@ -235,13 +188,27 @@ class MapItemDecorationTube01Item {
   String decorValues_ = "";
   double size_ = 1;
   String fontFamily_ = "";
+  double xOffset_ = 0;
 
-  MapItemDecorationTube01Item(double yOffset, int period, String decorValues,
-      double size, Color colorActive, Color colorPassive, String fontFamily) {
+  int lastChangeTextDT =
+      DateTime.now().subtract(const Duration(days: 365)).millisecondsSinceEpoch;
+
+  int textValue = 0;
+  Random rndItem = Random(DateTime.now().microsecondsSinceEpoch);
+
+  MapItemDecorationTube01Item(
+      double initValue,
+      double yOffset,
+      int period,
+      String decorValues,
+      double size,
+      Color colorActive,
+      Color colorPassive,
+      String fontFamily) {
     ticker.min = 0;
     ticker.max = 1;
-    ticker.periodMs = period + rnd.nextInt((period * 0.2).round());
-    ticker.valueMs = rnd.nextInt(ticker.periodMs);
+    ticker.periodMs = period;
+    ticker.valueMs = (ticker.periodMs * initValue).round();
     yOffset_ = yOffset;
     colorActive_ = colorActive;
     colorPassive_ = colorPassive;
@@ -254,16 +221,18 @@ class MapItemDecorationTube01Item {
     ticker.setEnabled(en);
   }
 
-  void draw(Canvas canvas, Rect rect) {
-    /*canvas.drawRect(
-        Rect.fromLTWH(rect.left + rect.width * ticker.value(),
-            rect.top + yOffset_, 10, 10),
-        Paint()
-          ..color = Colors.yellow
-          ..style = PaintingStyle.fill);*/
-
+  void draw(Canvas canvas, Rect rect, int changeTextPeriodMs) {
     String text = "";
-    int num = 123;
+
+    if (DateTime.now().millisecondsSinceEpoch -
+            lastChangeTextDT +
+            rndItem.nextInt((changeTextPeriodMs / 10).round()) >
+        changeTextPeriodMs) {
+      textValue = DateTime.now().microsecondsSinceEpoch;
+      lastChangeTextDT = DateTime.now().millisecondsSinceEpoch;
+    }
+
+    int num = textValue;
     num = num & 0xFF;
     if (decorValues_ == "HEX") {
       text = num.toRadixString(16);
@@ -284,7 +253,7 @@ class MapItemDecorationTube01Item {
     text = text.toUpperCase();
     drawText(
       canvas,
-      rect.left + rect.width * ticker.value(),
+      rect.left + rect.width * ticker.value() + xOffset_,
       rect.top + yOffset_,
       rect.width * 2,
       size_,
