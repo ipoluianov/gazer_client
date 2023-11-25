@@ -36,15 +36,22 @@ class MapItemDecorationTube01 extends MapItemDecoration {
   //int currentRandom = 0;
 
   int lastPeriod = 0;
+  String lastDecorValues = "";
 
   void initTickers(int count, double size, int period) {
     int period = getDouble("decor_period_1").toInt();
     double width = getDoubleZ("w");
-    int countPerLine = 10;
+    String decorValues = get("decor_values");
+    int countPerLine = getDouble("decor_values_per_line").round();
     double itemWidth = width / countPerLine.toDouble();
+    if (countPerLine < 1) countPerLine = 1;
+    if (countPerLine > 100) countPerLine = 100;
 
-    if (count * countPerLine != items_.length || period != lastPeriod) {
+    if (count * countPerLine != items_.length ||
+        period != lastPeriod ||
+        decorValues != lastDecorValues) {
       items_.clear();
+      lastDecorValues = decorValues;
       double yOffset = 0;
       var ta = getTextAppearance(this);
 
@@ -59,13 +66,11 @@ class MapItemDecorationTube01 extends MapItemDecoration {
             linePeriod.round(),
             get("decor_values"),
             ta.fontSize,
-            getColor("decor_color"),
-            getColor("decor_color_disabled"),
             ta.fontFamily,
           );
           items_.add(t);
         }
-        yOffset = yOffset + size;
+        yOffset = yOffset + size + size / 4;
       }
       lastPeriod = period;
     }
@@ -122,13 +127,20 @@ class MapItemDecorationTube01 extends MapItemDecoration {
     canvas.clipRect(Rect.fromLTWH(
         mainRect.left, mainRect.top + padding, mainRect.width, efHeight));
 
-    initTickers((efHeight / itemSize).round() + 1, itemSize,
-        getDouble("decor_period_1").round());
+    initTickers((getDouble("h") / getDouble("font_size")).round() + 1,
+        getDouble("font_size"), getDouble("decor_period_1").round());
     var clientRect = Rect.fromLTWH(mainRect.left, mainRect.top + padding,
         mainRect.width, mainRect.height - padding * 2);
     for (int i = 0; i < items_.length; i++) {
       items_[i].setEnabled(acEnabled);
-      items_[i].draw(canvas, clientRect, changeTimePeriodMs);
+      items_[i].draw(
+        canvas,
+        clientRect,
+        changeTimePeriodMs,
+        zoom,
+        getColor("decor_color"),
+        getColor("decor_color_disabled"),
+      );
     }
     canvas.restore();
 
@@ -149,6 +161,8 @@ class MapItemDecorationTube01 extends MapItemDecoration {
           "", "decor_period_1", "Sliding Period", "double", "20000"));
       props.add(MapItemPropItem(
           "", "decor_period_2", "Changing Text Period", "double", "100"));
+      props.add(MapItemPropItem(
+          "", "decor_values_per_line", "Values Per Line", "double", "5"));
       props.add(MapItemPropItem(
           "", "decor_border_width", "Border Width", "double", "2"));
       props.add(MapItemPropItem(
@@ -196,22 +210,13 @@ class MapItemDecorationTube01Item {
   int textValue = 0;
   Random rndItem = Random(DateTime.now().microsecondsSinceEpoch);
 
-  MapItemDecorationTube01Item(
-      double initValue,
-      double yOffset,
-      int period,
-      String decorValues,
-      double size,
-      Color colorActive,
-      Color colorPassive,
-      String fontFamily) {
+  MapItemDecorationTube01Item(double initValue, double yOffset, int period,
+      String decorValues, double size, String fontFamily) {
     ticker.min = 0;
     ticker.max = 1;
     ticker.periodMs = period;
     ticker.valueMs = (ticker.periodMs * initValue).round();
     yOffset_ = yOffset;
-    colorActive_ = colorActive;
-    colorPassive_ = colorPassive;
     decorValues_ = decorValues;
     size_ = size;
     fontFamily_ = fontFamily;
@@ -221,8 +226,12 @@ class MapItemDecorationTube01Item {
     ticker.setEnabled(en);
   }
 
-  void draw(Canvas canvas, Rect rect, int changeTextPeriodMs) {
+  void draw(Canvas canvas, Rect rect, int changeTextPeriodMs, double zoom,
+      Color activeCol, Color inactColor) {
     String text = "";
+
+    colorActive_ = activeCol;
+    colorPassive_ = inactColor;
 
     if (DateTime.now().millisecondsSinceEpoch -
             lastChangeTextDT +
@@ -254,11 +263,11 @@ class MapItemDecorationTube01Item {
     drawText(
       canvas,
       rect.left + rect.width * ticker.value() + xOffset_,
-      rect.top + yOffset_,
+      rect.top + yOffset_ * zoom,
       rect.width * 2,
-      size_,
+      size_ * zoom,
       text,
-      size_,
+      size_ * zoom,
       ticker.enabled_ ? colorActive_ : colorPassive_,
       TextVAlign.middle,
       TextAlign.left,

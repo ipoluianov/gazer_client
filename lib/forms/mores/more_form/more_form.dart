@@ -28,6 +28,93 @@ class MoreFormSt extends State<MoreForm> {
     super.initState();
   }
 
+  Widget buildHeader(BuildContext context, String header) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          margin: const EdgeInsets.all(10),
+          padding: EdgeInsets.only(bottom: 10),
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.green,
+                width: 3,
+              ),
+            ),
+          ),
+          child: Text(
+            header,
+            style: TextStyle(
+              fontSize: 24,
+              color: DesignColors.fore(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> buildRemoteAccess(BuildContext context) {
+    List<Widget> result = [
+      MoreButton(() {
+        Navigator.pushNamed(context, "/guest_access",
+            arguments: GuestAccessFormArgument(widget.arg.connection));
+      }, "Share\r\nGUEST Access",
+          const Icon(cupertino.CupertinoIcons.share, size: 48), 0),
+      MoreButton(() {
+        Navigator.pushNamed(context, "/access",
+            arguments: AccessFormArgument(widget.arg.connection));
+      }, "Share\r\nFULL Access", const Icon(Icons.shield_outlined, size: 48),
+          1),
+      MoreButton(() {
+        Navigator.pushNamed(context, "/billing",
+            arguments: BillingFormArgument(widget.arg.connection));
+      }, "PREMIUM", const Icon(Icons.auto_awesome, size: 48), 2),
+    ];
+    return [buildHeader(context, "Remote Access"), Wrap(children: result)];
+  }
+
+  List<Widget> buildNodeSettings(BuildContext context) {
+    List<Widget> result = [
+      MoreButton(() {
+        Repository().client(widget.arg.connection).serviceInfo().then((value) {
+          _textFieldController.text = value.nodeName;
+          _displayNodeNameDialog(context).then((value) {
+            incrementTitleKey();
+          });
+        }).catchError((err) {});
+      }, "Rename node", const Icon(Icons.abc, size: 48), 4),
+    ];
+    return [buildHeader(context, "Node Settings"), Wrap(children: result)];
+  }
+
+  List<Widget> buildAppInfo(BuildContext context) {
+    List<Widget> result = [
+      MoreButton(() {
+        Navigator.pushNamed(context, "/tools_menu",
+            arguments: ToolsFormArgument());
+      }, "Tools", const Icon(Icons.apps, size: 48), 3),
+      MoreButton(() {
+        Navigator.pushNamed(context, "/appearance",
+            arguments: AppearanceFormArgument(widget.arg.connection));
+      }, "Appearance", const Icon(Icons.settings, size: 48), 3),
+      MoreButton(() {
+        Navigator.pushNamed(context, "/about",
+            arguments: AboutFormArgument(widget.arg.connection));
+      }, "About", const Icon(Icons.info_outline, size: 48), 5),
+    ];
+    return [buildHeader(context, "Application"), Wrap(children: result)];
+  }
+
+  List<Widget> buildContent(BuildContext context) {
+    List<Widget> result = [];
+    result.addAll(buildNodeSettings(context));
+    result.addAll(buildRemoteAccess(context));
+    result.addAll(buildAppInfo(context));
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -60,61 +147,9 @@ class MoreFormSt extends State<MoreForm> {
                           controller: _scrollController,
                           child: SingleChildScrollView(
                             controller: _scrollController,
-                            child: Wrap(
-                              children: [
-                                MoreButton(() {
-                                  Navigator.pushNamed(context, "/guest_access",
-                                      arguments: GuestAccessFormArgument(
-                                          widget.arg.connection));
-                                },
-                                    "Share\r\nGUEST Access",
-                                    const Icon(cupertino.CupertinoIcons.share,
-                                        size: 48),
-                                    0),
-                                MoreButton(() {
-                                  Navigator.pushNamed(context, "/access",
-                                      arguments: AccessFormArgument(
-                                          widget.arg.connection));
-                                },
-                                    "Share\r\nFULL Access",
-                                    const Icon(Icons.shield_outlined, size: 48),
-                                    1),
-                                MoreButton(() {
-                                  Navigator.pushNamed(context, "/billing",
-                                      arguments: BillingFormArgument(
-                                          widget.arg.connection));
-                                },
-                                    "PREMIUM",
-                                    const Icon(Icons.auto_awesome, size: 48),
-                                    2),
-                                MoreButton(() {
-                                  Navigator.pushNamed(context, "/appearance",
-                                      arguments: AppearanceFormArgument(
-                                          widget.arg.connection));
-                                }, "Appearance",
-                                    const Icon(Icons.settings, size: 48), 3),
-                                MoreButton(() {
-                                  Repository()
-                                      .client(widget.arg.connection)
-                                      .serviceInfo()
-                                      .then((value) {
-                                    _textFieldController.text = value.nodeName;
-                                    _displayNodeNameDialog(context)
-                                        .then((value) {
-                                      incrementTitleKey();
-                                    });
-                                  }).catchError((err) {});
-                                }, "Rename node",
-                                    const Icon(Icons.abc, size: 48), 4),
-                                MoreButton(() {
-                                  Navigator.pushNamed(context, "/about",
-                                      arguments: AboutFormArgument(
-                                          widget.arg.connection));
-                                },
-                                    "About",
-                                    const Icon(Icons.info_outline, size: 48),
-                                    5),
-                              ],
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: buildContent(context),
                             ),
                           ),
                         ),

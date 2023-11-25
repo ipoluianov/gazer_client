@@ -1,23 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gazer_client/core/design.dart';
 import 'package:gazer_client/core/gazer_local_client.dart';
-import 'package:gazer_client/core/protocol/service/service_lookup.dart';
-import 'package:gazer_client/core/protocol/unit/unit_items_values.dart';
 import 'package:gazer_client/core/protocol/unit/unit_state.dart';
 import 'package:gazer_client/core/repository.dart';
 import 'package:gazer_client/core/workspace/workspace.dart';
 import 'package:gazer_client/core/navigation/navigation.dart';
-import 'package:gazer_client/core/navigation/route_generator.dart';
 import 'package:gazer_client/forms/units/unit_form/widget_dataitem_state.dart';
-import 'package:gazer_client/widgets/borders/border_01_item.dart';
-import 'package:gazer_client/widgets/borders/border_02_titlebar.dart';
 import 'package:gazer_client/widgets/borders/border_03_item_details.dart';
-import 'package:gazer_client/widgets/borders/border_04_action_button.dart';
-import 'package:gazer_client/widgets/borders/border_05_left_navigator.dart';
-import 'package:gazer_client/widgets/borders/border_06_item_details_name.dart';
-import 'package:gazer_client/widgets/borders/border_07_item_details_value.dart';
-import 'package:gazer_client/widgets/borders/border_08_item_list_item.dart';
-import 'package:gazer_client/widgets/borders/border_09_left_navigator_main.dart';
+import 'package:gazer_client/widgets/snackbar/snacks.dart';
 import 'package:intl/intl.dart';
 
 import '../../../widgets/error_dialog/error_dialog.dart';
@@ -120,8 +111,10 @@ class WidgetDataItemDetailState extends State<WidgetDataItemDetail> {
                             widget.unitId,
                             {"main_item": widget.item.name}).then((value) {
                           widget.onMainItemChanged();
+                          showSnackSuccess(context, "MainItem has been set");
                         }).catchError((err) {
                           showErrorDialog(context, "$err");
+                          showSnackError(context, "$err");
                         });
                       }),
                       buildActionButton(
@@ -132,6 +125,15 @@ class WidgetDataItemDetailState extends State<WidgetDataItemDetail> {
                           context, Icons.remove_circle_outline, "Remove item",
                           () {
                         showRemoveItemDialog(context);
+                      }),
+                      buildActionButton(
+                          context, Icons.copy, "Copy value to clipboard", () {
+                        Clipboard.setData(
+                                ClipboardData(text: widget.item.value.value))
+                            .then((value) {
+                          showSnackSuccess(
+                              context, "Value has been copied to clipboard");
+                        });
                       }),
                     ],
                   ),
