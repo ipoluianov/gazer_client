@@ -113,10 +113,10 @@ class MapItemsLibrary {
         MapItemDecorationMaterialIcon01.sName, "decoration", (c) {
       return MapItemDecorationMaterialIcon01(c);
     });
-    registerItem(MapItemDecorationTube01.sType, MapItemDecorationTube01.sName,
+    /*registerItem(MapItemDecorationTube01.sType, MapItemDecorationTube01.sName,
         "decoration", (c) {
       return MapItemDecorationTube01(c);
-    });
+    });*/
   }
 
   factory MapItemsLibrary() {

@@ -20,6 +20,9 @@ import '../../forms/mores/access_form/access_form.dart';
 import '../../forms/mores/appearance_form/appearance_form.dart';
 import '../../forms/mores/billing_form/billing_form.dart';
 import '../../forms/mores/guest_access_form/guest_access_form.dart';
+import '../../forms/mores/tools/tools_debug_summary/tools_debug_summary.dart';
+import '../../forms/mores/tools/tools_form/tools_form.dart';
+import '../../forms/mores/tools/tools_sensors_raw/tools_sensors_raw.dart';
 import '../../forms/nodes/node_edit_form/node_edit_form.dart';
 import '../../forms/units/data_item_history_table_form/data_item_history_table_form.dart';
 import '../../forms/units/data_item_properties/data_item_properties.dart';
@@ -452,6 +455,42 @@ class RouteGenerator {
           transitionDuration: transDuration(),
           reverseTransitionDuration: transDuration(),
         );
+      case '/tools_menu':
+        return PageRouteBuilder(
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
+            return ToolsForm(
+              settings.arguments as ToolsFormArgument,
+            );
+          },
+          transitionsBuilder: transBuilder,
+          transitionDuration: transDuration(),
+          reverseTransitionDuration: transDuration(),
+        );
+      case '/tools_debug_summary':
+        return PageRouteBuilder(
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
+            return ToolsDebugSummaryForm(
+              settings.arguments as ToolsFormArgument,
+            );
+          },
+          transitionsBuilder: transBuilder,
+          transitionDuration: transDuration(),
+          reverseTransitionDuration: transDuration(),
+        );
+      case '/tools_sensors_raw':
+        return PageRouteBuilder(
+          pageBuilder: (BuildContext context, Animation<double> animation,
+              Animation<double> secondaryAnimation) {
+            return ToolsSensorsRawForm(
+              settings.arguments as ToolsFormArgument,
+            );
+          },
+          transitionsBuilder: transBuilder,
+          transitionDuration: transDuration(),
+          reverseTransitionDuration: transDuration(),
+        );
     }
     return MaterialPageRoute(builder: (_) => const Text("wrong path"));
   }
@@ -491,6 +530,10 @@ class ChartGroupRenameFormArgument {
 class MoreFormArgument {
   Connection connection;
   MoreFormArgument(this.connection);
+}
+
+class ToolsFormArgument {
+  ToolsFormArgument();
 }
 
 class HomeFormArgument {
