@@ -76,6 +76,8 @@ class MapItemUnitTable01 extends MapItem {
       reloadItems();
     }
 
+    var demo = isDemo;
+
     var fontSize = getDoubleZ("font_size");
     var fontFamily = get("font_family");
     int? fontWeightN = int.tryParse(get("font_weight"));
@@ -84,12 +86,12 @@ class MapItemUnitTable01 extends MapItem {
       fontWeight = fontWeightN;
     }
 
-    if (!dataItemsLoaded && !isDemo) {
+    if (!dataItemsLoaded && !demo) {
       loadDataItems();
     }
 
     Map<String, DataItemInfo> values = {};
-    if (isDemo) {
+    if (demo) {
       unitDisplayName = "Unit";
       dataItems = [];
       dataItems.add("u0/item1");
@@ -110,7 +112,7 @@ class MapItemUnitTable01 extends MapItem {
 
     drawPre(canvas, size);
 
-    if (!isDemo) {
+    if (!demo) {
       for (var itemName in dataItems) {
         var val = Repository().history.getNode(connection).value(itemName);
         values[itemName] = val;
@@ -124,7 +126,7 @@ class MapItemUnitTable01 extends MapItem {
       }
     }
 
-    if (isDemo) {}
+    if (demo) {}
 
     var padding = z(10);
 
@@ -231,6 +233,23 @@ class MapItemUnitTable01 extends MapItem {
       }
 
       yOffset += z(textSize.height);
+    }
+
+    if (lastDataSource.isEmpty) {
+      drawText(
+        canvas,
+        getDoubleZ("x") + padding,
+        getDoubleZ("y") + yOffset,
+        getDoubleZ("w") - padding * 2,
+        getDoubleZ("h"),
+        "no data source",
+        fontSize,
+        getColor("name_color"),
+        TextVAlign.top,
+        TextAlign.left,
+        fontFamily,
+        fontWeight,
+      );
     }
 
     canvas.restore();
