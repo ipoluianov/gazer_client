@@ -275,33 +275,6 @@ abstract class MapItem extends IPropContainer {
             ..color = backColor);
     }
 
-    var gridColor = getColor("grid_color");
-    var gridSize = getDoubleZ("grid_size");
-    if (gridSize > 0) {
-      for (double x = getDoubleZ("x");
-          x < getDoubleZ("x") + getDoubleZ("w");
-          x += gridSize) {
-        canvas.drawLine(
-          Offset(x, getDoubleZ("y")),
-          Offset(x, getDoubleZ("y") + getDoubleZ("h")),
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..color = gridColor,
-        );
-      }
-
-      for (double y = getDoubleZ("y");
-          y < getDoubleZ("y") + getDoubleZ("h");
-          y += gridSize) {
-        canvas.drawLine(
-          Offset(getDoubleZ("x"), y),
-          Offset(getDoubleZ("x") + getDoubleZ("w"), y),
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..color = gridColor,
-        );
-      }
-    }
     canvas.restore();
   }
 
