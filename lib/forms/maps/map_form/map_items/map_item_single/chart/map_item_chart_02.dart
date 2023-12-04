@@ -453,6 +453,23 @@ class MapItemChart02 extends MapItemSingle {
           canvas, Rect.fromLTRB(x + width, y, x + width + padding, y + height));
     }
 
+    if (lastDataSource.isEmpty) {
+      drawText(
+        canvas,
+        getDoubleZ("x"),
+        getDoubleZ("y"),
+        getDoubleZ("w"),
+        getDoubleZ("h"),
+        "no data source",
+        32,
+        txtProps.textColor,
+        TextVAlign.middle,
+        TextAlign.center,
+        "Roboto",
+        400,
+      );
+    }
+
     drawPost(canvas, size);
   }
 
