@@ -9,6 +9,7 @@ import 'package:gazer_client/widgets/time_chart/time_chart_settings.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_settings_area.dart';
 import 'package:gazer_client/widgets/time_chart/time_chart_settings_series.dart';
 
+import '../../../../utils/draw_text.dart';
 import '../../../main/map_item.dart';
 import '../map_item_single.dart';
 
@@ -116,6 +117,23 @@ class MapItemChart extends MapItemSingle {
     Size chartAreaSize = Size(getDoubleZ("w"), getDoubleZ("h"));
     settings.draw(canvas, chartAreaSize);
     canvas.restore();
+
+    if (lastDataSource.isEmpty) {
+      drawText(
+        canvas,
+        getDoubleZ("x"),
+        getDoubleZ("y"),
+        getDoubleZ("w"),
+        getDoubleZ("h"),
+        "no data source",
+        32,
+        currentChartColor,
+        TextVAlign.top,
+        TextAlign.left,
+        "Roboto",
+        400,
+      );
+    }
 
     /*canvas.drawRect(Rect.fromLTWH(getDoubleZ("x"), getDoubleZ("y"), getDoubleZ("w"), z(25)), Paint()
       ..color = Colors.black54
