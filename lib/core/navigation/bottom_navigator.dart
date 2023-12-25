@@ -72,70 +72,73 @@ class BottomNavigator extends StatelessWidget {
         break;
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.black12,
-        border: Border(
-          top: BorderSide(
-            color: DesignColors.fore2(),
-            width: 0.5,
+    return SafeArea(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black12,
+          border: Border(
+            top: BorderSide(
+              color: DesignColors.fore2(),
+              width: 0.5,
+            ),
           ),
         ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          showHome
-              ? buildBottomBarButton(context, 0, "Home", Icons.apps, () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                  Navigator.of(context).pop();
-                  Navigator.pushNamed(context, "/home",
-                      arguments: HomeFormArgument(
-                          Repository().lastSelectedConnection));
-                })
-              : Container(),
-          showUnits
-              ? buildBottomBarButton(context, 1, "Units", Icons.blur_on, () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                  Navigator.of(context).pop();
-                  Navigator.pushNamed(context, "/node",
-                      arguments: NodeFormArgument(
-                          Repository().lastSelectedConnection));
-                })
-              : Container(),
-          showCharts
-              ? buildBottomBarButton(
-                  context, 2, "Charts", Icons.stacked_line_chart, () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                  Navigator.of(context).pop();
-                  Navigator.pushNamed(
-                    context,
-                    "/chart_groups",
-                    arguments: buildResourcesFormArgumentCharts(),
-                  );
-                })
-              : Container(),
-          showMaps
-              ? buildBottomBarButton(context, 3, "Maps", Icons.layers, () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                  Navigator.of(context).pop();
-                  Navigator.pushNamed(
-                    context,
-                    "/maps",
-                    arguments: buildResourcesFormArgumentMaps(),
-                  );
-                })
-              : Container(),
-          showMore
-              ? buildBottomBarButton(context, 4, "More", Icons.more_horiz, () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                  Navigator.of(context).pop();
-                  Navigator.pushNamed(context, "/more",
-                      arguments: MoreFormArgument(
-                          Repository().lastSelectedConnection));
-                })
-              : Container(),
-        ],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            showHome
+                ? buildBottomBarButton(context, 0, "Home", Icons.apps, () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.of(context).pop();
+                    Navigator.pushNamed(context, "/home",
+                        arguments: HomeFormArgument(
+                            Repository().lastSelectedConnection));
+                  })
+                : Container(),
+            showUnits
+                ? buildBottomBarButton(context, 1, "Units", Icons.blur_on, () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.of(context).pop();
+                    Navigator.pushNamed(context, "/node",
+                        arguments: NodeFormArgument(
+                            Repository().lastSelectedConnection));
+                  })
+                : Container(),
+            showCharts
+                ? buildBottomBarButton(
+                    context, 2, "Charts", Icons.stacked_line_chart, () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.of(context).pop();
+                    Navigator.pushNamed(
+                      context,
+                      "/chart_groups",
+                      arguments: buildResourcesFormArgumentCharts(),
+                    );
+                  })
+                : Container(),
+            showMaps
+                ? buildBottomBarButton(context, 3, "Maps", Icons.layers, () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.of(context).pop();
+                    Navigator.pushNamed(
+                      context,
+                      "/maps",
+                      arguments: buildResourcesFormArgumentMaps(),
+                    );
+                  })
+                : Container(),
+            showMore
+                ? buildBottomBarButton(context, 4, "More", Icons.more_horiz,
+                    () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.of(context).pop();
+                    Navigator.pushNamed(context, "/more",
+                        arguments: MoreFormArgument(
+                            Repository().lastSelectedConnection));
+                  })
+                : Container(),
+          ],
+        ),
       ),
     );
   }
