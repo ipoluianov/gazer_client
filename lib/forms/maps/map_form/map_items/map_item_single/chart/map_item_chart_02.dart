@@ -151,11 +151,15 @@ class MapItemChart02 extends MapItemSingle {
     int minTimeSlot = 1 * 1000 * 1000; // 1 sec
     int expectedCountOfItem =
         ((end.toDouble() - begin.toDouble()) / minTimeSlot.toDouble()).round();
-    while (expectedCountOfItem > width / 10) {
-      minTimeSlot += 1 * 1000 * 1000;
-      expectedCountOfItem =
-          ((end.toDouble() - begin.toDouble()) / minTimeSlot.toDouble())
-              .round();
+    if (expectedCountOfItem > 1) {
+      while (expectedCountOfItem > width / 10) {
+        minTimeSlot += 1 * 1000 * 1000;
+        expectedCountOfItem =
+            ((end.toDouble() - begin.toDouble()) / minTimeSlot.toDouble())
+                .round();
+      }
+    } else {
+      expectedCountOfItem = 1;
     }
     int maxTimeSlot = (lastSeconds * 1000 * 1000) ~/ 4;
 
