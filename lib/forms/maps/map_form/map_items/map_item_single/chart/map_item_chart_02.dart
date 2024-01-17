@@ -457,7 +457,7 @@ class MapItemChart02 extends MapItemSingle {
           canvas, Rect.fromLTRB(x + width, y, x + width + padding, y + height));
     }
 
-    if (lastDataSource.isEmpty) {
+    if (!hasDataSource()) {
       drawText(
         canvas,
         getDoubleZ("x"),

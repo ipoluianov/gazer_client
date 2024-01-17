@@ -818,6 +818,7 @@ class MapFormSt extends State<MapForm> {
                         onPressed: () {
                           load();
                           map.setEditing(false);
+                          map.entire();
                         },
                         icon: const Icon(Icons.cancel),
                         label: const Text("Reject"),

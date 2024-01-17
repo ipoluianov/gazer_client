@@ -84,21 +84,25 @@ class ToolsSensorsRawFormSt extends State<ToolsSensorsRawForm> {
         await environmentSensors.getSensorAvailable(SensorType.Pressure);
 
     environmentSensors.temperature.listen((event) {
+      if (!mounted) return;
       setState(() {
         lastPressure = event;
       });
     });
     environmentSensors.humidity.listen((event) {
+      if (!mounted) return;
       setState(() {
         lastPressure = event;
       });
     });
     environmentSensors.light.listen((event) {
+      if (!mounted) return;
       setState(() {
         lastPressure = event;
       });
     });
     environmentSensors.pressure.listen((event) {
+      if (!mounted) return;
       setState(() {
         lastPressure = event;
       });
@@ -106,6 +110,7 @@ class ToolsSensorsRawFormSt extends State<ToolsSensorsRawForm> {
 
     accelerometerEvents.listen(
       (AccelerometerEvent event) {
+        if (!mounted) return;
         setState(() {
           lastAccelerometerX = event.x;
           lastAccelerometerY = event.y;
@@ -121,6 +126,7 @@ class ToolsSensorsRawFormSt extends State<ToolsSensorsRawForm> {
 
     gyroscopeEvents.listen(
       (GyroscopeEvent event) {
+        if (!mounted) return;
         lastGyroX = event.x;
         lastGyroY = event.y;
         lastGyroZ = event.z;
@@ -134,6 +140,7 @@ class ToolsSensorsRawFormSt extends State<ToolsSensorsRawForm> {
 
     magnetometerEvents.listen(
       (MagnetometerEvent event) {
+        if (!mounted) return;
         lastMagX = event.x;
         lastMagY = event.y;
         lastMagZ = event.z;
@@ -145,6 +152,7 @@ class ToolsSensorsRawFormSt extends State<ToolsSensorsRawForm> {
       cancelOnError: true,
     );
 
+    if (!mounted) return;
     setState(() {
       _tempAvailable = tempAvailable;
       _humidityAvailable = humidityAvailable;
@@ -300,6 +308,7 @@ class ToolsSensorsRawFormSt extends State<ToolsSensorsRawForm> {
 
   int currentTitleKey = 0;
   void incrementTitleKey() {
+    if (!mounted) return;
     setState(() {
       currentTitleKey++;
     });
