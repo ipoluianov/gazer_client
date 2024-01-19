@@ -26,11 +26,7 @@ class BillingFromRouter {
 class BillingSummary {
   String clientAddress = "";
   String serverAddress = "";
-  int counter = 0;
-  int limit = 0;
-  double percents = 0;
   bool usingLocalRouter = false;
-  bool isPremium = false;
   bool isReceived = false;
 }
 
@@ -111,11 +107,7 @@ class BillingDB {
     if (usingLocalRouter) {
       result.clientAddress = clientAddress;
       result.serverAddress = serverAddress;
-      result.limit = 1000000000;
-      result.counter = 0;
-      result.percents = 0;
       result.usingLocalRouter = true;
-      result.isPremium = false;
       result.isReceived = true;
       return result;
     }
@@ -123,11 +115,7 @@ class BillingDB {
     if (usingDirectConnection) {
       result.clientAddress = clientAddress;
       result.serverAddress = serverAddress;
-      result.limit = 1000000000;
-      result.counter = 0;
-      result.percents = 0;
       result.usingLocalRouter = false;
-      result.isPremium = false;
       result.isReceived = true;
       return result;
     }
@@ -177,9 +165,6 @@ class BillingDB {
     double percents = max(percentsClient, percentsServer);
     result.clientAddress = clientAddress;
     result.serverAddress = serverAddress;
-    result.percents = percents * 100;
-    //result.usingLocalRouter = false;
-    result.isPremium = premiumDetected;
     result.isReceived = received;
     return result;
   }

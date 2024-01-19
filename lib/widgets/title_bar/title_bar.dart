@@ -99,23 +99,11 @@ class TitleBarSt extends State<TitleBar> {
   }
 
   Widget subheader() {
-    BillingSummary billingInfo = BillingSummary();
-
     String text = "";
     Color color = Colors.grey.withOpacity(0.5);
 
     if (widget.connection != null) {
-      billingInfo = Repository().client(widget.connection!).billingInfo();
       text = Repository().client(widget.connection!).linkInformation();
-      if (billingInfo.isPremium) {
-        text = "Premium Node";
-        color = Colors.green;
-      }
-
-      if (billingInfo.usingLocalRouter) {
-        text = "local connection";
-        color = Colors.grey;
-      }
     }
 
     if (text.isEmpty) {
@@ -162,53 +150,9 @@ class TitleBarSt extends State<TitleBar> {
       billingInfo = Repository().client(widget.connection!).billingInfo();
     }
 
-    bool isPremium = billingInfo.isPremium;
-
-    // isPremium = true;
-
-    double value = 0;
-    bool isUnknown = false;
-    value = billingInfo.percents;
-
-    if (value < 0) {
-      isUnknown = true;
-      value = 0;
-    }
-
     Color colorOfValue = Colors.green;
 
-    // value = 80;
-
-    if (value > 50) {
-      colorOfValue = Colors.orangeAccent;
-      if ((tickCounter_ % 2) == 0) {
-        colorOfValue = Colors.yellow;
-      }
-    }
-
-    if (value > 80) {
-      colorOfValue = Colors.red;
-      if ((tickCounter_ % 2) == 0) {
-        colorOfValue = Colors.yellow;
-      }
-    }
-
-    if (isUnknown) {
-      colorOfValue = Colors.transparent;
-    }
-
-    Widget innerWidget = CircularProgressIndicator(
-      value: value / 100,
-      color: colorOfValue,
-      backgroundColor: Colors.grey,
-    );
-    Widget percentsText = Center(
-      child: Text(
-        "${(value).round()}%",
-        textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 10, color: colorOfValue),
-      ),
-    );
+    Widget innerWidget = Container();
 
     if (usingLocalRouter) {
       innerWidget = const Center(
@@ -218,7 +162,6 @@ class TitleBarSt extends State<TitleBar> {
           color: Colors.green,
         ),
       );
-      percentsText = Container();
     }
 
     if (usingDirectConnection) {
@@ -229,10 +172,10 @@ class TitleBarSt extends State<TitleBar> {
           color: Colors.green,
         ),
       );
-      percentsText = Container();
     }
 
-    if (isPremium) {
+    if (true) {
+      // Premium
       innerWidget = const Center(
         child: Icon(
           Icons.auto_awesome,
@@ -240,7 +183,6 @@ class TitleBarSt extends State<TitleBar> {
           color: Colors.green,
         ),
       );
-      percentsText = Container();
     }
 
     if (widget.connection != null) {
@@ -252,18 +194,12 @@ class TitleBarSt extends State<TitleBar> {
             color: Colors.red,
           ),
         );
-        percentsText = Container();
       }
-    }
-
-    if (isUnknown) {
-      percentsText = Container();
     }
 
     if (widget.connection == null) {
       innerWidget = const Image(
           image: AssetImage('assets/images/ios/Icon-App-40x40@1x.png'));
-      percentsText = Container();
     }
 
     //billingInfo.isReceived = false;
@@ -276,16 +212,10 @@ class TitleBarSt extends State<TitleBar> {
           color: Color.fromARGB(50, 150, 150, 150),
         ),
       );
-      percentsText = Container();
     }
 
     return GestureDetector(
-      onTap: () {
-        if (widget.connection != null) {
-          Navigator.pushNamed(context, "/billing",
-              arguments: BillingFormArgument(widget.connection!));
-        }
-      },
+      onTap: () {},
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: Stack(
@@ -304,7 +234,7 @@ class TitleBarSt extends State<TitleBar> {
             SizedBox(
               width: 52,
               height: 52,
-              child: percentsText,
+              child: Container(),
             ),
           ],
         ),

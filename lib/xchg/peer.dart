@@ -223,24 +223,20 @@ class Peer {
 
   Future<Uint8List> httpCall(
       String routerHost, String function, Uint8List frame) async {
-    //throw "Ex";
-    //print("httpCall $routerHost $function");
     wcounter++;
     Dio? dio;
     if (httpClients.containsKey("$routerHost-$function")) {
       dio = httpClients["$routerHost-$function"];
     } else {
-      //HttpClient.enableTimelineLogging = false;
       dio = Dio();
       dio.options.connectTimeout = const Duration(milliseconds: 1000);
       dio.options.sendTimeout = const Duration(milliseconds: 1000);
       dio.options.receiveDataWhenStatusError = true;
-      //dio.options.persistentConnection = false;
       if (function == "w") {
         dio.options.receiveTimeout = const Duration(milliseconds: 1000);
       }
       if (function == "r") {
-        print("Read from $routerHost");
+        //print("Read from $routerHost");
         dio.options.receiveTimeout = const Duration(milliseconds: 1000);
       }
       httpClients["$routerHost-$function"] = dio;
@@ -412,7 +408,7 @@ class Peer {
   }
 
   void processFrame11(String router, Transaction transaction) {
-    transaction.transportType = "HTTP $router";
+    transaction.transportType = router;
 
     RemotePeer? remotePeer;
     for (RemotePeer peer in remotePeers.values) {
